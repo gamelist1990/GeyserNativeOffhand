@@ -3,7 +3,7 @@
   "minecraft:geometry": [
     {
       "description": {
-        "identifier": "geometry.nativeoffhand.food",
+        "identifier": "geometry.nativeoffhand.food.main",
         "texture_width": 16,
         "texture_height": 16,
         "visible_bounds_width": 4,
@@ -42,6 +42,67 @@
               ],
               "use_pixel_depth": true,
               "texture": "default"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": {
+        "identifier": "geometry.nativeoffhand.food.offhand",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "nativeoffhand_left_food",
+          "binding": "query.item_slot_to_bone_name(context.item_slot)",
+          "pivot": [
+            1,
+            15.5,
+            3
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                22,
+                -1
+              ],
+              "size": [
+                12,
+                12,
+                0.25
+              ],
+              "uv": {
+                "north": {
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "uv_size": [
+                    16,
+                    16
+                  ]
+                },
+                "south": {
+                  "uv": [
+                    16,
+                    0
+                  ],
+                  "uv_size": [
+                    -16,
+                    16
+                  ]
+                }
+              }
             }
           ]
         }

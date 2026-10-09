@@ -6,16 +6,33 @@
       "bones": {
         "nativeoffhand_food": {
           "position": [
-            "context.is_first_person ? (variable.noh_left ? 5.5 : -5.5) : (variable.noh_left ? -0.5 : 0.5)",
+            "context.is_first_person ? -5.5 : 0.5",
             "context.is_first_person ? 21.0 : 21.5",
             "context.is_first_person ? -3.0 : 1.0"
           ],
           "rotation": [
             "context.is_first_person ? 38.0 : 0.0",
-            "context.is_first_person ? (variable.noh_left ? 120.0 : -120.0) : 0.0",
-            "context.is_first_person ? (variable.noh_left ? 63.0 : -63.0) : 0.0"
+            "context.is_first_person ? -120.0 : 0.0",
+            "context.is_first_person ? -63.0 : 0.0"
           ],
           "scale": "context.is_first_person ? 0.75 : 0.5"
+        },
+        "nativeoffhand_left_food": {
+          "position": [
+            "context.is_first_person ? -13.5 : -1.6",
+            "context.is_first_person ? -5.8 : 9.0",
+            "context.is_first_person ? 5.1 : 9.3"
+          ],
+          "rotation": [
+            "context.is_first_person ? 1.0 : -90.0",
+            "context.is_first_person ? 176.0 : 0.0",
+            "context.is_first_person ? -2.5 : 90.0"
+          ],
+          "scale": [
+            "context.is_first_person ? 1.0 : -1.0",
+            "context.is_first_person ? 1.0 : -1.0",
+            1
+          ]
         }
       }
     },
@@ -23,16 +40,16 @@
       "loop": true,
       "animation_length": 10.0,
       "bones": {
-        "nativeoffhand_food": {
+        "nativeoffhand_left_food": {
           "position": [
-            "-3.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "4.0 * math.min(query.anim_time * 5.0, 1.0) + 0.75 * math.abs(math.sin(query.anim_time * 1080.0))",
-            "-1.0 * math.min(query.anim_time * 5.0, 1.0)"
+            "3.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "3.2 * math.min(query.anim_time * 5.0, 1.0) + 0.6 * math.abs(math.sin(query.anim_time * 1080.0))",
+            "1.5 * math.min(query.anim_time * 5.0, 1.0)"
           ],
           "rotation": [
-            "-25.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * math.abs(math.sin(query.anim_time * 1080.0))",
-            "-15.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "-10.0 * math.min(query.anim_time * 5.0, 1.0)"
+            "-15.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * math.abs(math.sin(query.anim_time * 1080.0))",
+            "-10.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "10.0 * math.min(query.anim_time * 5.0, 1.0)"
           ]
         }
       }
@@ -41,16 +58,16 @@
       "loop": true,
       "animation_length": 10.0,
       "bones": {
-        "nativeoffhand_food": {
+        "nativeoffhand_left_food": {
           "position": [
-            "-3.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "4.0 * math.min(query.anim_time * 5.0, 1.0) + 0.75 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
-            "-1.0 * math.min(query.anim_time * 5.0, 1.0)"
+            "3.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "3.2 * math.min(query.anim_time * 5.0, 1.0) + 0.6 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
+            "1.5 * math.min(query.anim_time * 5.0, 1.0)"
           ],
           "rotation": [
-            "-25.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
-            "-15.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "-10.0 * math.min(query.anim_time * 5.0, 1.0)"
+            "-15.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
+            "-10.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "10.0 * math.min(query.anim_time * 5.0, 1.0)"
           ]
         }
       }

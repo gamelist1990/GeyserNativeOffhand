@@ -2,7 +2,7 @@
   "format_version": "1.8.0",
   "render_controllers": {
     "controller.render.nativeoffhand.food": {
-      "geometry": "Geometry.default",
+      "geometry": "Array.food_hands[variable.noh_left]",
       "materials": [
         {
           "*": "variable.is_enchanted ? Material.enchanted : Material.default"
@@ -11,7 +11,15 @@
       "textures": [
         "Texture.default",
         "Texture.enchanted"
-      ]
+      ],
+      "arrays": {
+        "geometries": {
+          "Array.food_hands": [
+            "Geometry.default",
+            "Geometry.offhand"
+          ]
+        }
+      }
     }
   }
 }

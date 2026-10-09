@@ -30,7 +30,7 @@ for item in components:
         "item": {identifier: "query.owner_identifier == 'minecraft:player'"},
         "materials": {"default": "entity_alphatest", "enchanted": "entity_alphatest_glint"},
         "textures": {"default": textures[name], "enchanted": "textures/misc/enchanted_item_glint"},
-        "geometry": {"default": "geometry.nativeoffhand.food"},
+        "geometry": {"default": "geometry.nativeoffhand.food.main", "offhand": "geometry.nativeoffhand.food.offhand"},
         "animations": {
             "consume_controller": "controller.animation.nativeoffhand.food",
             "wield": "animation.nativeoffhand.food.wield",
