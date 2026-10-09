@@ -2,7 +2,7 @@
 
 Bedrock の通常のインベントリで、松明・ランタン・ブロック・剣などをオフハンドへ移動できるようにする Geyser-Spigot 拡張です。Java サーバーへオフハンドの設置・使用を送ります。食事・飲用も Java 側で処理します。
 
-**v0.1.3-attachable.4 は、一人称のオフハンド食事モーションを試す版です。実機での描画は確認待ちです。** 対応する Geyser の内部実装に依存します。
+**v0.1.3-attachable.5 は、一人称のオフハンド食事モーションを試す版です。実機での描画は確認待ちです。** 対応する Geyser の内部実装に依存します。
 
 モーションを追加しない従来版は [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2) と `main` にあります。この試作は `attachable-consumption` ブランチで公開します。
 
@@ -63,11 +63,11 @@ Cooldown と同じ attachable の仕組みを参考にし、モデルとアニ�
 - ランタン・魂のランタン・魂の松明・石・剣・りんご・水バケツ・記入済みの本のオフハンド往復移動。
 - 範囲外の操作と不正な保持アイテム定義を拒否。
 
-実機では、プレイヤーが松明のインベントリからの移動・設置、りんごの消費、全アイテム対応版でのオフハンドへの移動を確認しています。表示名と盾の ID は v0.1.1 で修正しました。従来の v0.1.2 は食事・飲用のカスタムモーションを削除した版です。このブランチで attachable 方式を再検証しています。40 個の attachable の ID と JSON も確認していますが、パケットテストは実機の描画を検証しません。attachable.1・.2 では左手の食品が見えませんでした。attachable.3 では右手のりんごは正常ですが、左手では一人称・三人称とも見えないとの実機報告がありました。インベントリ上の装備は正常です。attachable.4 は右手の正常な表示を保ち、左手に専用 geometry とバニラの盾の左手座標系を使う構成へ変更しました。補正後の表示・動きは確認待ちです。サーバー側の 26 項目は attachable.1 で検証した結果で、以降の変更はリソースパックです。
+実機では、プレイヤーが松明のインベントリからの移動・設置、りんごの消費、全アイテム対応版でのオフハンドへの移動を確認しています。表示名と盾の ID は v0.1.1 で修正しました。従来の v0.1.2 は食事・飲用のカスタムモーションを削除した版です。このブランチで attachable 方式を再検証しています。40 個の attachable の ID と JSON も確認していますが、パケットテストは実機の描画を検証しません。attachable.1・.2 では左手の食品が見えませんでした。attachable.3 では右手のりんごは正常ですが、左手では一人称・三人称とも見えないとの実機報告がありました。インベントリ上の装備は正常です。attachable.4 は右手の正常な表示を保ち、左手に専用 geometry とバニラの盾の左手座標系を使う構成へ変更しました。attachable.4 の実機では、食事中に画面中央下へ食品が見えるようになりましたが、待機位置は画面の下に隠れていました。attachable.5 は一人称の待機位置を 6 モデル単位上げています。補正後の位置・動きは確認待ちです。サーバー側の 26 項目は attachable.1 で検証した結果で、以降の変更はリソースパックです。
 
 特殊なアイテムの表示・翻訳名・attachable、他のカスタムアイテム拡張やリソースパックとの同時使用も網羅していません。フォールバックの優先度は低くしていますが、個別の互換性確認が必要です。
 
-[サーバー側の検証結果](tests/results/2026-10-09-attachable.1.json) / [補正版の確認結果](tests/results/2026-10-09-attachable.4.json) / [再実行手順](tests/bedrock/README.md)
+[サーバー側の検証結果](tests/results/2026-10-09-attachable.1.json) / [補正版の確認結果](tests/results/2026-10-09-attachable.5.json) / [再実行手順](tests/bedrock/README.md)
 
 ## ビルド
 
@@ -80,7 +80,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.1.3-attachable.4.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
+出力は `build/GeyserNativeOffhand-0.1.3-attachable.5.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
 
 ## ライセンスと出典
 
