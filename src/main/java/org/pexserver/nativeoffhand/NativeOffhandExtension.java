@@ -26,6 +26,8 @@ public final class NativeOffhandExtension implements Extension {
     private final Map<ItemDefinition, Original> originals = new IdentityHashMap<>();
     private Field componentBased;
     private Field componentData;
+    private Field translationString;
+    private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> originalTranslations = new IdentityHashMap<>();
     private PacketTranslator<InventoryTransactionPacket> previous;
     private OffhandInventoryTransactionTranslator installed;
     private org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty useProperty;
@@ -62,11 +64,21 @@ public final class NativeOffhandExtension implements Extension {
             // The allow_off_hand property is also used by Geyser's vanilla cake,
             // armor stand and firework overrides. Preserve identifier, runtime ID,
             // item version, native components, textures and Java mapping.
+            translationString = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
+            translationString.setAccessible(true);
             componentBased = SimpleItemDefinition.class.getDeclaredField("componentBased");
             componentData = SimpleItemDefinition.class.getDeclaredField("componentData");
             componentBased.setAccessible(true);
             componentData.setAccessible(true);
             for (var mappings : Registries.ITEMS.get().values()) {
+                for (var mapping : mappings.getItems()) {
+                    if (mapping == null || !ItemCatalog.isFallback(mapping.getJavaItem().javaKey().asString())
+                            || originalTranslations.containsKey(mapping)) continue;
+                    originalTranslations.put(mapping, mapping.getTranslationString());
+                    // Use Geyser's per-session Java locale, preserving custom names,
+                    // rarity and potion-specific names in its normal item translator.
+                    translationString.set(mapping, mapping.getJavaItem().translationKey());
+                }
                 for (ItemDefinition definition : mappings.getItemDefinitions().values()) {
                     if (definition.getRuntimeId() == 0 || originals.containsKey(definition)) continue;
                     if (!(definition instanceof SimpleItemDefinition))
@@ -123,6 +135,11 @@ public final class NativeOffhandExtension implements Extension {
             }
         });
         originals.clear();
+        originalTranslations.forEach((mapping, old) -> {
+            try { translationString.set(mapping, old); }
+            catch (IllegalAccessException e) { logger().error("Cannot restore item translation: " + e); }
+        });
+        originalTranslations.clear();
         installed = null;
     }
 

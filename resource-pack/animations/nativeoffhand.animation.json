@@ -3,50 +3,50 @@
   "animations": {
     "animation.nativeoffhand.eat": {
       "loop": true,
-      "animation_length": 1.0,
+      "animation_length": 10.0,
       "bones": {
         "leftarm": {
           "rotation": [
-            "query.is_first_person ? 0 : -75 - math.abs(math.sin(query.anim_time * 1080)) * 0.4 * 8",
-            "query.is_first_person ? 0 : -25",
-            "query.is_first_person ? 0 : -10"
+            "variable.is_first_person ? 0.0 : -60.0 * math.min(query.anim_time * 5.0, 1.0) + 11.25 * math.abs(math.sin(query.anim_time * 1080.0)) - this",
+            "variable.is_first_person ? 0.0 : 22.5 * math.min(query.anim_time * 5.0, 1.0) - 11.25 * math.abs(math.sin(query.anim_time * 1080.0)) - this",
+            "variable.is_first_person ? 0.0 : 5.625 * math.min(query.anim_time * 5.0, 1.0) - 11.25 * math.abs(math.sin(query.anim_time * 1080.0)) - this"
           ]
         },
         "leftitem": {
           "position": [
-            "query.is_first_person ? -2.5 : 0",
-            "query.is_first_person ? 2.8 + math.abs(math.sin(query.anim_time * 1080)) * 0.4 : 0",
-            "query.is_first_person ? -1.0 : 0"
+            "variable.is_first_person ? 4.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0",
+            "variable.is_first_person ? 5.0 * math.min(query.anim_time * 5.0, 1.0) + 1.25 * math.abs(math.sin(query.anim_time * 1080.0)) : 0.0",
+            "variable.is_first_person ? -3.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0"
           ],
           "rotation": [
-            "query.is_first_person ? -10 : 0",
-            "query.is_first_person ? 15 : 0",
-            "query.is_first_person ? -15 : 0"
+            "variable.is_first_person ? -10.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * math.abs(math.sin(query.anim_time * 1080.0)) : 0.0",
+            "variable.is_first_person ? -15.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0",
+            "variable.is_first_person ? 15.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0"
           ]
         }
       }
     },
     "animation.nativeoffhand.drink": {
       "loop": true,
-      "animation_length": 1.0,
+      "animation_length": 10.0,
       "bones": {
         "leftarm": {
           "rotation": [
-            "query.is_first_person ? 0 : -75 - math.sin(query.anim_time * 360) * 0.15 * 8",
-            "query.is_first_person ? 0 : -25",
-            "query.is_first_person ? 0 : -10"
+            "variable.is_first_person ? 0.0 : -60.0 * math.min(query.anim_time * 5.0, 1.0) + 11.25 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) - this",
+            "variable.is_first_person ? 0.0 : 22.5 * math.min(query.anim_time * 5.0, 1.0) - 11.25 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) - this",
+            "variable.is_first_person ? 0.0 : 5.625 * math.min(query.anim_time * 5.0, 1.0) - 11.25 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) - this"
           ]
         },
         "leftitem": {
           "position": [
-            "query.is_first_person ? -2.5 : 0",
-            "query.is_first_person ? 2.8 + math.sin(query.anim_time * 360) * 0.15 : 0",
-            "query.is_first_person ? -1.0 : 0"
+            "variable.is_first_person ? 4.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0",
+            "variable.is_first_person ? 5.0 * math.min(query.anim_time * 5.0, 1.0) + 1.25 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) : 0.0",
+            "variable.is_first_person ? -3.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0"
           ],
           "rotation": [
-            "query.is_first_person ? -10 : 0",
-            "query.is_first_person ? 15 : 0",
-            "query.is_first_person ? -15 : 0"
+            "variable.is_first_person ? -10.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) : 0.0",
+            "variable.is_first_person ? -15.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0",
+            "variable.is_first_person ? 15.0 * math.min(query.anim_time * 5.0, 1.0) : 0.0"
           ]
         }
       }

@@ -7,6 +7,8 @@ const nbt = require('prismarine-nbt')
 const settings = JSON.parse(fs.readFileSync(process.env.TEST_SETTINGS || path.resolve(__dirname, '../../.integration/test-settings.json')))
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 const checks = []
+const locale = process.env.TEST_LOCALE || "ja_JP"
+const entityEvents = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
 const state = { inventory: [], offhand: { network_id: 0 }, responses: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
@@ -92,7 +94,7 @@ function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0}
 async function main() {
   rcon=await connectRcon()
   await cmd('whitelist off')
-  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,transport:'raknet',conLog:()=>{}})
+  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,skinData:{LanguageCode:locale},transport:'raknet',conLog:()=>{}})
   client.prependOnceListener('session',profile=>{profile.xuid='31001'})
   client.on('error',err=>{state.error=err})
   client.on('disconnect',p=>{if(!state.closing)state.error=Error(JSON.stringify(p))})
@@ -110,7 +112,9 @@ async function main() {
   })
   client.on('item_stack_response',p=>{state.responses.push(p);debug('DEBUG_STACK',JSON.stringify(p))})
   client.on('update_block',p=>state.blocks.push(p))
-  client.on('animate_entity',p=>state.animations.push(p))
+  client.on('set_entity_data',p=>{entityEvents.push({type:'metadata',packet:p});debug('ENTITY_PROPERTIES',JSON.stringify(p.properties))})
+  client.on('sync_entity_property',p=>debug('PROPERTY_SCHEMA',JSON.stringify(nbt.simplify(p.nbt))))
+  client.on('animate_entity',p=>{state.animations.push(p);entityEvents.push({type:'animation',packet:p})})
   client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
     debug('DEBUG_MOVE',JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v))
@@ -148,6 +152,17 @@ async function main() {
   state.position={...state.position,z:state.position.z+0.0001}
   await pause(500)
   debug('DEBUG_POSITION',state.position)
+  assert(!state.registry.some(i=>i.name==='nativeoffhand:shield'))
+  assert(state.registry.some(i=>i.name==='minecraft:shield'))
+  check('Shield keeps its vanilla identifier for native rendering')
+  await setMain('stone',2)
+  const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
+  assert(stoneName.includes(locale.toLowerCase()==='ja_jp' ? '石' : 'Stone'),stoneName)
+  assert(!stoneName.includes('tile.stone'),stoneName)
+  check('Stone display name is localized for the client',stoneName)
+  await cmd('item replace entity NativeOH hotbar.0 with minecraft:stone[custom_name={text:"Named stone"}] 2')
+  await until('custom name preserved',()=>state.inventory[0]?.extra?.nbt && nbt.simplify(state.inventory[0].extra.nbt.nbt).display?.Name?.includes('Named stone'))
+  check('A user custom item name retains priority over the localized fallback')
   await setMain('torch',8)
   await setOffhand('air')
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
@@ -234,9 +249,18 @@ async function main() {
   assert(state.animations.some(p=>p.animation==='animation.nativeoffhand.drink'))
   assert(state.animations.some(p=>p.animation==='animation.nativeoffhand.idle'))
   check('Offhand eat/drink PlayAnimation starts and returns to idle',state.animations.map(p=>p.animation))
-  for(const [id,count] of [['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1]]) await transferRoundTrip(id,count)
+  for (const event of entityEvents.filter(e=>e.type==='animation' && /\.(eat|drink)$/.test(e.packet.animation))) {
+    const before=entityEvents.slice(0,entityEvents.indexOf(event))
+    const propertyPackets=before.filter(e=>e.type==='metadata' && String(e.packet.runtime_entity_id)===String(state.runtimeId))
+    const expected=event.packet.animation.endsWith('.eat') ? 1 : 2
+    assert(propertyPackets.some(e=>e.packet.properties.ints.some(p=>p.value===expected)), 'Use property missing before '+event.packet.animation)
+    const latest=propertyPackets.filter(e=>e.packet.properties.ints.length).at(-1)
+    assert(latest && latest.packet.properties.ints.some(p=>p.value===expected), 'Animation started before its active property')
+  }
+  check('The active use property reaches Bedrock before eat/drink PlayAnimation')
+  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1]]) await transferRoundTrip(id,count)
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
-  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Inventory drag behavior and visual animation quality require a retail client test.']},null,2)+'\n')
+  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Inventory drag behavior and visual animation quality require a retail client test.']},null,2)+'\n')
 }
 main().catch(error=>{console.error(error);process.exitCode=1}).finally(async()=>{
   state.closing=true

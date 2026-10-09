@@ -51,7 +51,9 @@ final class OffhandAnimations {
         if (previous == mode) return;
         if (mode == 0) active.remove(packet.getEntityId()); else active.put(packet.getEntityId(), mode);
         final int value = mode;
-        player.updatePropertiesBatched(updater -> updater.update(useProperty, value), false);
+        // The stop expression reads this property on the first animation frame.
+        // Flush it before PlayAnimation; a delayed update can stop the loop immediately.
+        player.updatePropertiesBatched(updater -> updater.update(useProperty, value), true);
         AnimateEntityPacket animation = new AnimateEntityPacket();
         animation.setAnimation(mode == 1 ? "animation.nativeoffhand.eat"
             : mode == 2 ? "animation.nativeoffhand.drink" : "animation.nativeoffhand.idle");

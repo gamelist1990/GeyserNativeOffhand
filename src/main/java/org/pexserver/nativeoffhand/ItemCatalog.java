@@ -14,6 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 final class ItemCatalog {
+    private static final Set<String> FALLBACK_IDS = new HashSet<>();
+    static boolean isFallback(String javaId) { return FALLBACK_IDS.contains(javaId); }
+    private static String readableName(String name) {
+        StringJoiner words = new StringJoiner(" ");
+        for (String word : name.split("_")) words.add(Character.toUpperCase(word.charAt(0)) + word.substring(1));
+        return words.toString();
+    }
     private static JsonElement read(Class<?> owner, String resource) throws IOException {
         try (InputStream in = owner.getResourceAsStream(resource)) {
             if (in == null) throw new IOException("Missing resource " + resource);
@@ -21,6 +28,7 @@ final class ItemCatalog {
         }
     }
     static int register(GeyserDefineCustomItemsEvent event) throws IOException {
+        FALLBACK_IDS.clear();
         JsonObject mappings = read(GeyserImpl.class, "/mappings/items.json").getAsJsonObject();
         JsonObject icons = read(ItemCatalog.class, "/icons.json").getAsJsonObject();
         Set<String> dataDriven = new HashSet<>();
@@ -28,6 +36,9 @@ final class ItemCatalog {
             JsonObject state = element.getAsJsonObject();
             if (state.get("version").getAsInt() == 1) dataDriven.add(state.get("name").getAsString());
         }
+        // A vanilla shield already supports offhand and its identifier selects
+        // the native attachable, banner patterns and blocking animations.
+        dataDriven.add("minecraft:shield");
         var blocks = BlockRegistries.BLOCKS.get().get(Collections.max(BlockRegistries.BLOCKS.get().keySet()));
         int count = 0;
         for (var entry : mappings.entrySet()) {
@@ -54,9 +65,10 @@ final class ItemCatalog {
                 options.icon("nativeoffhand_" + name);
             }
             builder.priority(-1000000).predicate(context -> true)
-                .displayName((block ? "tile." : "item.") + name + ".name")
+                .displayName(readableName(name))
                 .bedrockOptions(options);
             event.register(javaItem, builder.build());
+            FALLBACK_IDS.add(javaId);
             count++;
         }
         return count;
