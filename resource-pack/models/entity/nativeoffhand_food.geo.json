@@ -31,14 +31,14 @@
                 6
               ],
               "position": [
-                -2,
+                2,
                 1,
                 -2
               ],
               "rotation": [
                 0,
-                135,
-                -90
+                -135,
+                90
               ],
               "use_pixel_depth": true,
               "texture": "default"

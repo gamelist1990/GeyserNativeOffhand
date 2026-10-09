@@ -27,7 +27,7 @@ for item in components:
     identifier = bedrock_id if versions[bedrock_id] == 1 else "nativeoffhand:" + name
     description = {
         "identifier": identifier,
-        "item": {identifier: "query.owner_identifier == 'minecraft:player' && context.item_slot == 'off_hand'"},
+        "item": {identifier: "query.owner_identifier == 'minecraft:player'"},
         "materials": {"default": "entity_alphatest", "enchanted": "entity_alphatest_glint"},
         "textures": {"default": textures[name], "enchanted": "textures/misc/enchanted_item_glint"},
         "geometry": {"default": "geometry.nativeoffhand.food"},
@@ -38,7 +38,7 @@ for item in components:
             "drink": "animation.nativeoffhand.food.drink"
         },
         "scripts": {
-            "pre_animation": ["variable.noh_mode = query.property('nativeoffhand:consume_mode');"],
+            "pre_animation": ["variable.noh_left = context.item_slot == 'off_hand';", "variable.noh_mode = variable.noh_left ? query.property('nativeoffhand:consume_mode') : 0;"],
             "animate": ["consume_controller"]
         },
         "render_controllers": ["controller.render.nativeoffhand.food"]

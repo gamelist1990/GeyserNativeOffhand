@@ -10,7 +10,7 @@
   ],
   "previousProtocolTests": "2026-10-09-attachable.1.json",
   "changeSinceProtocolTests": "Resource-pack bound-model vertical placement only; server use-state code unchanged",
-  "retailRendering": "pending repeat check after apple was invisible in attachable.1",
+  "retailRendering": "failed: food remains invisible in offhand; torch and stone remain visible",
   "artifactSha256": {
     "GeyserNativeOffhand-0.1.3-attachable.2.jar": "ccba9835706995e62172508c500a9aac99ef95b0f961202b9573aa974823b113",
     "GeyserNativeOffhand.mcpack": "f699f1b4e62e39b512ae4524db1221a283c6c8d62a15f7f3db3f12bfefaa909c"

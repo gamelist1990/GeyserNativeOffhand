@@ -4,7 +4,7 @@
     "description": {
       "identifier": "nativeoffhand:beetroot_soup",
       "item": {
-        "nativeoffhand:beetroot_soup": "query.owner_identifier == 'minecraft:player' && context.item_slot == 'off_hand'"
+        "nativeoffhand:beetroot_soup": "query.owner_identifier == 'minecraft:player'"
       },
       "materials": {
         "default": "entity_alphatest",
@@ -25,7 +25,8 @@
       },
       "scripts": {
         "pre_animation": [
-          "variable.noh_mode = query.property('nativeoffhand:consume_mode');"
+          "variable.noh_left = context.item_slot == 'off_hand';",
+          "variable.noh_mode = variable.noh_left ? query.property('nativeoffhand:consume_mode') : 0;"
         ],
         "animate": [
           "consume_controller"

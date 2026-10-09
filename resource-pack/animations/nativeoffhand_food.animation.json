@@ -6,14 +6,14 @@
       "bones": {
         "nativeoffhand_food": {
           "position": [
-            "context.is_first_person ? 5.5 : -0.5",
+            "context.is_first_person ? (variable.noh_left ? 5.5 : -5.5) : (variable.noh_left ? -0.5 : 0.5)",
             "context.is_first_person ? 21.0 : 21.5",
             "context.is_first_person ? -3.0 : 1.0"
           ],
           "rotation": [
             "context.is_first_person ? 38.0 : 0.0",
-            "context.is_first_person ? 120.0 : 0.0",
-            "context.is_first_person ? 63.0 : 0.0"
+            "context.is_first_person ? (variable.noh_left ? 120.0 : -120.0) : 0.0",
+            "context.is_first_person ? (variable.noh_left ? 63.0 : -63.0) : 0.0"
           ],
           "scale": "context.is_first_person ? 0.75 : 0.5"
         }
