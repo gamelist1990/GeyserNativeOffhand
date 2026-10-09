@@ -120,9 +120,9 @@ public class OffhandInventoryTransactionTranslator extends PacketTranslator<Inve
             return;
         }
         if (DEBUG) session.getGeyser().getLogger().info("[nativeoffhand-debug] use action=" + packet.getActionType()
-            + " pos=" + session.getPlayerEntity().position() + " consuming=" + OffhandAnimations.consuming(session)
+            + " pos=" + session.getPlayerEntity().position() + " consuming=" + OffhandUseState.consuming(session)
             + " hotbar=" + session.getPlayerInventory().getHeldItemSlot());
-        if (OffhandAnimations.consuming(session)) return;
+        if (OffhandUseState.consuming(session)) return;
         // Validate the original client-held definition before changing context.
         ItemDefinition incoming = packet.getItemInHand() == null ? ItemData.AIR.getDefinition() : packet.getItemInHand().getDefinition();
         ItemDefinition main = ItemTranslator.getBedrockItemDefinition(session,

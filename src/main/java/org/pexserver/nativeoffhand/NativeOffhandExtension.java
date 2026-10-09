@@ -5,13 +5,7 @@ import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryTransactionPacket;
 import org.geysermc.event.subscribe.Subscribe;
-import org.geysermc.geyser.item.custom.GeyserCustomItemDefinition;
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomItemsEvent;
-import org.geysermc.geyser.api.item.custom.v2.CustomItemDefinition;
-import org.geysermc.geyser.api.item.custom.v2.CustomItemBedrockOptions;
-import org.geysermc.geyser.api.item.custom.v2.component.geyser.GeyserItemDataComponents;
-import org.geysermc.geyser.api.item.custom.v2.component.geyser.GeyserBlockPlacer;
-import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserShutdownEvent;
 import org.geysermc.geyser.api.extension.Extension;
@@ -30,7 +24,6 @@ public final class NativeOffhandExtension implements Extension {
     private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> originalTranslations = new IdentityHashMap<>();
     private PacketTranslator<InventoryTransactionPacket> previous;
     private OffhandInventoryTransactionTranslator installed;
-    private org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty useProperty;
     private PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket> previousMetadata;
     private PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket> metadataHook;
 
@@ -38,11 +31,6 @@ public final class NativeOffhandExtension implements Extension {
     public void defineItems(GeyserDefineCustomItemsEvent event) {
         try { logger().info("Registered " + ItemCatalog.register(event) + " automatic data-driven item fallbacks."); }
         catch (Exception failure) { throw new IllegalStateException("Cannot register native offhand item catalog", failure); }
-    }
-
-    @Subscribe
-    public void defineProperties(org.geysermc.geyser.api.event.lifecycle.GeyserDefineEntityPropertiesEvent event) {
-        useProperty = event.registerIntegerProperty(Identifier.of("minecraft:player"), Identifier.of("nativeoffhand:use"), 0, 2, 0);
     }
 
     @Subscribe
@@ -55,7 +43,7 @@ public final class NativeOffhandExtension implements Extension {
                 java.nio.file.Files.copy(stream, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }
             event.register(org.geysermc.geyser.api.pack.ResourcePack.create(org.geysermc.geyser.api.pack.PackCodec.path(target)));
-        } catch (Exception failure) { throw new IllegalStateException("Cannot register offhand animations and icon aliases", failure); }
+        } catch (Exception failure) { throw new IllegalStateException("Cannot register offhand icon aliases", failure); }
     }
 
     @Subscribe
@@ -103,12 +91,12 @@ public final class NativeOffhandExtension implements Extension {
             Registries.BEDROCK_PACKET_TRANSLATORS.register(InventoryTransactionPacket.class, installed);
             previousMetadata = (PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket>)
                 Registries.JAVA_PACKET_TRANSLATORS.get(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class);
-            var animations = new OffhandAnimations(useProperty);
+            var useState = new OffhandUseState();
             metadataHook = new PacketTranslator<>() {
                 @Override public void translate(org.geysermc.geyser.session.GeyserSession session,
                         org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket packet) {
                     previousMetadata.translate(session, packet);
-                    animations.accept(session, packet);
+                    useState.accept(session, packet);
                 }
             };
             Registries.JAVA_PACKET_TRANSLATORS.register(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class, metadataHook);
@@ -123,7 +111,7 @@ public final class NativeOffhandExtension implements Extension {
     private void restore() {
         if (metadataHook != null && Registries.JAVA_PACKET_TRANSLATORS.get(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class) == metadataHook)
             Registries.JAVA_PACKET_TRANSLATORS.register(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class, previousMetadata);
-        OffhandAnimations.clear();
+        OffhandUseState.clear();
         if (installed != null && Registries.BEDROCK_PACKET_TRANSLATORS.get(InventoryTransactionPacket.class) == installed)
             Registries.BEDROCK_PACKET_TRANSLATORS.register(InventoryTransactionPacket.class, previous);
         originals.forEach((definition, old) -> {
@@ -145,7 +133,7 @@ public final class NativeOffhandExtension implements Extension {
 
     @Subscribe
     public void disconnect(org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent event) {
-        if (event.connection() instanceof org.geysermc.geyser.session.GeyserSession session) OffhandAnimations.disconnect(session);
+        if (event.connection() instanceof org.geysermc.geyser.session.GeyserSession session) OffhandUseState.disconnect(session);
     }
 
     @Subscribe

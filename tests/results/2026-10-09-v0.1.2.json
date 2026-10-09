@@ -1,0 +1,131 @@
+{
+  "timestamp": "2026-10-09T23:19:28.591Z",
+  "bedrockVersion": "1.26.51",
+  "locale": "ja_JP",
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "All transmitted non-air definitions permit offhand",
+      "evidence": 3702
+    },
+    {
+      "label": "Shield keeps its vanilla identifier for native rendering"
+    },
+    {
+      "label": "Stone display name is localized for the client",
+      "evidence": "§r§f石"
+    },
+    {
+      "label": "A user custom item name retains priority over the localized fallback"
+    },
+    {
+      "label": "Native ItemStackRequest moved torches from hotbar into OFFHAND",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 8}}"
+    },
+    {
+      "label": "Out-of-range offhand interaction is rejected without consumption"
+    },
+    {
+      "label": "Forged held definition is rejected without consumption"
+    },
+    {
+      "label": "Empty main hand places exactly one native offhand torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 7}}"
+    },
+    {
+      "label": "Sword in main hand allows offhand torch placement",
+      "evidence": "Test passed"
+    },
+    {
+      "label": "Useful main hand retains priority; no offhand duplicate",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 6}}"
+    },
+    {
+      "label": "Native offhand water bucket places source water and returns empty bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:bucket\", count: 1}}"
+    },
+    {
+      "label": "Native offhand air-use consumes one ender pearl",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:ender_pearl\", count: 2}}"
+    },
+    {
+      "label": "Native offhand potion completes timed use",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:glass_bottle\", count: 1}}"
+    },
+    {
+      "label": "Native offhand food completes timed use",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:apple\", count: 1}}"
+    },
+    {
+      "label": "Offhand food and potion use emit no custom PlayAnimation"
+    },
+    {
+      "label": "No offhand animation control property is registered"
+    },
+    {
+      "label": "Native inventory offhand round trip: shield",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:shield\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: lantern",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:lantern\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_lantern",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:soul_lantern\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:soul_torch\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: stone",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:stone\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:diamond_sword\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: apple",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:apple\", count: 4}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: water_bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:water_bucket\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: written_book",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:written_book\", count: 1}}"
+    }
+  ],
+  "limitations": [
+    "Packet tests verify item names, identity, inventory/equipment/world state and absence of custom animation packets, not retail rendering.",
+    "Java main-hand PASS-to-offhand routing is conservative and does not cover all item/target combinations.",
+    "Only the pinned Geyser-Spigot and Bedrock protocol above were tested."
+  ],
+  "environment": {
+    "geyser": "2.12.0-SNAPSHOT build 3080",
+    "geyserCommit": "e215fa5cf1ffc3874c4d46c579d25800b20f17e4",
+    "geyserSha256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c",
+    "paper": "26.3-159-main@a4b87cf",
+    "paperSha256": "2224a0b2b6b096ff4c429ad926e97977213e4f633e90cb3a49b5eeb82f94bab0",
+    "java": 26,
+    "bedrockProtocol": 2193,
+    "bedrockProtocolPackage": "3.60.1",
+    "node": "24.12.0",
+    "resourcePackVersion": "0.1.3"
+  },
+  "extensionVersion": "0.1.2",
+  "artifactSha256": {
+    "GeyserNativeOffhand-0.1.2.jar": "687375c20cb6da3ba9c315f2842ed147ba7b29cdc2b74353708d468b86319af4",
+    "GeyserNativeOffhand.mcpack": "2e9ed61e758af20a35c08091032c18c3f93b3d110bf9f2265970b80b243f3088"
+  },
+  "scope": {
+    "customConsumptionAnimation": "removed at user request",
+    "nativeOffhandInventoryAndUse": "retained",
+    "previousRetailOffhandFunctionFeedback": "functional according to the human player"
+  }
+}

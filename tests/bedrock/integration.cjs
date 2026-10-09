@@ -8,7 +8,7 @@ const settings = JSON.parse(fs.readFileSync(process.env.TEST_SETTINGS || path.re
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 const checks = []
 const locale = process.env.TEST_LOCALE || "ja_JP"
-const entityEvents = []
+const propertySchemas = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
 const state = { inventory: [], offhand: { network_id: 0 }, responses: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
@@ -112,9 +112,8 @@ async function main() {
   })
   client.on('item_stack_response',p=>{state.responses.push(p);debug('DEBUG_STACK',JSON.stringify(p))})
   client.on('update_block',p=>state.blocks.push(p))
-  client.on('set_entity_data',p=>{entityEvents.push({type:'metadata',packet:p});debug('ENTITY_PROPERTIES',JSON.stringify(p.properties))})
-  client.on('sync_entity_property',p=>debug('PROPERTY_SCHEMA',JSON.stringify(nbt.simplify(p.nbt))))
-  client.on('animate_entity',p=>{state.animations.push(p);entityEvents.push({type:'animation',packet:p})})
+  client.on('sync_entity_property',p=>propertySchemas.push(nbt.simplify(p.nbt)))
+  client.on('animate_entity',p=>state.animations.push(p))
   client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
     debug('DEBUG_MOVE',JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v))
@@ -245,22 +244,13 @@ async function main() {
   use('click_air')
   await until('apple consumption',()=>state.offhand.count===1,10000)
   check('Native offhand food completes timed use',await inventoryData())
-  assert(state.animations.some(p=>p.animation==='animation.nativeoffhand.eat'))
-  assert(state.animations.some(p=>p.animation==='animation.nativeoffhand.drink'))
-  assert(state.animations.some(p=>p.animation==='animation.nativeoffhand.idle'))
-  check('Offhand eat/drink PlayAnimation starts and returns to idle',state.animations.map(p=>p.animation))
-  for (const event of entityEvents.filter(e=>e.type==='animation' && /\.(eat|drink)$/.test(e.packet.animation))) {
-    const before=entityEvents.slice(0,entityEvents.indexOf(event))
-    const propertyPackets=before.filter(e=>e.type==='metadata' && String(e.packet.runtime_entity_id)===String(state.runtimeId))
-    const expected=event.packet.animation.endsWith('.eat') ? 1 : 2
-    assert(propertyPackets.some(e=>e.packet.properties.ints.some(p=>p.value===expected)), 'Use property missing before '+event.packet.animation)
-    const latest=propertyPackets.filter(e=>e.packet.properties.ints.length).at(-1)
-    assert(latest && latest.packet.properties.ints.some(p=>p.value===expected), 'Animation started before its active property')
-  }
-  check('The active use property reaches Bedrock before eat/drink PlayAnimation')
+  assert(!state.animations.some(p=>p.animation.startsWith('animation.nativeoffhand.')))
+  check('Offhand food and potion use emit no custom PlayAnimation')
+  assert(!propertySchemas.some(schema=>schema.properties?.some(p=>p.name==='nativeoffhand:use')))
+  check('No offhand animation control property is registered')
   for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1]]) await transferRoundTrip(id,count)
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
-  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Inventory drag behavior and visual animation quality require a retail client test.']},null,2)+'\n')
+  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and item rendering require a retail client test.']},null,2)+'\n')
 }
 main().catch(error=>{console.error(error);process.exitCode=1}).finally(async()=>{
   state.closing=true
