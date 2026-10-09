@@ -1,0 +1,126 @@
+{
+  "timestamp": "2026-10-09T16:09:04.242Z",
+  "bedrockVersion": "1.26.51",
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "All transmitted non-air definitions permit offhand",
+      "evidence": 3703
+    },
+    {
+      "label": "Native ItemStackRequest moved torches from hotbar into OFFHAND",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 8}}"
+    },
+    {
+      "label": "Out-of-range offhand interaction is rejected without consumption"
+    },
+    {
+      "label": "Forged held definition is rejected without consumption"
+    },
+    {
+      "label": "Empty main hand places exactly one native offhand torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 7}}"
+    },
+    {
+      "label": "Sword in main hand allows offhand torch placement",
+      "evidence": "Test passed"
+    },
+    {
+      "label": "Useful main hand retains priority; no offhand duplicate",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 6}}"
+    },
+    {
+      "label": "Native offhand water bucket places source water and returns empty bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:bucket\", count: 1}}"
+    },
+    {
+      "label": "Native offhand air-use consumes one ender pearl",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:ender_pearl\", count: 2}}"
+    },
+    {
+      "label": "Native offhand potion completes timed use",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:glass_bottle\", count: 1}}"
+    },
+    {
+      "label": "Native offhand food completes timed use",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:apple\", count: 1}}"
+    },
+    {
+      "label": "Offhand eat/drink PlayAnimation starts and returns to idle",
+      "evidence": [
+        "animation.nativeoffhand.drink",
+        "animation.nativeoffhand.idle",
+        "animation.nativeoffhand.eat",
+        "animation.nativeoffhand.idle"
+      ]
+    },
+    {
+      "label": "Native inventory offhand round trip: lantern",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:lantern\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_lantern",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:soul_lantern\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:soul_torch\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: stone",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:stone\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:diamond_sword\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: apple",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:apple\", count: 4}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: water_bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:water_bucket\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: written_book",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:written_book\", count: 1}}"
+    }
+  ],
+  "limitations": [
+    "Headless tests verify packets and Java world/equipment state, not rendering or retail inventory drag behavior.",
+    "Latest all-item retail UI and animation visual quality remain pending human verification.",
+    "Java main-hand PASS-to-offhand routing is conservative and does not cover all item/target combinations.",
+    "Only the pinned Geyser-Spigot build and Bedrock protocol above were tested."
+  ],
+  "environment": {
+    "geyser": "2.12.0-SNAPSHOT build 3080",
+    "geyserCommit": "e215fa5cf1ffc3874c4d46c579d25800b20f17e4",
+    "geyserSha256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c",
+    "paper": "26.3-159-main@a4b87cf",
+    "paperSha256": "2224a0b2b6b096ff4c429ad926e97977213e4f633e90cb3a49b5eeb82f94bab0",
+    "java": 26,
+    "bedrockProtocol": 2193,
+    "bedrockProtocolPackage": "3.60.1",
+    "node": "24.12.0",
+    "resourcePackVersion": "0.1.1"
+  },
+  "artifactSha256": {
+    "GeyserNativeOffhand-0.1.0.jar": "e47ad67cf9bd3b35ac1920008bb636618ef2178452d3b9163cd237c0bab3212c",
+    "GeyserNativeOffhand.mcpack": "a024ede9cc1c5e7122c9385922eb3abdb02078a0dc3f2c39645f12d86b749fac"
+  },
+  "manualVerification": {
+    "earlierTorchRevision": {
+      "nativeInventoryTorchMove": true,
+      "offhandTorchPlacement": true,
+      "offhandAppleConsumption": true,
+      "reportedBy": "human player"
+    },
+    "latestRevision": {
+      "allItemInventoryUI": "pending",
+      "eatDrinkVisualQuality": "pending"
+    }
+  }
+}

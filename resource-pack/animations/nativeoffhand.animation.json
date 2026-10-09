@@ -1,0 +1,79 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.nativeoffhand.eat": {
+      "loop": true,
+      "animation_length": 1.0,
+      "bones": {
+        "leftarm": {
+          "rotation": [
+            "query.is_first_person ? 0 : -75 - math.abs(math.sin(query.anim_time * 1080)) * 0.4 * 8",
+            "query.is_first_person ? 0 : -25",
+            "query.is_first_person ? 0 : -10"
+          ]
+        },
+        "leftitem": {
+          "position": [
+            "query.is_first_person ? -2.5 : 0",
+            "query.is_first_person ? 2.8 + math.abs(math.sin(query.anim_time * 1080)) * 0.4 : 0",
+            "query.is_first_person ? -1.0 : 0"
+          ],
+          "rotation": [
+            "query.is_first_person ? -10 : 0",
+            "query.is_first_person ? 15 : 0",
+            "query.is_first_person ? -15 : 0"
+          ]
+        }
+      }
+    },
+    "animation.nativeoffhand.drink": {
+      "loop": true,
+      "animation_length": 1.0,
+      "bones": {
+        "leftarm": {
+          "rotation": [
+            "query.is_first_person ? 0 : -75 - math.sin(query.anim_time * 360) * 0.15 * 8",
+            "query.is_first_person ? 0 : -25",
+            "query.is_first_person ? 0 : -10"
+          ]
+        },
+        "leftitem": {
+          "position": [
+            "query.is_first_person ? -2.5 : 0",
+            "query.is_first_person ? 2.8 + math.sin(query.anim_time * 360) * 0.15 : 0",
+            "query.is_first_person ? -1.0 : 0"
+          ],
+          "rotation": [
+            "query.is_first_person ? -10 : 0",
+            "query.is_first_person ? 15 : 0",
+            "query.is_first_person ? -15 : 0"
+          ]
+        }
+      }
+    },
+    "animation.nativeoffhand.idle": {
+      "animation_length": 0.05,
+      "bones": {
+        "leftarm": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "leftitem": {
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    }
+  }
+}

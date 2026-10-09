@@ -1,0 +1,1467 @@
+{
+  "resource_pack_name": "nativeoffhand",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "nativeoffhand_abandoned_camp_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_acacia_boat": {
+      "textures": "textures/items/boat_acacia"
+    },
+    "nativeoffhand_acacia_chest_boat": {
+      "textures": "textures/items/acacia_chest_boat"
+    },
+    "nativeoffhand_allay_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_allay"
+    },
+    "nativeoffhand_amethyst_shard": {
+      "textures": "textures/items/amethyst_shard"
+    },
+    "nativeoffhand_angler_pottery_sherd": {
+      "textures": "textures/items/angler_pottery_sherd"
+    },
+    "nativeoffhand_archer_pottery_sherd": {
+      "textures": "textures/items/archer_pottery_sherd"
+    },
+    "nativeoffhand_armadillo_scute": {
+      "textures": "textures/items/armadillo_scute"
+    },
+    "nativeoffhand_armadillo_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_armadillo"
+    },
+    "nativeoffhand_armor_stand": {
+      "textures": "textures/items/armor_stand"
+    },
+    "nativeoffhand_arms_up_pottery_sherd": {
+      "textures": "textures/items/arms_up_pottery_sherd"
+    },
+    "nativeoffhand_arrow": {
+      "textures": "textures/items/arrow"
+    },
+    "nativeoffhand_axolotl_bucket": {
+      "textures": "textures/items/bucket_axolotl"
+    },
+    "nativeoffhand_axolotl_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_axolotl"
+    },
+    "nativeoffhand_baked_potato": {
+      "textures": "textures/items/potato_baked"
+    },
+    "nativeoffhand_bamboo_chest_raft": {
+      "textures": "textures/items/bamboo_chest_raft"
+    },
+    "nativeoffhand_bamboo_raft": {
+      "textures": "textures/items/bamboo_raft"
+    },
+    "nativeoffhand_bat_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_bat"
+    },
+    "nativeoffhand_bee_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_bee"
+    },
+    "nativeoffhand_beef": {
+      "textures": "textures/items/beef_raw"
+    },
+    "nativeoffhand_beetroot": {
+      "textures": "textures/items/beetroot"
+    },
+    "nativeoffhand_beetroot_soup": {
+      "textures": "textures/items/beetroot_soup"
+    },
+    "nativeoffhand_birch_boat": {
+      "textures": "textures/items/boat_birch"
+    },
+    "nativeoffhand_birch_chest_boat": {
+      "textures": "textures/items/birch_chest_boat"
+    },
+    "nativeoffhand_black_cushion": {
+      "textures": "textures/items/black_cushion"
+    },
+    "nativeoffhand_black_dye": {
+      "textures": "textures/items/dye_powder_black_new"
+    },
+    "nativeoffhand_black_harness": {
+      "textures": "textures/items/harness/harness_black"
+    },
+    "nativeoffhand_blade_pottery_sherd": {
+      "textures": "textures/items/blade_pottery_sherd"
+    },
+    "nativeoffhand_blaze_powder": {
+      "textures": "textures/items/blaze_powder"
+    },
+    "nativeoffhand_blaze_rod": {
+      "textures": "textures/items/blaze_rod"
+    },
+    "nativeoffhand_blaze_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_blaze"
+    },
+    "nativeoffhand_blue_cushion": {
+      "textures": "textures/items/blue_cushion"
+    },
+    "nativeoffhand_blue_dye": {
+      "textures": "textures/items/dye_powder_blue_new"
+    },
+    "nativeoffhand_blue_egg": {
+      "textures": "textures/items/blue_egg"
+    },
+    "nativeoffhand_blue_harness": {
+      "textures": "textures/items/harness/harness_blue"
+    },
+    "nativeoffhand_bogged_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_bogged"
+    },
+    "nativeoffhand_bolt_armor_trim_smithing_template": {
+      "textures": "textures/items/bolt_armor_trim_smithing_template"
+    },
+    "nativeoffhand_bone": {
+      "textures": "textures/items/bone"
+    },
+    "nativeoffhand_bone_meal": {
+      "textures": "textures/items/dye_powder_white"
+    },
+    "nativeoffhand_book": {
+      "textures": "textures/items/book_normal"
+    },
+    "nativeoffhand_bordure_indented_banner_pattern": {
+      "textures": "textures/items/bordure_indented_banner_pattern"
+    },
+    "nativeoffhand_bow": {
+      "textures": "textures/items/bow_standby"
+    },
+    "nativeoffhand_bowl": {
+      "textures": "textures/items/bowl"
+    },
+    "nativeoffhand_bread": {
+      "textures": "textures/items/bread"
+    },
+    "nativeoffhand_breeze_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_breeze"
+    },
+    "nativeoffhand_brewer_pottery_sherd": {
+      "textures": "textures/items/brewer_pottery_sherd"
+    },
+    "nativeoffhand_brick": {
+      "textures": "textures/items/brick"
+    },
+    "nativeoffhand_brown_cushion": {
+      "textures": "textures/items/brown_cushion"
+    },
+    "nativeoffhand_brown_dye": {
+      "textures": "textures/items/dye_powder_brown_new"
+    },
+    "nativeoffhand_brown_egg": {
+      "textures": "textures/items/brown_egg"
+    },
+    "nativeoffhand_brown_harness": {
+      "textures": "textures/items/harness/harness_brown"
+    },
+    "nativeoffhand_brush": {
+      "textures": "textures/items/brush"
+    },
+    "nativeoffhand_bucket": {
+      "textures": "textures/items/bucket_empty"
+    },
+    "nativeoffhand_buried_ancient_city_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_buried_mineshaft_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_buried_treasure_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_buried_trial_chambers_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_burn_pottery_sherd": {
+      "textures": "textures/items/burn_pottery_sherd"
+    },
+    "nativeoffhand_camel_husk_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_camel_husk"
+    },
+    "nativeoffhand_camel_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_camel"
+    },
+    "nativeoffhand_carrot_on_a_stick": {
+      "textures": "textures/items/carrot_on_a_stick"
+    },
+    "nativeoffhand_cat_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_cat"
+    },
+    "nativeoffhand_cave_spider_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_cave_spider"
+    },
+    "nativeoffhand_chainmail_boots": {
+      "textures": "textures/items/chainmail_boots"
+    },
+    "nativeoffhand_chainmail_chestplate": {
+      "textures": "textures/items/chainmail_chestplate"
+    },
+    "nativeoffhand_chainmail_helmet": {
+      "textures": "textures/items/chainmail_helmet"
+    },
+    "nativeoffhand_chainmail_leggings": {
+      "textures": "textures/items/chainmail_leggings"
+    },
+    "nativeoffhand_charcoal": {
+      "textures": "textures/items/charcoal"
+    },
+    "nativeoffhand_cherry_boat": {
+      "textures": "textures/items/cherry_boat"
+    },
+    "nativeoffhand_cherry_chest_boat": {
+      "textures": "textures/items/cherry_chest_boat"
+    },
+    "nativeoffhand_chest_minecart": {
+      "textures": "textures/items/minecart_chest"
+    },
+    "nativeoffhand_chicken": {
+      "textures": "textures/items/chicken_raw"
+    },
+    "nativeoffhand_chicken_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_chicken"
+    },
+    "nativeoffhand_chorus_fruit": {
+      "textures": "textures/items/chorus_fruit"
+    },
+    "nativeoffhand_clay_ball": {
+      "textures": "textures/items/clay_ball"
+    },
+    "nativeoffhand_clock": {
+      "textures": "textures/items/clock_item"
+    },
+    "nativeoffhand_coal": {
+      "textures": "textures/items/coal"
+    },
+    "nativeoffhand_coast_armor_trim_smithing_template": {
+      "textures": "textures/items/coast_armor_trim_smithing_template"
+    },
+    "nativeoffhand_cod": {
+      "textures": "textures/items/fish_raw"
+    },
+    "nativeoffhand_cod_bucket": {
+      "textures": "textures/items/bucket_cod"
+    },
+    "nativeoffhand_cod_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_cod"
+    },
+    "nativeoffhand_command_block_minecart": {
+      "textures": "textures/items/minecart_command_block"
+    },
+    "nativeoffhand_compass": {
+      "textures": "textures/items/compass_item"
+    },
+    "nativeoffhand_cooked_beef": {
+      "textures": "textures/items/beef_cooked"
+    },
+    "nativeoffhand_cooked_chicken": {
+      "textures": "textures/items/chicken_cooked"
+    },
+    "nativeoffhand_cooked_cod": {
+      "textures": "textures/items/fish_cooked"
+    },
+    "nativeoffhand_cooked_mutton": {
+      "textures": "textures/items/mutton_cooked"
+    },
+    "nativeoffhand_cooked_porkchop": {
+      "textures": "textures/items/porkchop_cooked"
+    },
+    "nativeoffhand_cooked_rabbit": {
+      "textures": "textures/items/rabbit_cooked"
+    },
+    "nativeoffhand_cooked_salmon": {
+      "textures": "textures/items/fish_salmon_cooked"
+    },
+    "nativeoffhand_cookie": {
+      "textures": "textures/items/cookie"
+    },
+    "nativeoffhand_copper_axe": {
+      "textures": "textures/items/copper_axe"
+    },
+    "nativeoffhand_copper_boots": {
+      "textures": "textures/items/copper_boots"
+    },
+    "nativeoffhand_copper_chestplate": {
+      "textures": "textures/items/copper_chestplate"
+    },
+    "nativeoffhand_copper_golem_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_copper_golem"
+    },
+    "nativeoffhand_copper_helmet": {
+      "textures": "textures/items/copper_helmet"
+    },
+    "nativeoffhand_copper_hoe": {
+      "textures": "textures/items/copper_hoe"
+    },
+    "nativeoffhand_copper_horse_armor": {
+      "textures": "textures/items/copper_horse_armor"
+    },
+    "nativeoffhand_copper_ingot": {
+      "textures": "textures/items/copper_ingot"
+    },
+    "nativeoffhand_copper_leggings": {
+      "textures": "textures/items/copper_leggings"
+    },
+    "nativeoffhand_copper_nautilus_armor": {
+      "textures": "textures/items/nautilus_armor/copper_nautilus_armor"
+    },
+    "nativeoffhand_copper_nugget": {
+      "textures": "textures/items/copper_nugget"
+    },
+    "nativeoffhand_copper_pickaxe": {
+      "textures": "textures/items/copper_pickaxe"
+    },
+    "nativeoffhand_copper_shovel": {
+      "textures": "textures/items/copper_shovel"
+    },
+    "nativeoffhand_copper_sword": {
+      "textures": "textures/items/copper_sword"
+    },
+    "nativeoffhand_cow_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_cow"
+    },
+    "nativeoffhand_creaking_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_creaking"
+    },
+    "nativeoffhand_creeper_banner_pattern": {
+      "textures": "textures/items/creeper_banner_pattern"
+    },
+    "nativeoffhand_creeper_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_creeper"
+    },
+    "nativeoffhand_crossbow": {
+      "textures": "textures/items/crossbow_standby"
+    },
+    "nativeoffhand_cyan_cushion": {
+      "textures": "textures/items/cyan_cushion"
+    },
+    "nativeoffhand_cyan_dye": {
+      "textures": "textures/items/dye_powder_cyan"
+    },
+    "nativeoffhand_cyan_harness": {
+      "textures": "textures/items/harness/harness_cyan"
+    },
+    "nativeoffhand_danger_pottery_sherd": {
+      "textures": "textures/items/danger_pottery_sherd"
+    },
+    "nativeoffhand_dark_oak_boat": {
+      "textures": "textures/items/boat_darkoak"
+    },
+    "nativeoffhand_dark_oak_chest_boat": {
+      "textures": "textures/items/dark_oak_chest_boat"
+    },
+    "nativeoffhand_debug_stick": {
+      "textures": "textures/items/stick"
+    },
+    "nativeoffhand_desert_pyramid_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_desert_village_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_diamond": {
+      "textures": "textures/items/diamond"
+    },
+    "nativeoffhand_diamond_axe": {
+      "textures": "textures/items/diamond_axe"
+    },
+    "nativeoffhand_diamond_boots": {
+      "textures": "textures/items/diamond_boots"
+    },
+    "nativeoffhand_diamond_chestplate": {
+      "textures": "textures/items/diamond_chestplate"
+    },
+    "nativeoffhand_diamond_helmet": {
+      "textures": "textures/items/diamond_helmet"
+    },
+    "nativeoffhand_diamond_hoe": {
+      "textures": "textures/items/diamond_hoe"
+    },
+    "nativeoffhand_diamond_horse_armor": {
+      "textures": "textures/items/diamond_horse_armor"
+    },
+    "nativeoffhand_diamond_leggings": {
+      "textures": "textures/items/diamond_leggings"
+    },
+    "nativeoffhand_diamond_nautilus_armor": {
+      "textures": "textures/items/nautilus_armor/diamond_nautilus_armor"
+    },
+    "nativeoffhand_diamond_pickaxe": {
+      "textures": "textures/items/diamond_pickaxe"
+    },
+    "nativeoffhand_diamond_shovel": {
+      "textures": "textures/items/diamond_shovel"
+    },
+    "nativeoffhand_diamond_sword": {
+      "textures": "textures/items/diamond_sword"
+    },
+    "nativeoffhand_disc_fragment_5": {
+      "textures": "textures/items/disc_fragment_5"
+    },
+    "nativeoffhand_dolphin_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_dolphin"
+    },
+    "nativeoffhand_donkey_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_donkey"
+    },
+    "nativeoffhand_dragon_breath": {
+      "textures": "textures/items/dragons_breath"
+    },
+    "nativeoffhand_dried_kelp": {
+      "textures": "textures/items/dried_kelp"
+    },
+    "nativeoffhand_drowned_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_drowned"
+    },
+    "nativeoffhand_dune_armor_trim_smithing_template": {
+      "textures": "textures/items/dune_armor_trim_smithing_template"
+    },
+    "nativeoffhand_echo_shard": {
+      "textures": "textures/items/echo_shard"
+    },
+    "nativeoffhand_egg": {
+      "textures": "textures/items/egg"
+    },
+    "nativeoffhand_elder_guardian_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_elder_guardian"
+    },
+    "nativeoffhand_elytra": {
+      "textures": "textures/items/elytra"
+    },
+    "nativeoffhand_emerald": {
+      "textures": "textures/items/emerald"
+    },
+    "nativeoffhand_enchanted_book": {
+      "textures": "textures/items/book_enchanted"
+    },
+    "nativeoffhand_enchanted_golden_apple": {
+      "textures": "textures/items/apple_golden"
+    },
+    "nativeoffhand_end_crystal": {
+      "textures": "textures/items/end_crystal"
+    },
+    "nativeoffhand_ender_dragon_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_ender_dragon"
+    },
+    "nativeoffhand_ender_eye": {
+      "textures": "textures/items/ender_eye"
+    },
+    "nativeoffhand_ender_pearl": {
+      "textures": "textures/items/ender_pearl"
+    },
+    "nativeoffhand_enderman_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_enderman"
+    },
+    "nativeoffhand_endermite_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_endermite"
+    },
+    "nativeoffhand_evoker_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_evoker"
+    },
+    "nativeoffhand_experience_bottle": {
+      "textures": "textures/items/experience_bottle"
+    },
+    "nativeoffhand_explorer_pottery_sherd": {
+      "textures": "textures/items/explorer_pottery_sherd"
+    },
+    "nativeoffhand_eye_armor_trim_smithing_template": {
+      "textures": "textures/items/eye_armor_trim_smithing_template"
+    },
+    "nativeoffhand_feather": {
+      "textures": "textures/items/feather"
+    },
+    "nativeoffhand_fermented_spider_eye": {
+      "textures": "textures/items/spider_eye_fermented"
+    },
+    "nativeoffhand_field_masoned_banner_pattern": {
+      "textures": "textures/items/field_masoned_banner_pattern"
+    },
+    "nativeoffhand_filled_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_fire_charge": {
+      "textures": "textures/items/fireball"
+    },
+    "nativeoffhand_firework_rocket": {
+      "textures": "textures/items/fireworks"
+    },
+    "nativeoffhand_firework_star": {
+      "textures": "textures/items/fireworks_charge"
+    },
+    "nativeoffhand_fishing_rod": {
+      "textures": "textures/items/fishing_rod_uncast"
+    },
+    "nativeoffhand_flint": {
+      "textures": "textures/items/flint"
+    },
+    "nativeoffhand_flint_and_steel": {
+      "textures": "textures/items/flint_and_steel"
+    },
+    "nativeoffhand_flow_armor_trim_smithing_template": {
+      "textures": "textures/items/flow_armor_trim_smithing_template"
+    },
+    "nativeoffhand_flow_banner_pattern": {
+      "textures": "textures/items/flow_banner_pattern"
+    },
+    "nativeoffhand_flow_pottery_sherd": {
+      "textures": "textures/items/flow_pottery_sherd"
+    },
+    "nativeoffhand_flower_banner_pattern": {
+      "textures": "textures/items/flower_banner_pattern"
+    },
+    "nativeoffhand_fox_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_fox"
+    },
+    "nativeoffhand_friend_pottery_sherd": {
+      "textures": "textures/items/friend_pottery_sherd"
+    },
+    "nativeoffhand_frog_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_frog"
+    },
+    "nativeoffhand_furnace_minecart": {
+      "textures": "textures/items/minecart_furnace"
+    },
+    "nativeoffhand_ghast_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_ghast"
+    },
+    "nativeoffhand_ghast_tear": {
+      "textures": "textures/items/ghast_tear"
+    },
+    "nativeoffhand_glass_bottle": {
+      "textures": "textures/items/potion_bottle_empty"
+    },
+    "nativeoffhand_glistering_melon_slice": {
+      "textures": "textures/items/melon_speckled"
+    },
+    "nativeoffhand_globe_banner_pattern": {
+      "textures": "textures/items/globe_banner_pattern"
+    },
+    "nativeoffhand_glow_ink_sac": {
+      "textures": "textures/items/dye_powder_glow"
+    },
+    "nativeoffhand_glow_item_frame": {
+      "textures": "textures/items/glow_item_frame"
+    },
+    "nativeoffhand_glow_squid_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_glow_squid"
+    },
+    "nativeoffhand_glowstone_dust": {
+      "textures": "textures/items/glowstone_dust"
+    },
+    "nativeoffhand_goat_horn": {
+      "textures": "textures/items/goat_horn"
+    },
+    "nativeoffhand_goat_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_goat"
+    },
+    "nativeoffhand_gold_ingot": {
+      "textures": "textures/items/gold_ingot"
+    },
+    "nativeoffhand_gold_nugget": {
+      "textures": "textures/items/gold_nugget"
+    },
+    "nativeoffhand_golden_apple": {
+      "textures": "textures/items/apple_golden"
+    },
+    "nativeoffhand_golden_axe": {
+      "textures": "textures/items/gold_axe"
+    },
+    "nativeoffhand_golden_boots": {
+      "textures": "textures/items/gold_boots"
+    },
+    "nativeoffhand_golden_carrot": {
+      "textures": "textures/items/carrot_golden"
+    },
+    "nativeoffhand_golden_chestplate": {
+      "textures": "textures/items/gold_chestplate"
+    },
+    "nativeoffhand_golden_helmet": {
+      "textures": "textures/items/gold_helmet"
+    },
+    "nativeoffhand_golden_hoe": {
+      "textures": "textures/items/gold_hoe"
+    },
+    "nativeoffhand_golden_horse_armor": {
+      "textures": "textures/items/gold_horse_armor"
+    },
+    "nativeoffhand_golden_leggings": {
+      "textures": "textures/items/gold_leggings"
+    },
+    "nativeoffhand_golden_nautilus_armor": {
+      "textures": "textures/items/nautilus_armor/gold_nautilus_armor"
+    },
+    "nativeoffhand_golden_pickaxe": {
+      "textures": "textures/items/gold_pickaxe"
+    },
+    "nativeoffhand_golden_shovel": {
+      "textures": "textures/items/gold_shovel"
+    },
+    "nativeoffhand_golden_sword": {
+      "textures": "textures/items/gold_sword"
+    },
+    "nativeoffhand_gray_cushion": {
+      "textures": "textures/items/gray_cushion"
+    },
+    "nativeoffhand_gray_dye": {
+      "textures": "textures/items/dye_powder_gray"
+    },
+    "nativeoffhand_gray_harness": {
+      "textures": "textures/items/harness/harness_gray"
+    },
+    "nativeoffhand_green_cushion": {
+      "textures": "textures/items/green_cushion"
+    },
+    "nativeoffhand_green_dye": {
+      "textures": "textures/items/dye_powder_green"
+    },
+    "nativeoffhand_green_harness": {
+      "textures": "textures/items/harness/harness_green"
+    },
+    "nativeoffhand_guardian_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_guardian"
+    },
+    "nativeoffhand_gunpowder": {
+      "textures": "textures/items/gunpowder"
+    },
+    "nativeoffhand_guster_banner_pattern": {
+      "textures": "textures/items/guster_banner_pattern"
+    },
+    "nativeoffhand_guster_pottery_sherd": {
+      "textures": "textures/items/guster_pottery_sherd"
+    },
+    "nativeoffhand_happy_ghast_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_happy_ghast"
+    },
+    "nativeoffhand_heart_of_the_sea": {
+      "textures": "textures/items/heartofthesea_closed"
+    },
+    "nativeoffhand_heart_pottery_sherd": {
+      "textures": "textures/items/heart_pottery_sherd"
+    },
+    "nativeoffhand_heartbreak_pottery_sherd": {
+      "textures": "textures/items/heartbreak_pottery_sherd"
+    },
+    "nativeoffhand_hoglin_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_hoglin"
+    },
+    "nativeoffhand_honey_bottle": {
+      "textures": "textures/items/honey_bottle"
+    },
+    "nativeoffhand_honeycomb": {
+      "textures": "textures/items/honeycomb"
+    },
+    "nativeoffhand_hopper_minecart": {
+      "textures": "textures/items/minecart_hopper"
+    },
+    "nativeoffhand_horse_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_horse"
+    },
+    "nativeoffhand_host_armor_trim_smithing_template": {
+      "textures": "textures/items/host_armor_trim_smithing_template"
+    },
+    "nativeoffhand_howl_pottery_sherd": {
+      "textures": "textures/items/howl_pottery_sherd"
+    },
+    "nativeoffhand_husk_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_husk"
+    },
+    "nativeoffhand_ink_sac": {
+      "textures": "textures/items/dye_powder_black"
+    },
+    "nativeoffhand_iron_axe": {
+      "textures": "textures/items/iron_axe"
+    },
+    "nativeoffhand_iron_boots": {
+      "textures": "textures/items/iron_boots"
+    },
+    "nativeoffhand_iron_chestplate": {
+      "textures": "textures/items/iron_chestplate"
+    },
+    "nativeoffhand_iron_golem_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_iron_golem"
+    },
+    "nativeoffhand_iron_helmet": {
+      "textures": "textures/items/iron_helmet"
+    },
+    "nativeoffhand_iron_hoe": {
+      "textures": "textures/items/iron_hoe"
+    },
+    "nativeoffhand_iron_horse_armor": {
+      "textures": "textures/items/iron_horse_armor"
+    },
+    "nativeoffhand_iron_ingot": {
+      "textures": "textures/items/iron_ingot"
+    },
+    "nativeoffhand_iron_leggings": {
+      "textures": "textures/items/iron_leggings"
+    },
+    "nativeoffhand_iron_nautilus_armor": {
+      "textures": "textures/items/nautilus_armor/iron_nautilus_armor"
+    },
+    "nativeoffhand_iron_nugget": {
+      "textures": "textures/items/iron_nugget"
+    },
+    "nativeoffhand_iron_pickaxe": {
+      "textures": "textures/items/iron_pickaxe"
+    },
+    "nativeoffhand_iron_shovel": {
+      "textures": "textures/items/iron_shovel"
+    },
+    "nativeoffhand_iron_sword": {
+      "textures": "textures/items/iron_sword"
+    },
+    "nativeoffhand_item_frame": {
+      "textures": "textures/items/item_frame"
+    },
+    "nativeoffhand_jungle_boat": {
+      "textures": "textures/items/boat_jungle"
+    },
+    "nativeoffhand_jungle_chest_boat": {
+      "textures": "textures/items/jungle_chest_boat"
+    },
+    "nativeoffhand_jungle_pyramid_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_knowledge_book": {
+      "textures": "textures/items/book_normal"
+    },
+    "nativeoffhand_lapis_lazuli": {
+      "textures": "textures/items/dye_powder_blue"
+    },
+    "nativeoffhand_lava_bucket": {
+      "textures": "textures/items/bucket_lava"
+    },
+    "nativeoffhand_lead": {
+      "textures": "textures/items/lead"
+    },
+    "nativeoffhand_leather": {
+      "textures": "textures/items/leather"
+    },
+    "nativeoffhand_leather_boots": {
+      "textures": "textures/items/leather_boots"
+    },
+    "nativeoffhand_leather_chestplate": {
+      "textures": "textures/items/leather_chestplate"
+    },
+    "nativeoffhand_leather_helmet": {
+      "textures": "textures/items/leather_helmet"
+    },
+    "nativeoffhand_leather_horse_armor": {
+      "textures": "textures/items/leather_horse_armor"
+    },
+    "nativeoffhand_leather_leggings": {
+      "textures": "textures/items/leather_leggings"
+    },
+    "nativeoffhand_light_blue_cushion": {
+      "textures": "textures/items/light_blue_cushion"
+    },
+    "nativeoffhand_light_blue_dye": {
+      "textures": "textures/items/dye_powder_light_blue"
+    },
+    "nativeoffhand_light_blue_harness": {
+      "textures": "textures/items/harness/harness_light_blue"
+    },
+    "nativeoffhand_light_gray_cushion": {
+      "textures": "textures/items/light_gray_cushion"
+    },
+    "nativeoffhand_light_gray_dye": {
+      "textures": "textures/items/dye_powder_silver"
+    },
+    "nativeoffhand_light_gray_harness": {
+      "textures": "textures/items/harness/harness_light_gray"
+    },
+    "nativeoffhand_lime_cushion": {
+      "textures": "textures/items/lime_cushion"
+    },
+    "nativeoffhand_lime_dye": {
+      "textures": "textures/items/dye_powder_lime"
+    },
+    "nativeoffhand_lime_harness": {
+      "textures": "textures/items/harness/harness_lime"
+    },
+    "nativeoffhand_lingering_potion": {
+      "textures": "textures/items/potion_bottle_lingering"
+    },
+    "nativeoffhand_llama_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_llama"
+    },
+    "nativeoffhand_mace": {
+      "textures": "textures/items/mace"
+    },
+    "nativeoffhand_magenta_cushion": {
+      "textures": "textures/items/magenta_cushion"
+    },
+    "nativeoffhand_magenta_dye": {
+      "textures": "textures/items/dye_powder_magenta"
+    },
+    "nativeoffhand_magenta_harness": {
+      "textures": "textures/items/harness/harness_magenta"
+    },
+    "nativeoffhand_magma_cream": {
+      "textures": "textures/items/magma_cream"
+    },
+    "nativeoffhand_magma_cube_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_magma_cube"
+    },
+    "nativeoffhand_mangrove_boat": {
+      "textures": "textures/items/mangrove_boat"
+    },
+    "nativeoffhand_mangrove_chest_boat": {
+      "textures": "textures/items/mangrove_chest_boat"
+    },
+    "nativeoffhand_map": {
+      "textures": "textures/items/map_empty"
+    },
+    "nativeoffhand_melon_slice": {
+      "textures": "textures/items/melon"
+    },
+    "nativeoffhand_milk_bucket": {
+      "textures": "textures/items/bucket_milk"
+    },
+    "nativeoffhand_minecart": {
+      "textures": "textures/items/minecart_normal"
+    },
+    "nativeoffhand_miner_pottery_sherd": {
+      "textures": "textures/items/miner_pottery_sherd"
+    },
+    "nativeoffhand_mojang_banner_pattern": {
+      "textures": "textures/items/mojang_banner_pattern"
+    },
+    "nativeoffhand_mooshroom_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_mooshroom"
+    },
+    "nativeoffhand_mourner_pottery_sherd": {
+      "textures": "textures/items/mourner_pottery_sherd"
+    },
+    "nativeoffhand_mule_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_mule"
+    },
+    "nativeoffhand_mushroom_stew": {
+      "textures": "textures/items/mushroom_stew"
+    },
+    "nativeoffhand_music_disc_11": {
+      "textures": "textures/items/record_11"
+    },
+    "nativeoffhand_music_disc_13": {
+      "textures": "textures/items/record_13"
+    },
+    "nativeoffhand_music_disc_5": {
+      "textures": "textures/items/record_5"
+    },
+    "nativeoffhand_music_disc_blocks": {
+      "textures": "textures/items/record_blocks"
+    },
+    "nativeoffhand_music_disc_bounce": {
+      "textures": "textures/items/music_disc_bounce"
+    },
+    "nativeoffhand_music_disc_cat": {
+      "textures": "textures/items/record_cat"
+    },
+    "nativeoffhand_music_disc_chirp": {
+      "textures": "textures/items/record_chirp"
+    },
+    "nativeoffhand_music_disc_creator": {
+      "textures": "textures/items/music_disc_creator"
+    },
+    "nativeoffhand_music_disc_creator_music_box": {
+      "textures": "textures/items/music_disc_creator_music_box"
+    },
+    "nativeoffhand_music_disc_far": {
+      "textures": "textures/items/record_far"
+    },
+    "nativeoffhand_music_disc_lava_chicken": {
+      "textures": "textures/items/music_disc_lava_chicken"
+    },
+    "nativeoffhand_music_disc_mall": {
+      "textures": "textures/items/record_mall"
+    },
+    "nativeoffhand_music_disc_mellohi": {
+      "textures": "textures/items/record_mellohi"
+    },
+    "nativeoffhand_music_disc_otherside": {
+      "textures": "textures/items/record_otherside"
+    },
+    "nativeoffhand_music_disc_pigstep": {
+      "textures": "textures/items/record_pigstep"
+    },
+    "nativeoffhand_music_disc_precipice": {
+      "textures": "textures/items/music_disc_precipice"
+    },
+    "nativeoffhand_music_disc_relic": {
+      "textures": "textures/items/music_disc_relic"
+    },
+    "nativeoffhand_music_disc_stal": {
+      "textures": "textures/items/record_stal"
+    },
+    "nativeoffhand_music_disc_strad": {
+      "textures": "textures/items/record_strad"
+    },
+    "nativeoffhand_music_disc_tears": {
+      "textures": "textures/items/music_disc_tears"
+    },
+    "nativeoffhand_music_disc_wait": {
+      "textures": "textures/items/record_wait"
+    },
+    "nativeoffhand_music_disc_ward": {
+      "textures": "textures/items/record_ward"
+    },
+    "nativeoffhand_mutton": {
+      "textures": "textures/items/mutton_raw"
+    },
+    "nativeoffhand_name_tag": {
+      "textures": "textures/items/name_tag"
+    },
+    "nativeoffhand_nautilus_shell": {
+      "textures": "textures/items/nautilus"
+    },
+    "nativeoffhand_nautilus_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_nautilus"
+    },
+    "nativeoffhand_nether_brick": {
+      "textures": "textures/items/netherbrick"
+    },
+    "nativeoffhand_nether_star": {
+      "textures": "textures/items/nether_star"
+    },
+    "nativeoffhand_netherite_axe": {
+      "textures": "textures/items/netherite_axe"
+    },
+    "nativeoffhand_netherite_boots": {
+      "textures": "textures/items/netherite_boots"
+    },
+    "nativeoffhand_netherite_chestplate": {
+      "textures": "textures/items/netherite_chestplate"
+    },
+    "nativeoffhand_netherite_helmet": {
+      "textures": "textures/items/netherite_helmet"
+    },
+    "nativeoffhand_netherite_hoe": {
+      "textures": "textures/items/netherite_hoe"
+    },
+    "nativeoffhand_netherite_horse_armor": {
+      "textures": "textures/items/netherite_horse_armor"
+    },
+    "nativeoffhand_netherite_ingot": {
+      "textures": "textures/items/netherite_ingot"
+    },
+    "nativeoffhand_netherite_leggings": {
+      "textures": "textures/items/netherite_leggings"
+    },
+    "nativeoffhand_netherite_nautilus_armor": {
+      "textures": "textures/items/nautilus_armor/netherite_nautilus_armor"
+    },
+    "nativeoffhand_netherite_pickaxe": {
+      "textures": "textures/items/netherite_pickaxe"
+    },
+    "nativeoffhand_netherite_scrap": {
+      "textures": "textures/items/netherite_scrap"
+    },
+    "nativeoffhand_netherite_shovel": {
+      "textures": "textures/items/netherite_shovel"
+    },
+    "nativeoffhand_netherite_sword": {
+      "textures": "textures/items/netherite_sword"
+    },
+    "nativeoffhand_netherite_upgrade_smithing_template": {
+      "textures": "textures/items/netherite_upgrade_smithing_template"
+    },
+    "nativeoffhand_oak_boat": {
+      "textures": "textures/items/boat_oak"
+    },
+    "nativeoffhand_oak_chest_boat": {
+      "textures": "textures/items/oak_chest_boat"
+    },
+    "nativeoffhand_ocean_monument_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_ocelot_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_ocelot"
+    },
+    "nativeoffhand_ominous_bottle": {
+      "textures": "textures/items/ominous_bottle"
+    },
+    "nativeoffhand_orange_cushion": {
+      "textures": "textures/items/orange_cushion"
+    },
+    "nativeoffhand_orange_dye": {
+      "textures": "textures/items/dye_powder_orange"
+    },
+    "nativeoffhand_orange_harness": {
+      "textures": "textures/items/harness/harness_orange"
+    },
+    "nativeoffhand_painting": {
+      "textures": "textures/items/painting"
+    },
+    "nativeoffhand_pale_oak_boat": {
+      "textures": "textures/items/pale_oak_boat"
+    },
+    "nativeoffhand_pale_oak_chest_boat": {
+      "textures": "textures/items/pale_oak_chest_boat"
+    },
+    "nativeoffhand_panda_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_panda"
+    },
+    "nativeoffhand_paper": {
+      "textures": "textures/items/paper"
+    },
+    "nativeoffhand_parched_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_parched"
+    },
+    "nativeoffhand_parrot_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_parrot"
+    },
+    "nativeoffhand_phantom_membrane": {
+      "textures": "textures/items/phantom_membrane"
+    },
+    "nativeoffhand_phantom_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_phantom"
+    },
+    "nativeoffhand_pig_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_pig"
+    },
+    "nativeoffhand_piglin_banner_pattern": {
+      "textures": "textures/items/piglin_banner_pattern"
+    },
+    "nativeoffhand_piglin_brute_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_piglin_brute"
+    },
+    "nativeoffhand_piglin_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_piglin"
+    },
+    "nativeoffhand_pillager_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_pillager"
+    },
+    "nativeoffhand_pink_cushion": {
+      "textures": "textures/items/pink_cushion"
+    },
+    "nativeoffhand_pink_dye": {
+      "textures": "textures/items/dye_powder_pink"
+    },
+    "nativeoffhand_pink_harness": {
+      "textures": "textures/items/harness/harness_pink"
+    },
+    "nativeoffhand_plains_village_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_plenty_pottery_sherd": {
+      "textures": "textures/items/plenty_pottery_sherd"
+    },
+    "nativeoffhand_poisonous_potato": {
+      "textures": "textures/items/potato_poisonous"
+    },
+    "nativeoffhand_polar_bear_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_polar_bear"
+    },
+    "nativeoffhand_poplar_boat": {
+      "textures": "textures/items/poplar_boat"
+    },
+    "nativeoffhand_poplar_chest_boat": {
+      "textures": "textures/items/poplar_chest_boat"
+    },
+    "nativeoffhand_popped_chorus_fruit": {
+      "textures": "textures/items/chorus_fruit_popped"
+    },
+    "nativeoffhand_porkchop": {
+      "textures": "textures/items/porkchop_raw"
+    },
+    "nativeoffhand_potion": {
+      "textures": "textures/items/potion_bottle_drinkable"
+    },
+    "nativeoffhand_prismarine_crystals": {
+      "textures": "textures/items/prismarine_crystals"
+    },
+    "nativeoffhand_prismarine_shard": {
+      "textures": "textures/items/prismarine_shard"
+    },
+    "nativeoffhand_prize_pottery_sherd": {
+      "textures": "textures/items/prize_pottery_sherd"
+    },
+    "nativeoffhand_pufferfish": {
+      "textures": "textures/items/fish_pufferfish_raw"
+    },
+    "nativeoffhand_pufferfish_bucket": {
+      "textures": "textures/items/bucket_pufferfish"
+    },
+    "nativeoffhand_pufferfish_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_pufferfish"
+    },
+    "nativeoffhand_pumpkin_pie": {
+      "textures": "textures/items/pumpkin_pie"
+    },
+    "nativeoffhand_purple_cushion": {
+      "textures": "textures/items/purple_cushion"
+    },
+    "nativeoffhand_purple_dye": {
+      "textures": "textures/items/dye_powder_purple"
+    },
+    "nativeoffhand_purple_harness": {
+      "textures": "textures/items/harness/harness_purple"
+    },
+    "nativeoffhand_quartz": {
+      "textures": "textures/items/quartz"
+    },
+    "nativeoffhand_rabbit": {
+      "textures": "textures/items/rabbit_raw"
+    },
+    "nativeoffhand_rabbit_foot": {
+      "textures": "textures/items/rabbit_foot"
+    },
+    "nativeoffhand_rabbit_hide": {
+      "textures": "textures/items/rabbit_hide"
+    },
+    "nativeoffhand_rabbit_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_rabbit"
+    },
+    "nativeoffhand_rabbit_stew": {
+      "textures": "textures/items/rabbit_stew"
+    },
+    "nativeoffhand_raiser_armor_trim_smithing_template": {
+      "textures": "textures/items/raiser_armor_trim_smithing_template"
+    },
+    "nativeoffhand_ravager_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_ravager"
+    },
+    "nativeoffhand_raw_copper": {
+      "textures": "textures/items/raw_copper"
+    },
+    "nativeoffhand_raw_gold": {
+      "textures": "textures/items/raw_gold"
+    },
+    "nativeoffhand_raw_iron": {
+      "textures": "textures/items/raw_iron"
+    },
+    "nativeoffhand_recovery_compass": {
+      "textures": "textures/items/recovery_compass_item"
+    },
+    "nativeoffhand_red_cushion": {
+      "textures": "textures/items/red_cushion"
+    },
+    "nativeoffhand_red_dye": {
+      "textures": "textures/items/dye_powder_red"
+    },
+    "nativeoffhand_red_harness": {
+      "textures": "textures/items/harness/harness_red"
+    },
+    "nativeoffhand_resin_brick": {
+      "textures": "textures/items/resin_brick"
+    },
+    "nativeoffhand_rib_armor_trim_smithing_template": {
+      "textures": "textures/items/rib_armor_trim_smithing_template"
+    },
+    "nativeoffhand_rotten_flesh": {
+      "textures": "textures/items/rotten_flesh"
+    },
+    "nativeoffhand_saddle": {
+      "textures": "textures/items/saddle"
+    },
+    "nativeoffhand_salmon": {
+      "textures": "textures/items/fish_salmon_raw"
+    },
+    "nativeoffhand_salmon_bucket": {
+      "textures": "textures/items/bucket_salmon"
+    },
+    "nativeoffhand_salmon_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_salmon"
+    },
+    "nativeoffhand_savanna_village_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_scrape_pottery_sherd": {
+      "textures": "textures/items/scrape_pottery_sherd"
+    },
+    "nativeoffhand_sentry_armor_trim_smithing_template": {
+      "textures": "textures/items/sentry_armor_trim_smithing_template"
+    },
+    "nativeoffhand_shaper_armor_trim_smithing_template": {
+      "textures": "textures/items/shaper_armor_trim_smithing_template"
+    },
+    "nativeoffhand_sheaf_pottery_sherd": {
+      "textures": "textures/items/sheaf_pottery_sherd"
+    },
+    "nativeoffhand_shears": {
+      "textures": "textures/items/shears"
+    },
+    "nativeoffhand_sheep_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_sheep"
+    },
+    "nativeoffhand_shelter_pottery_sherd": {
+      "textures": "textures/items/shelter_pottery_sherd"
+    },
+    "nativeoffhand_shield": {
+      "textures": "textures/entity/shield"
+    },
+    "nativeoffhand_shulker_shell": {
+      "textures": "textures/items/shulker_shell"
+    },
+    "nativeoffhand_shulker_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_shulker"
+    },
+    "nativeoffhand_silence_armor_trim_smithing_template": {
+      "textures": "textures/items/silence_armor_trim_smithing_template"
+    },
+    "nativeoffhand_silverfish_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_silverfish"
+    },
+    "nativeoffhand_skeleton_horse_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_skeleton_horse"
+    },
+    "nativeoffhand_skeleton_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_skeleton"
+    },
+    "nativeoffhand_skull_banner_pattern": {
+      "textures": "textures/items/skull_banner_pattern"
+    },
+    "nativeoffhand_skull_pottery_sherd": {
+      "textures": "textures/items/skull_pottery_sherd"
+    },
+    "nativeoffhand_slime_ball": {
+      "textures": "textures/items/slimeball"
+    },
+    "nativeoffhand_slime_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_slime"
+    },
+    "nativeoffhand_sniffer_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_sniffer"
+    },
+    "nativeoffhand_snort_pottery_sherd": {
+      "textures": "textures/items/snort_pottery_sherd"
+    },
+    "nativeoffhand_snout_armor_trim_smithing_template": {
+      "textures": "textures/items/snout_armor_trim_smithing_template"
+    },
+    "nativeoffhand_snow_golem_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_snow_golem"
+    },
+    "nativeoffhand_snowball": {
+      "textures": "textures/items/snowball"
+    },
+    "nativeoffhand_snowy_village_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_spectral_arrow": {
+      "textures": "textures/items/arrow"
+    },
+    "nativeoffhand_spider_eye": {
+      "textures": "textures/items/spider_eye"
+    },
+    "nativeoffhand_spider_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_spider"
+    },
+    "nativeoffhand_spire_armor_trim_smithing_template": {
+      "textures": "textures/items/spire_armor_trim_smithing_template"
+    },
+    "nativeoffhand_splash_potion": {
+      "textures": "textures/items/potion_bottle_splash"
+    },
+    "nativeoffhand_spruce_boat": {
+      "textures": "textures/items/boat_spruce"
+    },
+    "nativeoffhand_spruce_chest_boat": {
+      "textures": "textures/items/spruce_chest_boat"
+    },
+    "nativeoffhand_spyglass": {
+      "textures": "textures/items/spyglass"
+    },
+    "nativeoffhand_squid_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_squid"
+    },
+    "nativeoffhand_stick": {
+      "textures": "textures/items/stick"
+    },
+    "nativeoffhand_stone_axe": {
+      "textures": "textures/items/stone_axe"
+    },
+    "nativeoffhand_stone_hoe": {
+      "textures": "textures/items/stone_hoe"
+    },
+    "nativeoffhand_stone_pickaxe": {
+      "textures": "textures/items/stone_pickaxe"
+    },
+    "nativeoffhand_stone_shovel": {
+      "textures": "textures/items/stone_shovel"
+    },
+    "nativeoffhand_stone_sword": {
+      "textures": "textures/items/stone_sword"
+    },
+    "nativeoffhand_stray_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_stray"
+    },
+    "nativeoffhand_strider_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_strider"
+    },
+    "nativeoffhand_sugar": {
+      "textures": "textures/items/sugar"
+    },
+    "nativeoffhand_sulfur_cube_bucket": {
+      "textures": "textures/items/bucket_sulfur_cube"
+    },
+    "nativeoffhand_sulfur_cube_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_sulfur_cube"
+    },
+    "nativeoffhand_suspicious_stew": {
+      "textures": "textures/items/suspicious_stew"
+    },
+    "nativeoffhand_swamp_hut_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_tadpole_bucket": {
+      "textures": "textures/items/bucket_tadpole"
+    },
+    "nativeoffhand_tadpole_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_tadpole"
+    },
+    "nativeoffhand_taiga_village_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_tide_armor_trim_smithing_template": {
+      "textures": "textures/items/tide_armor_trim_smithing_template"
+    },
+    "nativeoffhand_tipped_arrow": {
+      "textures": "textures/items/tipped_arrow"
+    },
+    "nativeoffhand_tnt_minecart": {
+      "textures": "textures/items/minecart_tnt"
+    },
+    "nativeoffhand_totem_of_undying": {
+      "textures": "textures/items/totem"
+    },
+    "nativeoffhand_trader_llama_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_trader_llama"
+    },
+    "nativeoffhand_trident": {
+      "textures": "textures/items/trident"
+    },
+    "nativeoffhand_tropical_fish": {
+      "textures": "textures/items/fish_clownfish_raw"
+    },
+    "nativeoffhand_tropical_fish_bucket": {
+      "textures": "textures/items/bucket_tropical"
+    },
+    "nativeoffhand_tropical_fish_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_tropicalfish"
+    },
+    "nativeoffhand_turtle_helmet": {
+      "textures": "textures/items/turtle_helmet"
+    },
+    "nativeoffhand_turtle_scute": {
+      "textures": "textures/items/turtle_shell_piece"
+    },
+    "nativeoffhand_turtle_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_turtle"
+    },
+    "nativeoffhand_vex_armor_trim_smithing_template": {
+      "textures": "textures/items/vex_armor_trim_smithing_template"
+    },
+    "nativeoffhand_vex_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_vex"
+    },
+    "nativeoffhand_villager_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_villager"
+    },
+    "nativeoffhand_vindicator_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_vindicator"
+    },
+    "nativeoffhand_wandering_trader_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_wandering_trader"
+    },
+    "nativeoffhand_ward_armor_trim_smithing_template": {
+      "textures": "textures/items/ward_armor_trim_smithing_template"
+    },
+    "nativeoffhand_warden_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_warden"
+    },
+    "nativeoffhand_warm_ocean_ruins_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_warped_fungus_on_a_stick": {
+      "textures": "textures/items/warped_fungus_on_a_stick"
+    },
+    "nativeoffhand_water_bucket": {
+      "textures": "textures/items/bucket_water"
+    },
+    "nativeoffhand_wayfinder_armor_trim_smithing_template": {
+      "textures": "textures/items/wayfinder_armor_trim_smithing_template"
+    },
+    "nativeoffhand_wheat": {
+      "textures": "textures/items/wheat"
+    },
+    "nativeoffhand_white_cushion": {
+      "textures": "textures/items/white_cushion"
+    },
+    "nativeoffhand_white_dye": {
+      "textures": "textures/items/dye_powder_white_new"
+    },
+    "nativeoffhand_white_harness": {
+      "textures": "textures/items/harness/harness_white"
+    },
+    "nativeoffhand_wild_armor_trim_smithing_template": {
+      "textures": "textures/items/wild_armor_trim_smithing_template"
+    },
+    "nativeoffhand_witch_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_witch"
+    },
+    "nativeoffhand_wither_skeleton_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_wither_skeleton"
+    },
+    "nativeoffhand_wither_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_wither"
+    },
+    "nativeoffhand_wolf_armor": {
+      "textures": "textures/items/wolf_armor"
+    },
+    "nativeoffhand_wolf_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_wolf"
+    },
+    "nativeoffhand_wooden_axe": {
+      "textures": "textures/items/wood_axe"
+    },
+    "nativeoffhand_wooden_hoe": {
+      "textures": "textures/items/wood_hoe"
+    },
+    "nativeoffhand_wooden_pickaxe": {
+      "textures": "textures/items/wood_pickaxe"
+    },
+    "nativeoffhand_wooden_shovel": {
+      "textures": "textures/items/wood_shovel"
+    },
+    "nativeoffhand_wooden_sword": {
+      "textures": "textures/items/wood_sword"
+    },
+    "nativeoffhand_woodland_mansion_map": {
+      "textures": "textures/items/map_filled"
+    },
+    "nativeoffhand_writable_book": {
+      "textures": "textures/items/book_writable"
+    },
+    "nativeoffhand_written_book": {
+      "textures": "textures/items/book_written"
+    },
+    "nativeoffhand_yellow_cushion": {
+      "textures": "textures/items/yellow_cushion"
+    },
+    "nativeoffhand_yellow_dye": {
+      "textures": "textures/items/dye_powder_yellow"
+    },
+    "nativeoffhand_yellow_harness": {
+      "textures": "textures/items/harness/harness_yellow"
+    },
+    "nativeoffhand_zoglin_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_zoglin"
+    },
+    "nativeoffhand_zombie_horse_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_zombie_horse"
+    },
+    "nativeoffhand_zombie_nautilus_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_zombie_nautilus"
+    },
+    "nativeoffhand_zombie_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_zombie"
+    },
+    "nativeoffhand_zombie_villager_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_zombie_villager"
+    },
+    "nativeoffhand_zombified_piglin_spawn_egg": {
+      "textures": "textures/items/spawn_eggs/spawn_egg_zombified_piglin"
+    }
+  }
+}

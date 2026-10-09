@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Geyser Native Offhand",
+    "description": "Native offhand item aliases and Java offhand use animations",
+    "uuid": "641ac933-aadc-4d81-9ed9-d787b47b5cb9",
+    "version": [
+      0,
+      1,
+      1
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "6c356b8d-2f1d-485b-a125-9d816a08a0cb",
+      "version": [
+        0,
+        1,
+        1
+      ]
+    }
+  ]
+}
