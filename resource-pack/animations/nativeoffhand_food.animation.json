@@ -1,0 +1,59 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.nativeoffhand.food.wield": {
+      "loop": true,
+      "bones": {
+        "nativeoffhand_food": {
+          "position": [
+            "context.is_first_person ? 5.5 : -0.5",
+            "context.is_first_person ? 21.0 : 21.5",
+            "context.is_first_person ? -3.0 : 1.0"
+          ],
+          "rotation": [
+            "context.is_first_person ? 38.0 : 0.0",
+            "context.is_first_person ? 120.0 : 0.0",
+            "context.is_first_person ? 63.0 : 0.0"
+          ],
+          "scale": "context.is_first_person ? 0.75 : 0.5"
+        }
+      }
+    },
+    "animation.nativeoffhand.food.eat": {
+      "loop": true,
+      "animation_length": 10.0,
+      "bones": {
+        "nativeoffhand_food": {
+          "position": [
+            "-3.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "4.0 * math.min(query.anim_time * 5.0, 1.0) + 0.75 * math.abs(math.sin(query.anim_time * 1080.0))",
+            "-1.0 * math.min(query.anim_time * 5.0, 1.0)"
+          ],
+          "rotation": [
+            "-25.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * math.abs(math.sin(query.anim_time * 1080.0))",
+            "-15.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "-10.0 * math.min(query.anim_time * 5.0, 1.0)"
+          ]
+        }
+      }
+    },
+    "animation.nativeoffhand.food.drink": {
+      "loop": true,
+      "animation_length": 10.0,
+      "bones": {
+        "nativeoffhand_food": {
+          "position": [
+            "-3.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "4.0 * math.min(query.anim_time * 5.0, 1.0) + 0.75 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
+            "-1.0 * math.min(query.anim_time * 5.0, 1.0)"
+          ],
+          "rotation": [
+            "-25.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
+            "-15.0 * math.min(query.anim_time * 5.0, 1.0)",
+            "-10.0 * math.min(query.anim_time * 5.0, 1.0)"
+          ]
+        }
+      }
+    }
+  }
+}

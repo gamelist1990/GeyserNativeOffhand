@@ -9,6 +9,7 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 const checks = []
 const locale = process.env.TEST_LOCALE || "ja_JP"
 const propertySchemas = []
+const propertyPackets = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
 const state = { inventory: [], offhand: { network_id: 0 }, responses: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
@@ -113,6 +114,7 @@ async function main() {
   client.on('item_stack_response',p=>{state.responses.push(p);debug('DEBUG_STACK',JSON.stringify(p))})
   client.on('update_block',p=>state.blocks.push(p))
   client.on('sync_entity_property',p=>propertySchemas.push(nbt.simplify(p.nbt)))
+  client.on('set_entity_data',p=>propertyPackets.push(p))
   client.on('animate_entity',p=>state.animations.push(p))
   client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
@@ -232,6 +234,7 @@ async function main() {
   await until('return from pearl',()=>Math.abs(state.position.x-.5)<.01 && Math.abs(state.position.y-66.62)<.02)
   state.position={...state.position,z:state.position.z+0.0001}
   await pause(300)
+  await setMain('diamond_sword')
   await setOffhand('potion',1)
   use('click_air')
   await until('offhand potion consumed',()=>state.offhand.network_id===definition('glass_bottle')?.runtime_id,10000)
@@ -246,11 +249,18 @@ async function main() {
   check('Native offhand food completes timed use',await inventoryData())
   assert(!state.animations.some(p=>p.animation.startsWith('animation.nativeoffhand.')))
   check('Offhand food and potion use emit no custom PlayAnimation')
-  assert(!propertySchemas.some(schema=>schema.properties?.some(p=>p.name==='nativeoffhand:use')))
-  check('No offhand animation control property is registered')
+  const schema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:consume_mode'))
+  assert(schema, 'Missing attachable consumption property definition')
+  const modeIndex=schema.properties.findIndex(p=>p.name==='nativeoffhand:consume_mode')
+  const modes=propertyPackets.filter(p=>String(p.runtime_entity_id)===String(state.runtimeId))
+    .flatMap(p=>p.properties.ints.filter(v=>v.index===modeIndex).map(v=>v.value))
+  let cursor=0
+  for(const mode of modes) if(mode===[2,0,1,0][cursor])cursor++
+  assert.equal(cursor,4,JSON.stringify(modes))
+  check('Attachable use state follows drink/idle/eat/idle while the main hand holds a sword',modes)
   for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1]]) await transferRoundTrip(id,count)
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
-  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and item rendering require a retail client test.']},null,2)+'\n')
+  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and attachable rendering require a retail client test.']},null,2)+'\n')
 }
 main().catch(error=>{console.error(error);process.exitCode=1}).finally(async()=>{
   state.closing=true

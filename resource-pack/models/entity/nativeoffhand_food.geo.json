@@ -1,0 +1,51 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.nativeoffhand.food",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "nativeoffhand_food",
+          "binding": "query.item_slot_to_bone_name(context.item_slot)",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "texture_meshes": [
+            {
+              "local_pivot": [
+                6,
+                0,
+                6
+              ],
+              "position": [
+                -2,
+                1,
+                -2
+              ],
+              "rotation": [
+                0,
+                135,
+                -90
+              ],
+              "use_pixel_depth": true,
+              "texture": "default"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

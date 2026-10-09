@@ -1,6 +1,7 @@
 package org.pexserver.nativeoffhand;
 
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
+import org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty;
 import org.geysermc.geyser.entity.type.Entity;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.inventory.GeyserItemStack;
@@ -8,14 +9,15 @@ import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.data.game.item.component.DataComponentTypes;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Tracks native timed consumption without adding client animations. */
+/** Tracks native timed consumption and exposes state to offhand food attachables. */
 final class OffhandUseState {
-    private static final Map<GeyserSession, Set<Integer>> ACTIVE = new ConcurrentHashMap<>();
+    private static final Map<GeyserSession, Map<Integer, Integer>> ACTIVE = new ConcurrentHashMap<>();
+    private final GeyserIntEntityProperty consumeMode;
+    OffhandUseState(GeyserIntEntityProperty consumeMode) { this.consumeMode = consumeMode; }
     static boolean consuming(GeyserSession session) {
-        return ACTIVE.getOrDefault(session, Set.of()).contains(session.getPlayerEntity().getEntityId());
+        return ACTIVE.getOrDefault(session, Map.of()).containsKey(session.getPlayerEntity().getEntityId());
     }
     static void disconnect(GeyserSession session) { ACTIVE.remove(session); }
     static void clear() { ACTIVE.clear(); }
@@ -29,22 +31,28 @@ final class OffhandUseState {
         Entity entity = packet.getEntityId() == session.getPlayerEntity().getEntityId()
             ? session.getPlayerEntity() : session.getEntityCache().getEntityByJavaId(packet.getEntityId());
         if (!(entity instanceof PlayerEntity player)) return;
-        boolean consuming = false;
+        int mode = 0;
         if ((handState & 3) == 3) {
             GeyserItemStack off = player == session.getPlayerEntity()
                 ? session.getPlayerInventory().getOffhand() : player.getOffHandItem();
             var consumable = off.getComponent(DataComponentTypes.CONSUMABLE);
-            if (consumable != null) consuming = switch (consumable.animation()) {
-                case EAT, DRINK -> true; default -> false;
+            if (consumable != null) mode = switch (consumable.animation()) {
+                case EAT -> 1; case DRINK -> 2; default -> 0;
             };
         }
-        Set<Integer> active = ACTIVE.computeIfAbsent(session, key -> ConcurrentHashMap.newKeySet());
-        if (consuming) {
-            active.add(packet.getEntityId());
+        Map<Integer, Integer> active = ACTIVE.computeIfAbsent(session, key -> new ConcurrentHashMap<>());
+        int previous = active.getOrDefault(packet.getEntityId(), 0);
+        if (mode != 0) {
+            active.put(packet.getEntityId(), mode);
             // Bedrock's generic use flag targets the main hand. Suppress that
             // wrong-hand visual while Java completes the offhand consumption.
             player.setFlag(EntityFlag.USING_ITEM, false);
             player.updateBedrockMetadata();
         } else active.remove(packet.getEntityId());
+        if (previous != mode) {
+            final int value = mode;
+            // The attachable controller observes the owning player's property.
+            player.updatePropertiesBatched(updater -> updater.update(consumeMode, value), true);
+        }
     }
 }

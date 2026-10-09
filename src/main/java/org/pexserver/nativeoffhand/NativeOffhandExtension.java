@@ -24,6 +24,7 @@ public final class NativeOffhandExtension implements Extension {
     private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> originalTranslations = new IdentityHashMap<>();
     private PacketTranslator<InventoryTransactionPacket> previous;
     private OffhandInventoryTransactionTranslator installed;
+    private org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty consumeMode;
     private PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket> previousMetadata;
     private PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket> metadataHook;
 
@@ -31,6 +32,12 @@ public final class NativeOffhandExtension implements Extension {
     public void defineItems(GeyserDefineCustomItemsEvent event) {
         try { logger().info("Registered " + ItemCatalog.register(event) + " automatic data-driven item fallbacks."); }
         catch (Exception failure) { throw new IllegalStateException("Cannot register native offhand item catalog", failure); }
+    }
+
+    @Subscribe
+    public void defineProperties(org.geysermc.geyser.api.event.lifecycle.GeyserDefineEntityPropertiesEvent event) {
+        consumeMode = event.registerIntegerProperty(org.geysermc.geyser.api.util.Identifier.of("minecraft:player"),
+            org.geysermc.geyser.api.util.Identifier.of("nativeoffhand:consume_mode"), 0, 2, 0);
     }
 
     @Subscribe
@@ -91,7 +98,7 @@ public final class NativeOffhandExtension implements Extension {
             Registries.BEDROCK_PACKET_TRANSLATORS.register(InventoryTransactionPacket.class, installed);
             previousMetadata = (PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket>)
                 Registries.JAVA_PACKET_TRANSLATORS.get(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class);
-            var useState = new OffhandUseState();
+            var useState = new OffhandUseState(consumeMode);
             metadataHook = new PacketTranslator<>() {
                 @Override public void translate(org.geysermc.geyser.session.GeyserSession session,
                         org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket packet) {
