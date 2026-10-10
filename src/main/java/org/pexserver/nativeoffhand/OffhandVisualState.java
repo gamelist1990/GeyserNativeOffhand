@@ -38,8 +38,7 @@ final class OffhandVisualState {
             // shield rendering. Classify what was actually translated for this player.
             boolean ownRenderer = renderedId.startsWith("nativeoffhand:")
                 || (renderedId.startsWith("minecraft:")
-                    && (ItemCatalog.usesNativeBlock(javaId)
-                        || definition.getVersion() == org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion.DATA_DRIVEN));
+                    && definition.getVersion() == org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion.DATA_DRIVEN);
             if (ownRenderer && !name.equals("shield") && !name.equals("torch") && !name.endsWith("_torch")) {
                 mode = foodNames.contains(name) ? 3 : ItemCatalog.isHandheld(name) ? 2 : 1;
             }

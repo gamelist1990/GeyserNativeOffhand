@@ -67,7 +67,8 @@ final class ItemCatalog {
                 // A custom fallback causes ItemTranslator to clear the vanilla
                 // block runtime definition. Retain the original identifier and
                 // state-aware block item mapping instead. Its native definition
-                // is made data-driven with offhand permission during post-init.
+                // keeps its native item version during post-init; only offhand
+                // permission is added.
                 NATIVE_BLOCK_ITEMS.add(javaId);
                 NATIVE_BLOCK_DEFINITIONS.putIfAbsent(bedrockId, placedBlock);
                 continue;

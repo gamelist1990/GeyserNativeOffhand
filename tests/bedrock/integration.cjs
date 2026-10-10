@@ -80,7 +80,12 @@ async function transferRoundTrip(id,count) {
   assert.equal(moved.count,count)
   const equipped=await inventoryData()
   assert(equipped.includes('minecraft:'+id) && equipped.includes('count: '+count),equipped)
-  const expectedPose={shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1
+  const nativeBlocks=new Set(['lantern','soul_lantern','stone','stone_bricks','oak_planks','red_wool','glass','oak_fence','oak_stairs','chest','white_shulker_box','red_bed','red_banner','oak_sign','flower_pot'])
+  if(nativeBlocks.has(id)) {
+    assert.equal(definition(id).version,'none',id+' native item version')
+    assert(!nbt.simplify(definition(id).nbt).components['minecraft:block_placer'],id+' native block renderer')
+  }
+  const expectedPose=nativeBlocks.has(id) ? 0 : ({shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1)
   await expectPose(expectedPose,'inventory transfer '+id)
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
@@ -176,7 +181,7 @@ async function main() {
   const poseSchema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:offhand_pose'))
   assert(poseSchema,'Missing synchronized offhand renderer property')
   check('Player defines the server-synchronized offhand renderer property')
-  const poseCases=[['air',0],['stone',1],['oak_stairs',1],['ender_pearl',1],['diamond_sword',2],['iron_axe',2],['bread',3],['apple',3],['torch',0],['shield',0],['air',0]]
+  const poseCases=[['air',0],['stone',0],['oak_stairs',0],['ender_pearl',1],['diamond_sword',2],['iron_axe',2],['bread',3],['apple',3],['torch',0],['shield',0],['air',0]]
   for(const [id,mode] of poseCases) { await setOffhand(id);await expectPose(mode,id) }
   check('Inventory updates synchronize block, tool, food and native held poses',poseCases)
 
@@ -200,8 +205,9 @@ async function main() {
   assert.equal(definition('stone').name,'minecraft:stone')
   assert(!state.registry.some(i=>i.name==='nativeoffhand:stone'))
   assert(state.inventory[0].block_runtime_id>0,JSON.stringify(state.inventory[0]))
-  assert.equal(nbt.simplify(definition('stone').nbt).components['minecraft:block_placer'].block,'minecraft:stone')
-  check('Stone retains its original native item identifier and nonzero block-runtime rendering state')
+  assert.equal(definition('stone').version,'none','Stone must retain native ItemVersion.NONE')
+  assert(!nbt.simplify(definition('stone').nbt).components['minecraft:block_placer'],'Native stone renderer must not be replaced with a data-driven block placer')
+  check('Stone retains native ItemVersion.NONE, original ID and block rendering state')
 
   const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
   assert(stoneName.includes(locale.toLowerCase()==='ja_jp' ? '石' : 'Stone'),stoneName)

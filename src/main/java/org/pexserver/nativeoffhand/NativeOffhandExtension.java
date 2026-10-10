@@ -67,9 +67,9 @@ public final class NativeOffhandExtension implements Extension {
     @Subscribe
     public void initialize(GeyserPostInitializeEvent event) {
         try {
-            // Enable offhand like Geyser's native item overrides. Blocks retain
-            // their identifiers and state-aware mappings; only their version
-            // becomes data-driven. Save and restore all original definitions.
+            // Enable offhand permission while retaining the original native block
+            // item class, identifier and state-aware mapping. Save and restore
+            // every original definition.
             translationString = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
             translationString.setAccessible(true);
             itemVersion = SimpleItemDefinition.class.getDeclaredField("version");
@@ -112,19 +112,10 @@ public final class NativeOffhandExtension implements Extension {
                     var properties = components.getCompound("item_properties").toBuilder()
                         .putBoolean("allow_off_hand", true);
                     String nativeBlock = ItemCatalog.nativeBlock(definition.getIdentifier());
-                    if (nativeBlock != null) {
-                        // Use the original item ID and Geyser block runtime state.
-                        // DATA_DRIVEN is required for the native inventory to honor
-                        // allow_off_hand; the block icon is still the vanilla block.
-                        itemVersion.set(definition, ItemVersion.DATA_DRIVEN);
-                        properties.putInt("max_stack_size", nativeBlockStackSizes.getOrDefault(definition.getIdentifier(), 64));
-                    }
+                    // Native block renderers must retain ItemVersion.NONE and
+                    // their original components. Converting them to DATA_DRIVEN
+                    // changes the client-held renderer even with a block state.
                     var patchedComponents = components.toBuilder().putCompound("item_properties", properties.build());
-                    if (nativeBlock != null) {
-                        patchedComponents.putCompound("minecraft:block_placer", components.getCompound("minecraft:block_placer")
-                            .toBuilder().putString("block", nativeBlock).putBoolean("canUseBlockAsIcon", true)
-                            .putList("use_on", NbtType.COMPOUND, java.util.List.of()).build());
-                    }
                     if (definition.getIdentifier().startsWith("nativeoffhand:")
                             && !foodDefinitions.contains(definition.getIdentifier())
                             && !definition.getIdentifier().endsWith(":torch")
