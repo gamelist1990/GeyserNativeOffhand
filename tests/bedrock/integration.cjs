@@ -336,6 +336,14 @@ async function main() {
     assert.equal(nbt.simplify(alias.nbt).components.item_properties.hand_equipped,0,id+' must retain the ordinary-item pose')
   }
   check('Inventory tool aliases retain handheld rendering; ordinary items and blocks keep their own pose', {handheld:handheldAliases.length,ordinary:6})
+  const renderPresets = {bow:'bow',crossbow:'bow',trident:'trident',fishing_rod:'fishing_rods',
+    carrot_on_a_stick:'fishing_rods',warped_fungus_on_a_stick:'fishing_rods'}
+  for (const id of handheldAliases) assert.equal(nbt.simplify(uiDefinition(id).nbt).components.render_offsets,
+    renderPresets[id] || 'tools', id+' needs its vanilla render group')
+  for (const id of ['bread','ender_pearl','stone','stone_bricks','torch','water_bucket'])
+    assert.equal(nbt.simplify(uiDefinition(id).nbt).components.render_offsets,undefined,id+' must not receive a tool transform')
+  check('Inventory aliases advertise family-specific vanilla render presets; ordinary items keep their native group')
+
   assert(!state.registry.some(i=>i.name.startsWith('nativeoffhand:')),'No custom held item definitions')
   assert(!propertySchemas.some(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name.startsWith('nativeoffhand:'))),'No custom player pose or consume properties')
   check('Rewrite registers no custom held items or player pose/consume properties')

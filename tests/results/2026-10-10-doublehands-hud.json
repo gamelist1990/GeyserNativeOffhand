@@ -1998,10 +1998,10 @@
     "copiedFilesDigest": "14943bdcb663a6d450992c7660647a01112e1c08ac1be57e3a027ccfef70c416"
   },
   "retailFeedback": {
-    "ordinaryHotbarHealthHungerRecovery": "pending",
-    "offhandHudRendering": "pending",
+    "ordinaryHotbarHealthHungerRecovery": "confirmed by user: HUD looks good",
+    "offhandHudRendering": "confirmed by user",
     "touchHudPosition": "pending",
-    "heldPositionAndOrientation": "pending for current candidate",
+    "heldPositionAndOrientation": "failed for tool aliases: user reports incorrect axe/tool orientation while the inventory is open",
     "smallOffhandBlockRendering": "Bedrock limitation accepted by user"
   },
   "testEnvironmentNotes": [

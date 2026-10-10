@@ -48,6 +48,7 @@ public final class NativeOffhandExtension implements Extension {
             componentData.setAccessible(true);
             translation = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
             translation.setAccessible(true);
+            int toolPresets = 0;
             for (var mappings : Registries.ITEMS.get().values()) {
                 for (var mapping : mappings.getItems()) {
                     if (mapping == null || !NativeItemCatalog.hasAlias(mapping.getJavaItem().javaKey().asString())
@@ -56,13 +57,24 @@ public final class NativeOffhandExtension implements Extension {
                     translation.set(mapping, mapping.getJavaItem().translationKey());
                 }
                 for (var definition : mappings.getItemDefinitions().values()) {
-                    // NONE and LEGACY retain their complete native definitions.
-                    // Only the already data-driven vanilla items need this flag.
                     if (!(definition instanceof SimpleItemDefinition simple)
-                            || definition.getVersion() != ItemVersion.DATA_DRIVEN
-                            || definition.getIdentifier().startsWith("nativeoffhand_ui:") || nativeData.containsKey(simple)) continue;
+                            || definition.getVersion() != ItemVersion.DATA_DRIVEN || nativeData.containsKey(simple)) continue;
                     var root = definition.getComponentData();
-                    if (root == null) throw new IllegalStateException("Missing native components: " + definition.getIdentifier());
+                    if (root == null) throw new IllegalStateException("Missing item components: " + definition.getIdentifier());
+                    String preset = NativeItemCatalog.renderPreset(definition.getIdentifier());
+                    if (preset != null) {
+                        nativeData.put(simple, root);
+                        // Geyser also uses this unnamespaced registry component
+                        // for vanilla render groups (e.g. armor). The obsolete
+                        // minecraft:render_offsets transform API is not used.
+                        var toolComponents = root.getCompound("components").toBuilder()
+                            .putString("render_offsets", preset).build();
+                        componentData.set(simple, root.toBuilder().putCompound("components", toolComponents).build());
+                        toolPresets++;
+                        continue;
+                    }
+                    if (definition.getIdentifier().startsWith("nativeoffhand_ui:")) continue;
+                    // Native NONE/LEGACY items keep their original definition.
                     nativeData.put(simple, root);
                     var components = root.getCompound("components");
                     var properties = components.getCompound("item_properties").toBuilder().putBoolean("allow_off_hand", true).build();
@@ -70,6 +82,7 @@ public final class NativeOffhandExtension implements Extension {
                         components.toBuilder().putCompound("item_properties", properties).build()).build());
                 }
             }
+            logger().info("Applied vanilla render presets to " + toolPresets + " inventory tool definitions.");
             hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerSetSlotPacket.class, false);
             hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerSetContentPacket.class, false);
             hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerClosePacket.class, false);

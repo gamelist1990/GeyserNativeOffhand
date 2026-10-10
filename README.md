@@ -2,7 +2,9 @@
 
 Bedrock の通常のインベントリで、アイテムをオフハンドへ移動し、Java サーバーへ設置・使用を送る Geyser-Spigot 拡張です。
 
-**0.2.4-rewrite.5 / RP 0.2.4 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、この基準版に独自の食事モーションはありません。0.2.0 の実機画像で、インベントリを開くと剣・斧の向きと大きさが変わる問題を確認しました。0.2.1 で移動用定義の `hand_equipped` を道具に合わせて修正しました。0.2.3 は実機でホットバー・体力などが消える不具合が確認されました。0.2.4 はユーザーの指示に従って DoubleHands の元の HUD UI とアイコンをそのまま取り込んだ修正版です。HUD と開閉時の保持表示は実機確認待ちです。
+**0.2.5-rewrite.6 / RP 0.2.5 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、独自の食事モーションはありません。
+
+0.2.4 で取り込んだ DoubleHands の元の HUD はユーザーの実機で良好との報告を受けました。一方、インベントリを開いたときの斧・道具の向きには不具合が残っています。0.2.5 は Geyser のカスタムアイテム登録を使い、移動用の道具に種類別の描画プリセットを追加した修正候補です。送信データと移動・使用の試験は通過していますが、描画の改善は実機確認待ちです。
 
 開発ブランチは `native-renderer-rewrite`。従来の公開版は `main` / [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2)、失敗した表示補正の記録は `attachable-consumption` に残します。本拡張は Geyser の公式機能ではありません。
 
@@ -10,7 +12,7 @@ Bedrock の通常のインベントリで、アイテムをオフハンドへ移
 
 [解析記録](docs/doublehands-reference.md)に、入力ファイルの SHA-256 と確認した処理を記載しています。DoubleHands は Bedrock Script API と `replaceitem` でバニラのアイテムを装備させます。保持モデルや腕の姿勢を置き換えていません。一方、通常のインベントリ操作を解禁する仕組みはなく、スニーク・エモート・コマンドで切り替えます。
 
-この拡張では、その「装備はバニラのアイテムのまま」という方針を参考に、新しい Geyser 用コードを作成しました。DoubleHands のスクリプト・UI・テクスチャは同梱していません。オフハンド切り替えキー、スニーク切り替え、専用メニューは実装しません。
+この拡張では、その「装備はバニラのアイテムのまま」という方針を参考に、新しい Geyser 用コードを作成しました。DoubleHands のスクリプト・行動パックは同梱せず、HUD の UI・画像と変換したテクスチャ一覧を取り込みます。オフハンド切り替えキー、スニーク切り替え、専用メニューは実装しません。
 
 ## 今回の操作要件と表示の制約
 
@@ -28,13 +30,13 @@ Geyser は元の TextureMap から画像パスを選び、title へ画像パス�
 
 **元の DoubleHands UI は通常のタイトル・副題を非表示にします。** この版ではそのチャンネルを HUD 専用に使い、Java の通常タイトルが画像パスや個数を上書きしないようにします。アクションバーは元の Geyser の処理を使います。表示時間は 2 秒、変化がない場合も 1 秒ごとに更新します。
 
-[HUD の変更記録と確認項目](docs/offhand-hud.md)。画面描画・タッチ位置は実機で確認します。
+[HUD の変更記録と確認項目](docs/offhand-hud.md)。0.2.4 の HUD 表示はユーザー確認済みです。タッチ位置の詳細と道具の向きは別に確認します。
 
 ## 実装
 
 - Geyser のアイテムマッピングとブロックパレットから自動列挙し、通常のプレイヤーインベントリ用に 1,625 件の低優先度の data-driven 定義を登録します。
 - 通常のインベントリが開いている間だけ、移動を許可する `nativeoffhand_ui:` 定義を選びます。通常の ItemStackRequest を Geyser の処理へ渡します。
-- インベントリ内の定義が背景の手元にも描画されるため、剣・斧・ツルハシ・シャベル・クワなどの道具には `hand_equipped=true` を設定します。食品・一般アイテム・ブロックには道具の姿勢を適用しません。
+- インベントリ内の定義が背景の手元にも描画されるため、道具に `hand_equipped=true` と種類別の `components.render_offsets` プリセットを設定します。剣・斧・採掘道具などは `tools`、弓は `bow`、釣り竿は `fishing_rods`、トライデントは `trident`。食品・一般アイテム・ブロックには追加しません。これは Geyser 内部の登録データを補う互換処理で、現行 Bedrock での見た目の効果は未確認です。[技術記録](docs/tool-render-presets.md)。
 - 閉じると元のバニラ ID とブロック状態へ戻します。両手の表示を更新し、移動用の定義から保持用の定義へ変わるアイテムには新しい Bedrock のスタック ID を割り当てます。Java 側の種類・個数・名前・コンポーネントは維持します。
 - 元の NONE・LEGACY のアイテム定義、保持モデル、プレイヤーの定義・ボーン・アニメーションを変更しません。元から data-driven のアイテムにはオフハンド許可だけを設定します。
 - 食品や道具も、ゲーム画面ではバニラの ID を使います。リソースパックにはバニラの画像パスを参照する移動用アイコン一覧と DoubleHands の元の HUD・枠・アイコン画像を含めます。保持用のモデルやアニメーションは追加しません。
@@ -46,9 +48,9 @@ Bedrock の使用パケットには手の指定がないため、Java の全て�
 
 ## 検証
 
-独立した Paper + Geyser 検証鯖と [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) で **68 項目が通過しました**。自動テストは Bedrock 本体のドラッグ制限や画面描画を実行しません。
+独立した Paper + Geyser 検証鯖と [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) で **69 項目が通過しました**。自動テストは Bedrock 本体のドラッグ制限や画面描画を実行しません。
 
-- 剣・斧など 13 種類の移動用定義が道具の姿勢、食品・ブロックなど 6 種類が一般アイテムの姿勢であることを受信パケットから確認。
+- 剣・斧など 13 種類の移動用定義の `hand_equipped` と種類別プリセット、食品・ブロックなど 6 種類に道具用の設定を追加しないことを受信パケットから確認。
 - 松明・ランタン・魂の松明・石・石レンガ・剣・斧・食品・バケツ・本など 23 種類をインベントリとオフハンドの間で往復移動。
 - 板材、色付き羊毛、ガラス、フェンス、階段、チェスト、シュルカーボックス、ベッド、旗、看板、植木鉢などの個数・Java 側の種類・元のブロック状態を維持。
 - 通常の持ち物欄から部分スタックをオフハンドへ移動し、同じ種類をまとめ、カーソルで分けて持ち物欄へ戻す。
@@ -61,7 +63,7 @@ Bedrock の使用パケットには手の指定がないため、Java の全て�
 - HUD に元の画像パス・個数・空画像を送り、インベントリ表示中も移動用のアイテム ID を画像名に使わないことを確認。
 - 表示データを定期更新し、Java の通常タイトル・副題・リセットが画像パスを上書きしないこと、アクションバーが使えることを確認。
 
-[実行手順](tests/bedrock/README.md) / [DoubleHands HUD の検証結果](tests/results/2026-10-10-doublehands-hud.json) / [前版の実機での失敗記録](tests/results/2026-10-10-offhand-hud.json) / [開閉時の道具描画設定を修正した結果](tests/results/2026-10-10-handheld-pose.json) / [通常のインベントリ操作を追加した結果](tests/results/2026-10-10-native-inventory.json) / [最初の検証結果](tests/results/2026-10-10-rewrite.1.json)
+[実行手順](tests/bedrock/README.md) / [道具の描画プリセットの検証結果](tests/results/2026-10-10-tool-render-presets.json) / [DoubleHands HUD の検証結果](tests/results/2026-10-10-doublehands-hud.json) / [前版の実機での失敗記録](tests/results/2026-10-10-offhand-hud.json) / [開閉時の道具描画設定を修正した結果](tests/results/2026-10-10-handheld-pose.json) / [通常のインベントリ操作を追加した結果](tests/results/2026-10-10-native-inventory.json) / [最初の検証結果](tests/results/2026-10-10-rewrite.1.json)
 
 前の RP 0.1.14 は、実機で石の位置が正常になりましたが移動できませんでした。0.1.15 も移動できませんでした。0.1.16 は移動できましたが、ブロックが左上に離れて表示されました。これらを修正完了とは扱いません。[最後の失敗記録](tests/results/2026-10-10-attachable.14.json)と過去の Blockbench プレビューは履歴として残します。
 
@@ -90,7 +92,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.2.4-rewrite.5.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
+出力は `build/GeyserNativeOffhand-0.2.5-rewrite.6.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
 
 ## ライセンスと出典
 
