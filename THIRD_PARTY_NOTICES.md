@@ -4,6 +4,8 @@ The extension is MIT-licensed. Inventory validation and interaction conventions 
 
 The user-supplied DoubleHands 5.6.0 add-on, credited to Areed Elahi in its manifest, was inspected as a behavioral reference. No DoubleHands source code, UI files or texture assets are redistributed. See [the inspection record](docs/doublehands-reference.md).
 
-The 0.2.x resource pack contains only its manifest and vanilla texture-path aliases. It bundles no Minecraft images, player models, attachables or animation definitions. Geyser's integrated pack is loaded separately by Geyser.
+The 0.2.3 resource pack includes vanilla texture-path aliases, original HUD JSON and an original slot-frame image. It bundles no Minecraft item images, player models, attachables or animation definitions. The HUD uses the native inventory item renderer. Geyser's integrated pack is loaded separately by Geyser.
 
 Historical files in `docs/previews` contain Blockbench screenshots and texture-free inspection projects from the previous experimental implementation. Minecraft imagery remains the property of Mojang. Bedrock bone hierarchy/pivots in those historical projects were taken from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples), copyright Mojang AB, under its Minecraft EULA notice. Those previews do not verify the Bedrock runtime renderer and are not used by the rewrite.
+
+HUD binding behavior and type conversion were also studied in the [Bedrock Wiki JSON UI documentation](https://wiki.bedrock.dev/json-ui/json-ui-documentation), [preserved title tutorial](https://wiki.bedrock.dev/json-ui/preserve-title-texts) and [type conversion tutorial](https://wiki.bedrock.dev/json-ui/type-conversion). These are behavioral references; no documentation source files are bundled.

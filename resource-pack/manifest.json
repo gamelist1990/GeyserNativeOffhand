@@ -2,12 +2,12 @@
   "format_version": 2,
   "header": {
     "name": "Geyser Native Offhand Rewrite",
-    "description": "Inventory aliases only; untouched vanilla held models",
+    "description": "Native offhand inventory and left hotbar HUD",
     "uuid": "ccfef51b-c350-4a05-8cd7-8be9328f8daf",
     "version": [
       0,
       2,
-      1
+      3
     ],
     "min_engine_version": [
       1,
@@ -22,7 +22,7 @@
       "version": [
         0,
         2,
-        1
+        3
       ]
     }
   ]

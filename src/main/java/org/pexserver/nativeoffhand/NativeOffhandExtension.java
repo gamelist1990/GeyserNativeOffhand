@@ -11,6 +11,8 @@ import org.geysermc.geyser.registry.*;
 import org.geysermc.geyser.translator.protocol.PacketTranslator;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.*;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.title.*;
+import java.util.function.BiConsumer;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket;
 import java.lang.reflect.Field;
 import java.nio.file.*;
@@ -18,6 +20,7 @@ import java.util.*;
 
 public final class NativeOffhandExtension implements Extension {
     private final NativeUseRouter use = new NativeUseRouter();
+    private final NativeOffhandHud hud = new NativeOffhandHud();
     private final List<Runnable> restore = new ArrayList<>();
     private final Map<SimpleItemDefinition, NbtMap> nativeData = new IdentityHashMap<>();
     private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> names = new IdentityHashMap<>();
@@ -76,7 +79,12 @@ public final class NativeOffhandExtension implements Extension {
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, ContainerClosePacket.class, false);
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, ItemStackRequestPacket.class, false);
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, InventoryTransactionPacket.class, true);
+            hookInventoryLatency();
             hookMetadata();
+            hookHud(ClientboundSetTitleTextPacket.class, hud::beforeTitle);
+            hookHud(ClientboundSetSubtitleTextPacket.class, hud::subtitle);
+            hookHud(ClientboundSetTitlesAnimationPacket.class, hud::times);
+            hookHud(ClientboundClearTitlesPacket.class, hud::clearTitles);
             logger().info("Native renderer rewrite enabled; no player pose, attachable or animation overrides.");
         } catch (Throwable error) {
             restoreAll();
@@ -95,11 +103,57 @@ public final class NativeOffhandExtension implements Extension {
                         (PacketTranslator<InventoryTransactionPacket>) delegate);
                     else delegate.translate(session, packet);
                 });
+                hud.update(session);
             }
             @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
         };
         registry.register(type, wrapper);
         restore.add(() -> { if (registry.get(type) == wrapper) registry.register(type, delegate); });
+    }
+
+    private void hookInventoryLatency() {
+        var type = NetworkStackLatencyPacket.class;
+        @SuppressWarnings("unchecked")
+        var delegate = (PacketTranslator<NetworkStackLatencyPacket>) Registries.BEDROCK_PACKET_TRANSLATORS.get(type);
+        if (delegate == null) throw new IllegalStateException("Missing inventory latency translator");
+        PacketTranslator<NetworkStackLatencyPacket> wrapper = new PacketTranslator<>() {
+            @Override public void translate(GeyserSession session, NetworkStackLatencyPacket packet) {
+                var holder = session.getInventoryHolder();
+                if (holder != null && holder.inventory() instanceof org.geysermc.geyser.inventory.PlayerInventory) {
+                    // Delayed opens run through a latency callback. Enter the
+                    // session event loop first so ensureInEventLoop in that
+                    // callback runs inline, inside our item-translation scope.
+                    // Dequeue on arrival, as Geyser does, so callbacks retain
+                    // reply order even if the inventory closes before dispatch.
+                    var callback = session.getLatencyPingCache().poll();
+                    if (callback != null) session.ensureInEventLoop(() -> {
+                        NativeInventoryView.translate(session, callback);
+                        hud.update(session);
+                    });
+                } else delegate.translate(session, packet);
+            }
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        Registries.BEDROCK_PACKET_TRANSLATORS.register(type, wrapper);
+        restore.add(() -> { if (Registries.BEDROCK_PACKET_TRANSLATORS.get(type) == wrapper)
+            Registries.BEDROCK_PACKET_TRANSLATORS.register(type, delegate); });
+    }
+
+    private <P extends org.geysermc.mcprotocollib.network.packet.Packet> void hookHud(Class<P> type, BiConsumer<GeyserSession, P> before) {
+        @SuppressWarnings("unchecked")
+        var delegate = (PacketTranslator<P>) Registries.JAVA_PACKET_TRANSLATORS.get(type);
+        if (delegate == null) throw new IllegalStateException("Missing title translator: " + type);
+        PacketTranslator<P> wrapper = new PacketTranslator<>() {
+            @Override public void translate(GeyserSession session, P packet) {
+                before.accept(session, packet);
+                delegate.translate(session, packet);
+                hud.update(session);
+            }
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        Registries.JAVA_PACKET_TRANSLATORS.register(type, wrapper);
+        restore.add(() -> { if (Registries.JAVA_PACKET_TRANSLATORS.get(type) == wrapper)
+            Registries.JAVA_PACKET_TRANSLATORS.register(type, delegate); });
     }
 
     @SuppressWarnings("unchecked")
@@ -122,14 +176,19 @@ public final class NativeOffhandExtension implements Extension {
         for (int i = restore.size() - 1; i >= 0; i--) restore.get(i).run();
         restore.clear();
         use.clear();
+        hud.clear();
         nativeData.forEach((item, data) -> { try { componentData.set(item, data); } catch (Exception error) { logger().error(error.toString()); } });
         nativeData.clear();
         names.forEach((mapping, name) -> { try { translation.set(mapping, name); } catch (Exception error) { logger().error(error.toString()); } });
         names.clear();
     }
 
+    @Subscribe public void join(org.geysermc.geyser.api.event.bedrock.SessionJoinEvent event) {
+        if (event.connection() instanceof GeyserSession session) hud.start(session);
+    }
+
     @Subscribe public void disconnect(org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent event) {
-        if (event.connection() instanceof GeyserSession session) use.forget(session);
+        if (event.connection() instanceof GeyserSession session) { use.forget(session); hud.forget(session); }
     }
     @Subscribe public void shutdown(GeyserShutdownEvent event) { restoreAll(); }
 }

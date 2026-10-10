@@ -1,0 +1,230 @@
+{
+  "namespace": "nativeoffhand_hud",
+  "content": {
+    "type": "panel",
+    "size": [
+      "100%",
+      "100%"
+    ],
+    "controls": [
+      {
+        "frame": {
+          "type": "image",
+          "texture": "textures/nativeoffhand/offhand_slot",
+          "size": [
+            "100%",
+            "100%"
+          ],
+          "layer": 1
+        }
+      },
+      {
+        "icon": {
+          "type": "custom",
+          "renderer": "inventory_item_renderer",
+          "size": [
+            16,
+            16
+          ],
+          "layer": 2,
+          "bindings": [
+            {
+              "binding_type": "view",
+              "source_property_name": "(0 + (#saved - 'nativeoffhandhud:item:'))",
+              "target_property_name": "#item_id_aux",
+              "source_control_name": "nativeoffhand_icon_state"
+            }
+          ]
+        }
+      },
+      {
+        "count": {
+          "type": "label",
+          "text": "#text",
+          "anchor_from": "bottom_right",
+          "anchor_to": "bottom_right",
+          "offset": [
+            -1,
+            0
+          ],
+          "shadow": true,
+          "localize": false,
+          "layer": 4,
+          "color": [
+            1,
+            1,
+            1
+          ],
+          "bindings": [
+            {
+              "binding_type": "view",
+              "source_property_name": "(#saved - 'nativeoffhandhud:count:')",
+              "target_property_name": "#text",
+              "source_control_name": "nativeoffhand_count_state"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((0 + (#saved - 'nativeoffhandhud:count:')) > 1)",
+              "target_property_name": "#visible",
+              "source_control_name": "nativeoffhand_count_state"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "offhand": {
+    "type": "panel",
+    "size": [
+      "100%",
+      "100%"
+    ],
+    "layer": 100,
+    "controls": [
+      {
+        "nativeoffhand_icon_state": {
+          "type": "panel",
+          "size": [
+            0,
+            0
+          ],
+          "property_bag": {
+            "#saved": "nativeoffhandhud:item:0"
+          },
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#saved",
+              "binding_condition": "visibility_changed"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(not (#hud_title_text_string = #saved) and not ((#hud_title_text_string - 'nativeoffhandhud:item:') = #hud_title_text_string))",
+              "target_property_name": "#visible"
+            }
+          ]
+        }
+      },
+      {
+        "nativeoffhand_count_state": {
+          "type": "panel",
+          "size": [
+            0,
+            0
+          ],
+          "property_bag": {
+            "#saved": "nativeoffhandhud:count:0"
+          },
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_subtitle_text_string"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_subtitle_text_string",
+              "binding_name_override": "#saved",
+              "binding_condition": "visibility_changed"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(not (#hud_subtitle_text_string = #saved) and not ((#hud_subtitle_text_string - 'nativeoffhandhud:count:') = #hud_subtitle_text_string))",
+              "target_property_name": "#visible"
+            }
+          ]
+        }
+      },
+      {
+        "classic": {
+          "type": "panel",
+          "size": [
+            22,
+            22
+          ],
+          "anchor_from": "bottom_middle",
+          "anchor_to": "bottom_middle",
+          "offset": [
+            -110,
+            -1.5
+          ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_left_visible",
+              "binding_name_override": "#left"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_right_visible",
+              "binding_name_override": "#right"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((0 + (#saved - 'nativeoffhandhud:count:')) > 0)",
+              "target_property_name": "#has_item",
+              "source_control_name": "nativeoffhand_count_state"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(#has_item and (not (#left or #right)))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "content@nativeoffhand_hud.content": {}
+            }
+          ]
+        }
+      },
+      {
+        "touch": {
+          "type": "panel",
+          "size": [
+            22,
+            22
+          ],
+          "anchor_from": "bottom_middle",
+          "anchor_to": "bottom_middle",
+          "offset": [
+            -128,
+            -1.5
+          ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_left_visible",
+              "binding_name_override": "#left"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_right_visible",
+              "binding_name_override": "#right"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((0 + (#saved - 'nativeoffhandhud:count:')) > 0)",
+              "target_property_name": "#has_item",
+              "source_control_name": "nativeoffhand_count_state"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(#has_item and (#left or #right))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "content@nativeoffhand_hud.content": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -11,11 +11,11 @@ const locale = process.env.TEST_LOCALE || "ja_JP"
 const propertySchemas = []
 const propertyPackets = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
-const state = { inventory: [], offhand: { network_id: 0 }, cursor: { network_id: 0 }, responses: [], equipment: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
+const state = { inventory: [], offhand: { network_id: 0 }, cursor: { network_id: 0 }, responses: [], closes: [], equipment: [], titles: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
 async function until(label, predicate, timeout=15000) {
   const end=Date.now()+timeout
-  while (Date.now()<end) { if(state.error) throw state.error; if(predicate()) return; await pause(100) }
+  while (Date.now()<end) { if(state.error) throw state.error; if(await predicate()) return; await pause(100) }
   throw Error('Timeout: '+label)
 }
 async function connectRcon() {
@@ -85,9 +85,13 @@ async function transferRoundTrip(id,count) {
   const response=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===forward)
   const moved=response.containers.find(c=>c.slot_type.container_id==='offhand').slots[0]
   assert.equal(moved.count,count)
-  const equipped=await inventoryData()
-  assert(equipped.includes('minecraft:'+id) && equipped.includes('count: '+count),equipped)
+  let equipped
+  await until('Java OFFHAND confirms '+id,async()=>{
+    equipped=await cmd('data get entity NativeOH equipment.offhand')
+    return equipped.includes('minecraft:'+id) && equipped.includes('count: '+count)
+  })
   if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
+  if(id==='stone' || id==='iron_axe') await checkHud(original,count,'HUD keeps native '+id+' ID while the inventory uses a move alias')
   if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
@@ -99,8 +103,11 @@ async function transferRoundTrip(id,count) {
   const returned=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===backward).containers.find(c=>c.slot_type.container_id==='hotbar').slots[0]
   assert.equal(returned.count,count)
   state.inventory[0]={...from,count,stack_id:returned.item_stack_id};state.offhand={network_id:0}
-  assert((await cmd('execute if items entity NativeOH hotbar.0 minecraft:'+id)).includes('Test passed'))
+  await until('Java hotbar confirms returned '+id,async()=>
+    (await cmd('execute if items entity NativeOH hotbar.0 minecraft:'+id)).includes('Test passed'))
+  const closeCount=state.closes.length
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
+  await until('inventory close confirmation '+id,()=>state.closes.length>closeCount)
   await until('native definition restored '+id,()=>state.inventory[0]?.network_id===original.network_id
     && state.inventory[0]?.count===count && (ui ? state.inventory[0]?.stack_id!==returned.item_stack_id : state.inventory[0]?.stack_id===returned.item_stack_id))
   assert.equal(state.inventory[0].block_runtime_id,original.block_runtime_id,id+' native block state')
@@ -148,8 +155,9 @@ async function nativeAction(type,count,sourceContainer,sourceSlot,destContainer,
   return response
 }
 async function checkJavaCount(javaPath,count) {
-  const actual=await cmd('data get entity NativeOH '+javaPath)
-  assert(new RegExp('(?:^|[: ])'+count+'(?:$|\\D)').test(actual),actual)
+  // Geyser acknowledges the predicted move before Java processes the click.
+  await until('Java count confirms '+javaPath+' = '+count,async()=>
+    (await cmd('data get entity NativeOH '+javaPath)).trim().endsWith(': '+count))
 }
 async function nativeInventoryOperations() {
   await cmd('clear NativeOH')
@@ -215,6 +223,51 @@ function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0}
     block_runtime_id:runtime,client_prediction:'failure'
   }}})
 }
+const hudItemPrefix='nativeoffhandhud:item:'
+const hudCountPrefix='nativeoffhandhud:count:'
+const plainTitle = packet => packet?.text?.replace(/§./g,'')
+const latestHud = prefix => state.titles.findLast(p=>p.text?.startsWith(prefix))?.text.slice(prefix.length)
+async function checkHud(item,count,label) {
+  const aux=item.network_id ? (item.network_id<<16) | ((item.metadata||0)&65535) : 0
+  await until('offhand HUD '+label,()=>latestHud(hudItemPrefix)===String(aux) && latestHud(hudCountPrefix)===String(count))
+  check(label,{itemAux:aux,count})
+}
+async function hudOperations() {
+  await cmd('title NativeOH reset')
+  await setOffhand('stone',64)
+  await checkHud(state.offhand,64,'HUD publishes native block renderer ID and stack count')
+  await setOffhand('bread',7)
+  await checkHud(state.offhand,7,'HUD replaces the icon when OFFHAND changes from a block to food')
+  await setOffhand('bread',1)
+  await checkHud(state.offhand,1,'HUD publishes count one for hiding the extra count label')
+  await setOffhand('air')
+  await checkHud(state.offhand,0,'Empty OFFHAND publishes zero so the HUD slot hides')
+  await setOffhand('iron_axe',1)
+  await checkHud(state.offhand,1,'HUD uses the native tool ID without changing the equipped item')
+  const still=state.titles.length
+  await pause(600)
+  assert.equal(state.titles.slice(still).filter(p=>p.text?.startsWith('nativeoffhandhud:')).length,0)
+  check('Unchanged OFFHAND does not repeatedly overwrite title or subtitle')
+
+  await cmd('title NativeOH times 4 12 4')
+  await cmd('title NativeOH subtitle {"text":"HUD subtitle preserved"}')
+  await cmd('title NativeOH title {"text":"HUD test title"}')
+  await until('ordinary title',()=>state.titles.some(p=>plainTitle(p)==='HUD test title'))
+  const titleIndex=state.titles.findLastIndex(p=>plainTitle(p)==='HUD test title'),real=state.titles[titleIndex]
+  const previousTimes=state.titles.slice(0,titleIndex).findLast(p=>p.type==='set_durations')
+  assert(previousTimes,'Server title times are forwarded')
+  assert.equal(previousTimes.fade_in_time,4);assert.equal(previousTimes.stay_time,12);assert.equal(previousTimes.fade_out_time,4)
+  assert.equal(plainTitle(state.titles.slice(0,titleIndex).findLast(p=>p.type==='set_subtitle')),'HUD subtitle preserved')
+  await setOffhand('stone',3)
+  await cmd('title NativeOH actionbar {"text":"HUD actionbar preserved"}')
+  await until('ordinary actionbar',()=>state.titles.some(p=>plainTitle(p)==='HUD actionbar preserved'))
+  await pause(500)
+  assert(!state.titles.slice(titleIndex+1).some(p=>p.text?.startsWith('nativeoffhandhud:') && p.received-real.received<900),'HUD must not replace an active server title')
+  check('Server title/subtitle/timings and actionbar remain intact while OFFHAND changes')
+  await checkHud(state.offhand,3,'Deferred HUD update resumes after the real server title ends')
+  await cmd('title NativeOH reset')
+}
+
 async function main() {
   rcon=await connectRcon()
   await cmd('whitelist off')
@@ -240,7 +293,9 @@ async function main() {
   client.on('sync_entity_property',p=>propertySchemas.push(nbt.simplify(p.nbt)))
   client.on('set_entity_data',p=>propertyPackets.push(p))
   client.on('animate_entity',p=>state.animations.push(p))
+  client.on('set_title',p=>{state.titles.push({...p,received:Date.now()});debug('DEBUG_TITLE',p)})
   client.on('mob_equipment',p=>{if(String(p.runtime_entity_id)===String(state.runtimeId))state.equipment.push(p)})
+  client.on('container_close',p=>state.closes.push(p))
   client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
     debug('DEBUG_MOVE',JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v))
@@ -259,6 +314,7 @@ async function main() {
   })
   await until('spawn',()=>state.spawned && state.registry.length,60000)
   check('Bedrock 1.26.51 joined actual Paper/Geyser server')
+  if(process.env.TEST_HUD_ONLY==='1') { await hudOperations(); return }
   const uiItems=state.registry.filter(i=>i.name.startsWith('nativeoffhand_ui:'))
   assert(uiItems.length>1500,'Automatic aliases cover ordinary blocks, tools and items')
   for(const item of state.registry.filter(i=>i.version==='data_driven')) {
@@ -290,6 +346,9 @@ async function main() {
   await cmd('gamemode survival NativeOH')
   await cmd('effect clear NativeOH')
   await cmd('effect give NativeOH minecraft:instant_health 1 5 true')
+  // Pearl-spawned endermites can otherwise kill the headless stationary bot.
+  // Protect only this test player, retaining survival item consumption.
+  await cmd('effect give NativeOH minecraft:resistance 180 255 true')
   await cmd('fill -5 64 -5 5 64 5 minecraft:stone')
   await cmd('fill -5 65 -5 5 68 5 minecraft:air')
   await cmd('tp NativeOH 0.5 65 0.5 0 0')
@@ -332,8 +391,11 @@ async function main() {
   state.inventory[0]={network_id:0}
   assert.equal(moved.count,8)
   debug('STACK_RESPONSE',JSON.stringify(state.responses))
-  const movedData=await inventoryData()
-  assert(movedData.includes('minecraft:torch') && movedData.includes('count: 8'),movedData)
+  let movedData
+  await until('Java confirms initial torch transfer',async()=>{
+    movedData=await cmd('data get entity NativeOH equipment.offhand')
+    return movedData.includes('minecraft:torch') && movedData.includes('count: 8')
+  })
   check('Native ItemStackRequest moved torches from hotbar into OFFHAND',movedData)
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
   await pause(300)
@@ -392,12 +454,25 @@ async function main() {
   await until('offhand potion consumed',()=>state.offhand.network_id===definition('glass_bottle')?.runtime_id,10000)
   check('Native offhand potion completes timed use',await inventoryData())
   await setOffhand('apple',2)
-  await cmd('effect give NativeOH minecraft:hunger 8 255 true')
+  await cmd('effect give NativeOH minecraft:hunger 15 255 true')
   await pause(4500)
-  const hunger=await cmd('data get entity NativeOH foodLevel')
+  let hunger,foodLevel=20
+  const hungerDeadline=Date.now()+12000
+  do {
+    hunger=await cmd('data get entity NativeOH foodLevel')
+    foodLevel=Number(hunger.match(/: (\d+)$/)?.[1])
+    if(foodLevel<20) break
+    await pause(100)
+  } while(Date.now()<hungerDeadline)
+  assert(foodLevel<20,'Apple consumption needs a hungry player: '+hunger)
   debug('FOOD_LEVEL',hunger)
-  use('click_air')
-  await until('apple consumption',()=>state.offhand.count===1,10000)
+  // Match a held use input. The router must suppress repeated starts while
+  // Java is already consuming, so these packets must not reset the timer.
+  const foodInput=setInterval(()=>use('click_air'),150)
+  try {
+    use('click_air')
+    await until('apple consumption with held use input',()=>state.offhand.count===1,10000)
+  } finally { clearInterval(foodInput) }
   check('Native offhand food completes timed use',await inventoryData())
   assert(!state.animations.some(p=>p.animation.startsWith('animation.nativeoffhand.')))
   check('Offhand food and potion use emit no custom PlayAnimation')
@@ -472,6 +547,7 @@ async function main() {
     await cmd('item replace entity NativeOH hotbar.1 with minecraft:air')
   }
   await nativeInventoryOperations()
+  await hudOperations()
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
   fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag restrictions and held-item appearance require a retail client test.']},null,2)+'\n')
 }

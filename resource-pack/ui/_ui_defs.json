@@ -1,0 +1,6 @@
+{
+  "ui_defs": [
+    "ui/nativeoffhand_hud.json",
+    "ui/nativeoffhand_hud_inject.json"
+  ]
+}
