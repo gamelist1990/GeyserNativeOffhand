@@ -43,6 +43,7 @@ async function connectRcon() {
 // Native colored beds and banners share their identifier; damage/NBT carries color.
 const definition = id => state.registry.find(i=>i.name==='nativeoffhand:'+id)
   || state.registry.find(i=>i.name==='minecraft:'+(id.endsWith('_bed') ? 'bed' : id.endsWith('_banner') ? 'banner' : id))
+const uiDefinition = id => state.registry.find(i=>i.name==='nativeoffhand_ui:'+id)
 const check = (label,evidence) => { checks.push({label,evidence});console.log('PASS',label,evidence||'') }
 async function cmd(command) { const result=await rcon.command(command);if(/Unknown|Incorrect|No entity was found|No player was found/.test(result))throw Error(command+': '+result);return result }
 async function inventoryData() { return cmd('data get entity NativeOH equipment') }
@@ -65,11 +66,25 @@ async function setMain(id,count=1) {
 async function transferRoundTrip(id,count) {
   await setOffhand('air')
   await setMain(id,count)
+  if(id==='stone') {
+    await cmd('item replace entity NativeOH hotbar.0 with minecraft:stone[custom_name={text:"Movable named stone"}] '+count)
+    await until('named stone before UI',()=>state.inventory[0]?.extra?.nbt
+      && nbt.simplify(state.inventory[0].extra.nbt.nbt).display?.Name?.includes('Movable named stone'))
+  }
+  const original=state.inventory[0],ui=uiDefinition(id)
   state.opened=null
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
   await until('inventory open',()=>state.opened)
-  await pause(100)
+  await until('inventory definition '+id,()=>state.inventory[0]?.network_id===(ui || definition(id)).runtime_id)
   const from=state.inventory[0],forward=stackId++
+  assert.equal(from.stack_id,original.stack_id,id+' presentation must retain stack ID')
+  assert.equal(from.count,count)
+  if(id==='stone') assert.equal(nbt.simplify(from.extra.nbt.nbt).display.Name,
+    nbt.simplify(original.extra.nbt.nbt).display.Name,'Custom name survives UI presentation')
+  if(ui) {
+    assert.equal(ui.version,'data_driven',id+' movable UI definition')
+    assert.equal(nbt.simplify(ui.nbt).components.item_properties.allow_off_hand,1)
+  }
   client.queue('item_stack_request',{requests:[{request_id:forward,actions:[{type_id:'place',count,
     source:{slot_type:{container_id:'hotbar'},slot:0,stack_id:from.stack_id},
     destination:{slot_type:{container_id:'offhand'},slot:1,stack_id:0}
@@ -80,12 +95,12 @@ async function transferRoundTrip(id,count) {
   assert.equal(moved.count,count)
   const equipped=await inventoryData()
   assert(equipped.includes('minecraft:'+id) && equipped.includes('count: '+count),equipped)
-  const nativeBlocks=new Set(['lantern','soul_lantern','stone','stone_bricks','oak_planks','red_wool','glass','oak_fence','oak_stairs','chest','white_shulker_box','red_bed','red_banner','oak_sign','flower_pot'])
-  if(nativeBlocks.has(id)) {
-    assert.equal(definition(id).version,'legacy',id+' native item version')
+  if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
+  if(ui) {
+    assert.equal(definition(id).version,'none',id+' native item version')
     assert(!nbt.simplify(definition(id).nbt).components['minecraft:block_placer'],id+' native block renderer')
   }
-  const expectedPose=nativeBlocks.has(id) ? 0 : ({shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1)
+  const expectedPose=ui ? 0 : ({shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1)
   await expectPose(expectedPose,'inventory transfer '+id)
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
@@ -99,7 +114,12 @@ async function transferRoundTrip(id,count) {
   state.inventory[0]={...from,count,stack_id:returned.item_stack_id};state.offhand={network_id:0}
   assert((await cmd('execute if items entity NativeOH hotbar.0 minecraft:'+id)).includes('Test passed'))
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
-  await pause(150)
+  await until('native definition restored '+id,()=>state.inventory[0]?.network_id===original.network_id
+    && state.inventory[0]?.count===count && state.inventory[0]?.stack_id===returned.item_stack_id)
+  assert.equal(state.inventory[0].block_runtime_id,original.block_runtime_id,id+' native block state')
+  assert.equal(state.inventory[0].metadata,original.metadata,id+' native data value')
+  if(id==='stone') assert.equal(nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name,
+    nbt.simplify(original.extra.nbt.nbt).display.Name,'Custom name survives native restoration')
   await expectPose(0,'inventory return '+id)
   check('Native inventory offhand round trip: '+id,equipped)
 }
@@ -205,9 +225,9 @@ async function main() {
   assert.equal(definition('stone').name,'minecraft:stone')
   assert(!state.registry.some(i=>i.name==='nativeoffhand:stone'))
   assert(state.inventory[0].block_runtime_id>0,JSON.stringify(state.inventory[0]))
-  assert.equal(definition('stone').version,'legacy','Stone uses the legacy component loader')
+  assert.equal(definition('stone').version,'none','Stone retains its native item version')
   assert(!nbt.simplify(definition('stone').nbt).components['minecraft:block_placer'],'Native stone renderer must not be replaced with a data-driven block placer')
-  check('Stone uses ItemVersion.LEGACY without a custom block placer and retains original ID and block state')
+  check('Stone retains ItemVersion.NONE, original ID and block state outside the inventory')
 
   const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
   assert(stoneName.includes(locale.toLowerCase()==='ja_jp' ? '石' : 'Stone'),stoneName)
@@ -330,6 +350,53 @@ async function main() {
   assert((await cmd('execute if block -2 65 1 minecraft:stone')).includes('Test passed'))
   check('After eating, main-hand stone placement keeps priority over offhand food')
   for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['stone_bricks',16],['diamond_sword',1],['iron_axe',1],['apple',4],['bread',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
+  // Leave a transferred block in OFFHAND while closing, then place it and
+  // reopen the inventory. This exercises both representations of the same
+  // authoritative Java stack without relying on manually filled equipment.
+  for(const id of ['stone','oak_stairs']) {
+    await setOffhand('air')
+    await setMain(id,3)
+    const original=state.inventory[0],ui=uiDefinition(id)
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('block UI open '+id,()=>state.opened && state.inventory[0]?.network_id===ui.runtime_id)
+    const from=state.inventory[0],forward=stackId++
+    client.queue('item_stack_request',{requests:[{request_id:forward,actions:[{type_id:'place',count:3,
+      source:{slot_type:{container_id:'hotbar'},slot:0,stack_id:from.stack_id},
+      destination:{slot_type:{container_id:'offhand'},slot:1,stack_id:0}
+    }],custom_names:[],cause:'slash_command_chat'}]})
+    await until('block equipped '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===forward && r.status==='ok'))
+    const moved=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===forward).containers.find(c=>c.slot_type.container_id==='offhand').slots[0]
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('offhand native restoration '+id,()=>state.offhand.network_id===original.network_id && state.offhand.count===3)
+    assert.equal(state.offhand.stack_id,moved.item_stack_id,id+' close preserves offhand stack ID')
+    assert.equal(state.offhand.block_runtime_id,original.block_runtime_id)
+    assert.equal(state.offhand.metadata,original.metadata)
+    await expectPose(0,'native block after close '+id)
+    check('Closing inventory restores native OFFHAND block '+id+' with unchanged state and stack ID')
+    await setMain('diamond_sword')
+    await cmd('setblock 3 65 1 minecraft:air')
+    use('click_block',{x:3,y:64,z:1})
+    await until('transferred native block placed '+id,()=>state.offhand.count===2)
+    assert((await cmd('execute if block 3 65 1 minecraft:'+id)).includes('Test passed'))
+    check('Inventory-transferred OFFHAND '+id+' places once after native restoration')
+    const nativeHeld=state.offhand
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('offhand UI reopen '+id,()=>state.opened && state.offhand.network_id===ui.runtime_id && state.offhand.count===2)
+    assert.equal(state.offhand.stack_id,nativeHeld.stack_id)
+    const backward=stackId++
+    client.queue('item_stack_request',{requests:[{request_id:backward,actions:[{type_id:'place',count:2,
+      source:{slot_type:{container_id:'offhand'},slot:1,stack_id:state.offhand.stack_id},
+      destination:{slot_type:{container_id:'hotbar'},slot:1,stack_id:0}
+    }],custom_names:[],cause:'slash_command_chat'}]})
+    await until('reopened block returned '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===backward && r.status==='ok'))
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('returned native block '+id,()=>!state.offhand.network_id && state.inventory[1]?.network_id===original.network_id && state.inventory[1]?.count===2)
+    assert((await cmd('execute if items entity NativeOH hotbar.1 minecraft:'+id)).includes('Test passed'))
+    check('Reopening inventory restores movable '+id+' and returns remaining count')
+    await cmd('item replace entity NativeOH hotbar.1 with minecraft:air')
+  }
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
   fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and attachable rendering require a retail client test.']},null,2)+'\n')
 }

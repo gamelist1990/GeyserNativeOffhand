@@ -38,7 +38,7 @@ public final class NativeOffhandExtension implements Extension {
         try {
             int fallbacks = ItemCatalog.register(event);
             logger().info("Registered " + fallbacks + " automatic data-driven item fallbacks; retained native block mappings for "
-                + ItemCatalog.nativeBlockCount() + " Java items.");
+                + ItemCatalog.nativeBlockCount() + " Java items with inventory-only aliases.");
         }
         catch (Exception failure) { throw new IllegalStateException("Cannot register native offhand item catalog", failure); }
     }
@@ -67,9 +67,8 @@ public final class NativeOffhandExtension implements Extension {
     @Subscribe
     public void initialize(GeyserPostInitializeEvent event) {
         try {
-            // Trial legacy component loading for offhand permission on native
-            // blocks, retaining the identifier and state-aware mapping. Save
-            // and restore every original definition.
+            // Retain native item versions and state-aware block mappings.
+            // Save and restore every modified permission and definition.
             translationString = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
             translationString.setAccessible(true);
             itemVersion = SimpleItemDefinition.class.getDeclaredField("version");
@@ -86,12 +85,6 @@ public final class NativeOffhandExtension implements Extension {
                 names.keySet().forEach(name -> foodDefinitions.add("nativeoffhand:" + name));
             }
             for (var mappings : Registries.ITEMS.get().values()) {
-                var nativeBlockStackSizes = new java.util.HashMap<String, Integer>();
-                for (var mapping : mappings.getItems()) {
-                    if (mapping != null && ItemCatalog.usesNativeBlock(mapping.getJavaItem().javaKey().asString()))
-                        nativeBlockStackSizes.putIfAbsent(mapping.getBedrockDefinition().getIdentifier(),
-                            mapping.getJavaItem().defaultMaxStackSize());
-                }
                 for (var mapping : mappings.getItems()) {
                     if (mapping == null || (!ItemCatalog.isFallback(mapping.getJavaItem().javaKey().asString())
                             && !ItemCatalog.usesNativeBlock(mapping.getJavaItem().javaKey().asString()))
@@ -111,14 +104,6 @@ public final class NativeOffhandExtension implements Extension {
                     NbtMap components = root.getCompound("components");
                     var properties = components.getCompound("item_properties").toBuilder()
                         .putBoolean("allow_off_hand", true);
-                    String nativeBlock = ItemCatalog.nativeBlock(definition.getIdentifier());
-                    // NONE preserves the native renderer but the retail client
-                    // ignores its offhand permission. Test the legacy component
-                    // loader without injecting a data-driven block placer.
-                    if (nativeBlock != null) {
-                        itemVersion.set(definition, ItemVersion.LEGACY);
-                        properties.putInt("max_stack_size", nativeBlockStackSizes.getOrDefault(definition.getIdentifier(), 64));
-                    }
                     var patchedComponents = components.toBuilder().putCompound("item_properties", properties.build());
                     if (definition.getIdentifier().startsWith("nativeoffhand:")
                             && !foodDefinitions.contains(definition.getIdentifier())
@@ -167,6 +152,14 @@ public final class NativeOffhandExtension implements Extension {
             hookVisual(Registries.BEDROCK_PACKET_TRANSLATORS,
                 org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket.class, visualState);
             hookVisual(Registries.BEDROCK_PACKET_TRANSLATORS, InventoryTransactionPacket.class, visualState);
+            hookVisual(Registries.BEDROCK_PACKET_TRANSLATORS,
+                org.cloudburstmc.protocol.bedrock.packet.InteractPacket.class, visualState);
+            hookVisual(Registries.BEDROCK_PACKET_TRANSLATORS,
+                org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket.class, visualState);
+            hookVisual(Registries.JAVA_PACKET_TRANSLATORS,
+                org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.ClientboundContainerClosePacket.class, visualState);
+            hookVisual(Registries.JAVA_PACKET_TRANSLATORS,
+                org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.ClientboundOpenScreenPacket.class, visualState);
             logger().info("Enabled native offhand permission on " + originals.size()
                 + " item definitions; installed validated native Java hand routing.");
         } catch (Throwable failure) {
@@ -182,7 +175,13 @@ public final class NativeOffhandExtension implements Extension {
         if (delegate == null) throw new IllegalStateException("Missing inventory translator: " + packetType);
         PacketTranslator<P> wrapper = new PacketTranslator<>() {
             @Override public void translate(org.geysermc.geyser.session.GeyserSession session, P packet) {
-                delegate.translate(session, packet);
+                boolean hadPlayerInventory = InventoryBlockPresentation.playerInventoryOpen(session);
+                InventoryBlockPresentation.translate(session, () -> delegate.translate(session, packet));
+                if (hadPlayerInventory && !InventoryBlockPresentation.playerInventoryOpen(session)) {
+                    // Refresh all slots, including OFFHAND, using native
+                    // definitions after either a client or server close.
+                    session.getPlayerInventoryHolder().updateInventory();
+                }
                 visualState.update(session);
             }
             @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }

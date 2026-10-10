@@ -64,13 +64,21 @@ final class ItemCatalog {
                 .getState().getString("name") : null;
             if (block && !foods.contains(name) && !name.equals("torch") && !name.endsWith("_torch")
                     && !bedrockId.equals("minecraft:unknown")) {
-                // A custom fallback causes ItemTranslator to clear the vanilla
-                // block runtime definition. Retain the original identifier and
-                // state-aware block item mapping instead. Its native definition
-                // uses legacy component loading during post-init without an
-                // injected data-driven block renderer.
+                // The native NONE definition preserves the correct held block
+                // renderer, but Bedrock ignores its allow_off_hand property.
+                // Use a movable data-driven alias in the native inventory only.
+                // Closing the inventory resends the unchanged Java stack through
+                // the original state-aware mapping for normal held rendering.
                 NATIVE_BLOCK_ITEMS.add(javaId);
                 NATIVE_BLOCK_DEFINITIONS.putIfAbsent(bedrockId, placedBlock);
+                Identifier javaItem = Identifier.of(javaId);
+                var ui = new GeyserCustomItemDefinition.Builder(Identifier.of("nativeoffhand_ui", name), javaItem);
+                ui.priority(-1000000).predicate(context -> InventoryBlockPresentation.useUiDefinition())
+                    .displayName(readableName(name))
+                    .bedrockOptions(CustomItemBedrockOptions.builder().allowOffhand(true).displayHandheld(false));
+                ui.geyserComponent(GeyserItemDataComponents.BLOCK_PLACER,
+                    GeyserBlockPlacer.of(Identifier.of(placedBlock), true));
+                event.register(javaItem, ui.build());
                 continue;
             }
             Identifier javaItem = Identifier.of(javaId);

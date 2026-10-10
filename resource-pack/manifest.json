@@ -2,12 +2,12 @@
   "format_version": 2,
   "header": {
     "name": "Geyser Native Offhand",
-    "description": "Native Offhand 0.1.15 - legacy native block component trial",
+    "description": "Native offhand: inventory-only movable blocks, native held rendering",
     "uuid": "641ac933-aadc-4d81-9ed9-d787b47b5cb9",
     "version": [
       0,
       1,
-      15
+      16
     ],
     "min_engine_version": [
       1,
@@ -22,7 +22,7 @@
       "version": [
         0,
         1,
-        15
+        16
       ]
     }
   ]
