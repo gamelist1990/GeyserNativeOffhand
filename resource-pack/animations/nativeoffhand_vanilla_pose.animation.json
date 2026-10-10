@@ -28,6 +28,11 @@
             0.0,
             "q.get_default_bone_pivot('leftarm',1) - q.get_default_bone_pivot('leftitem',1) - 7.0",
             "-q.get_default_bone_pivot('leftitem',2)"
+          ],
+          "rotation": [
+            0,
+            "query.equipped_item_any_tag('slot.weapon.offhand', 'nativeoffhand:handheld_pose') ? 180.0 : 0.0",
+            0
           ]
         },
         "leftarm": {

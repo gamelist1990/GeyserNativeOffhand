@@ -154,6 +154,14 @@ async function main() {
     assert(!components['minecraft:render_offsets'],id)
   }
   check('Vanilla arm-pose correction excludes torches, food attachables and the native shield')
+  for(const entry of state.registry.filter(i=>i.name.startsWith('nativeoffhand:'))) {
+    const components=nbt.simplify(entry.nbt).components
+    assert.equal((components.item_tags || []).includes('nativeoffhand:handheld_pose'),!!components.item_properties.hand_equipped,entry.name)
+  }
+  for(const id of ['diamond_sword','iron_axe']) assert(nbt.simplify(definition(id).nbt).components.item_tags.includes('nativeoffhand:handheld_pose'),id)
+  for(const id of ['ender_pearl','stone','torch','apple','shield']) assert(!(nbt.simplify(definition(id).nbt).components.item_tags || []).includes('nativeoffhand:handheld_pose'),id)
+  check('Tool-facing correction selects handheld fallbacks and excludes ordinary items, blocks, torches, food and shield')
+
   await cmd('execute as @e[type=minecraft:ender_pearl] at @s on owner if entity @s[name=NativeOH] run kill @e[type=minecraft:ender_pearl,distance=..0.01,limit=1]')
   await cmd('clear NativeOH')
   await cmd('gamemode survival NativeOH')

@@ -133,6 +133,9 @@ public final class NativeOffhandExtension implements Extension {
                         var tags = new java.util.ArrayList<>(components.getList("item_tags", NbtType.STRING));
                         if (!tags.contains("nativeoffhand:vanilla_offhand_pose"))
                             tags.add("nativeoffhand:vanilla_offhand_pose");
+                        if (components.getCompound("item_properties").getBoolean("hand_equipped")
+                                && !tags.contains("nativeoffhand:handheld_pose"))
+                            tags.add("nativeoffhand:handheld_pose");
                         patchedComponents.putList("item_tags", NbtType.STRING, tags);
                     }
                     NbtMap patched = root.toBuilder()

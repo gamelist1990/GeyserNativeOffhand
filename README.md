@@ -2,7 +2,7 @@
 
 Bedrock の通常のインベントリで、松明・ランタン・ブロック・剣などをオフハンドへ移動できるようにする Geyser-Spigot 拡張です。Java サーバーへオフハンドの設置・使用を送ります。食事・飲用も Java 側で処理します。
 
-**v0.1.3-attachable.8 は、通常ブロックの元の ID と描画用ブロック状態を保ち、一人称の左手の食品位置も調整する検証版です。** 直前の実機確認ではエンダーパール・斧・松明の位置が改善していましたが、石が遠く離れ、りんごが画面下に切れていたため、別々の修正を入れています。新しい描画は実機確認待ちです。対応する Geyser の内部実装に依存します。
+**v0.1.3-attachable.9 は、一人称の左手の道具の向きを調整する検証版です。** Blockbench の Java バニラ左手プレビューを確認し、剣・斧などの handheld フォールバックだけにモデルの回転を追加します。通常ブロックと食品の修正は attachable.8 を保ちます。新しい Bedrock の表示は実機確認待ちです。対応する Geyser の内部実装に依存します。
 
 モーションを追加しない従来版は [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2) と `main` にあります。この試作は `attachable-consumption` ブランチで公開します。
 
@@ -60,9 +60,22 @@ Cooldown と同じ attachable の仕組みを参考にし、モデルとアニ�
 
 attachable.6 の旧式の `minecraft:render_offsets` による一律の座標補正は撤去済みです。検証サーバーは Geyser の内蔵パックも有効にしています。同じバニラアニメーションを別途置き換えるパック、特殊なブロックの描画、他のカスタムアイテムとの互換性には確認が必要です。
 
+## Blockbench での道具の向きの確認
+
+Ubuntu 上の独立した Chrome セッションで [Web Blockbench](https://web.blockbench.net/) 5.2.2 を、Remote Desktop Commander MCP と Chrome DevTools 経由で操作しました。Java 1.21.11 のバニラ `item/handheld` の display 定義と剣・斧のテクスチャを読み込み、First Person Left Hand スロットを実際に描画しました。基準の左手 display 値は回転 `[0, 90, -25]`、移動 `[1.13, 3.2, 1.13]`、スケール `[0.68, 0.68, 0.68]` です。
+
+| モデル | Blockbench の基準プレビュー | 操作画面 |
+| --- | --- | --- |
+| ダイヤの剣 | [左手の剣](docs/previews/sword-java-left-reference.png) | [回転・位置の設定](docs/previews/sword-blockbench-app.png) |
+| 鉄の斧 | [左手の斧](docs/previews/axe-java-left-reference.png) | [回転・位置の設定](docs/previews/axe-blockbench-app.png) |
+
+attachable.9 は既存の左腕の位置・回転を保ち、`leftitem` ボーンにローカル Y 軸の 180 度回転を条件付きで追加して、左手の道具の向きを切り替える方式を試します。対象は、本拡張の `hand_equipped` が有効なフォールバックへ付ける `nativeoffhand:handheld_pose` タグです。エンダーパール・松明・食品・元のブロック・盾・他の拡張のアイテムには付けません。右手・三人称・食品のモーションも変更しません。
+
+画像は **Java バニラモデルを Blockbench で描画した基準形** です。Bedrock のパケットで設定されるアイテム描画を再現した実機キャプチャではありません。Blockbench での基準モデル確認、対象を限定する送信タグの検証、Bedrock 実機での最終的な向きの確認を分けて記録します。Bedrock の新しい回転が意図した表示になるかは、実機確認中です。[プレビューの設定・出典](docs/previews/blockbench-reference.json)も公開しています。
+
 ## 検証状況
 
-実際の独立した Paper + Geyser サーバーと [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) を使った **43 項目が通過**しました。
+実際の独立した Paper + Geyser サーバーと [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) を使った **44 項目が通過**しました。
 
 - 通常のインベントリから松明をオフハンドへ移動。
 - 空の右手／右手の剣で、左手の松明を 1 個ずつ設置。
@@ -76,13 +89,14 @@ attachable.6 の旧式の `minecraft:render_offsets` による一律の座標補
 - 通常品のバニラ姿勢用タグが送られ、旧式の座標補正がなく、松明・食品・盾が対象外であること。
 - 石が元の `minecraft:stone` ID と非ゼロの block runtime state を保つこと。
 - 板材・色付き羊毛・ガラス・フェンス・階段・チェスト・シュルカーボックス・色付きベッド・色付き旗・看板・植木鉢のオフハンド往復移動。
+- 道具の向きの補正用タグが handheld フォールバックだけに送られ、エンパ・ブロック・松明・食品・盾を除外すること。
 - 範囲外の操作と不正な保持アイテム定義を拒否。
 
 実機では、プレイヤーが松明のインベントリからの移動・設置、りんごの消費、全アイテム対応版でのオフハンドへの移動を確認しています。表示名と盾の ID は v0.1.1 で修正しました。従来の v0.1.2 は食事・飲用のカスタムモーションを削除した版です。このブランチで attachable 方式を再検証しています。40 個の attachable の ID と JSON も確認していますが、パケットテストは実機の描画を検証しません。attachable.5 の一人称の食品表示と食事モーションについて、実機で「いい感じ」との確認を受けました。attachable.7 の実機画像ではエンダーパールと斧が左下へ移り、松明も正常でしたが、石は左上に離れたままで、りんごも画面下に切れていました。attachable.8 は石などの描画用ブロック状態を保つ方式へ変更し、食品の待機位置を上・左へ調整する版です。新しい修正の実機描画は確認待ちです。
 
 特殊なアイテムの表示・翻訳名・attachable、他のカスタムアイテム拡張やリソースパックとの同時使用も網羅していません。フォールバックの優先度は低くしていますが、個別の互換性確認が必要です。
 
-[サーバー側の検証結果](tests/results/2026-10-10-attachable.8.json) / [補正版の確認結果](tests/results/2026-10-10-block-regression-before.json) / [再実行手順](tests/bedrock/README.md)
+[サーバー側の検証結果](tests/results/2026-10-10-attachable.9.json) / [補正版の確認結果](tests/results/2026-10-10-block-regression-before.json) / [再実行手順](tests/bedrock/README.md)
 
 ## ビルド
 
@@ -95,7 +109,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.1.3-attachable.8.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
+出力は `build/GeyserNativeOffhand-0.1.3-attachable.9.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
 
 ## ライセンスと出典
 
