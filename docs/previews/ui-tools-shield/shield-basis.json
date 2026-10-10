@@ -1,0 +1,43 @@
+{
+  "source": "https://github.com/Mojang/bedrock-samples/tree/main/resource_pack",
+  "referenceSha256": {
+    "shield.animation_controllers.json": "a67157620dda7f0f2aba947f3bd2f93bf94f461817eeaf51b2e6bfb993f57df6",
+    "shield.animation.json": "3676aeb4b67f446e1f5f6a2b530391e57a60e73ebb194d4701fbf49219f8f4c4",
+    "shield.render_controllers.json": "7ab6d8cdd359a31aa2b2af47a3372fe779259910c418ac109a26dca84c42d1bb",
+    "shield.entity.json": "3454d5c5361aff33bd19cfff636821e5c136fd363180d718172a0413c99fec19",
+    "shield.geo.json": "34de0c36a9cd7ab737d988ae2554a5b394ac6c502f1c0d4948827c1cd4bf21dc"
+  },
+  "vanillaFirstPersonAnimationSha256": "be55737455e163a4983d2315b46df3d6815d9365363c295776251287a70b664e",
+  "shieldOffhandPosition": [
+    -13.5,
+    -5.8,
+    5.1
+  ],
+  "shieldOffhandRotation": [
+    1,
+    176,
+    -2.5
+  ],
+  "shieldBonePivot": [
+    1.0,
+    15.5,
+    3.0
+  ],
+  "shieldPanelCenter": [
+    1.0,
+    28.0,
+    -0.5
+  ],
+  "lift": 2,
+  "candidateOffhandPosition": [
+    -13.5,
+    -3.8,
+    5.1
+  ],
+  "candidateRotation": [
+    1,
+    176,
+    -2.5
+  ],
+  "scope": "Offhand first-person tool geometry only. Main-hand and third-person bases are retained. Native shield is unchanged. Static model preview is not a retail rendering test."
+}

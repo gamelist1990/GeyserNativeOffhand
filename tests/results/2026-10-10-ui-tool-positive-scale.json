@@ -702,8 +702,9 @@
     "geyserSha256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
   },
   "retailClient": {
-    "status": "pending",
-    "source": "PEXkurann reconnect check requested",
-    "limitation": "68 packet/server checks and equivalent Blockbench vertices do not certify retail inventory background rendering."
+    "status": "not_confirmed",
+    "source": "PEXkurann screenshot and shield-coordinate proposal after the RP 0.2.8 reconnect request",
+    "report": "Inventory background has no visible left-hand axe. User proposes using vanilla shield coordinates and raising the item.",
+    "limitation": "RP version is not visible in the screenshot. No successful retail rendering result was reported. Earlier previews used an invented mirrored left-arm pose."
   }
 }

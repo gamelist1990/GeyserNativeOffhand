@@ -70,27 +70,27 @@
           "name": "nativeoffhand_tool",
           "binding": "q.item_slot_to_bone_name(c.item_slot)",
           "pivot": [
-            0,
-            0,
-            0
+            1,
+            15.5,
+            3
           ],
           "texture_meshes": [
             {
               "texture": "default",
               "local_pivot": [
-                9,
+                8,
                 0,
-                6
+                8
               ],
               "position": [
-                -2.01,
-                -0.5,
-                -1
+                1,
+                28,
+                -0.5
               ],
               "rotation": [
+                -90,
                 0,
-                -135,
-                90
+                0
               ],
               "use_pixel_depth": true,
               "scale": [

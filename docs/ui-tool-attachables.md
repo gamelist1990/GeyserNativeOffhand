@@ -46,3 +46,16 @@ Blockbench に読み込んだ斧・剣の一人称・三人称、4 つの左手�
 - [正の倍率の剣・三人称](previews/ui-tools-positive/diamond_sword-third-paired.png)
 - [実モデルの SHA-256](previews/ui-tools-positive/verification.json) / [頂点の比較結果](previews/ui-tools-positive/equivalence.json)
 - [サーバー試験と実機の記録](../tests/results/2026-10-10-ui-tool-positive-scale.json)
+
+## 0.2.9: 盾の左手座標を基準にする
+
+0.2.8 の確認を依頼した後、ユーザーはインベントリ背景の左手が見えない画像を提示し、盾の座標に加算して少し持ち上げる方法を提案しました。画像には RP の番号が写っていません。負の倍率を外しただけで修正できたという報告はありません。
+
+公式の [盾の attachable](https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/attachables/shield.entity.json) は、一人称の左右で別の保持座標を使います。左手の位置は `[-13.5, -5.8, 5.1]`、回転は `[1, 176, -2.5]` です。0.2.9-rewrite.10 / RP 0.2.9 の左手・一人称はこの位置に Y +2 を加え、`[-13.5, -3.8, 5.1]` へ置きます。[盾の geometry](https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/models/entity/shield.geo.json) の支点と板の中心に合わせて 16×16 のアイテム画像を配置します。nativeoffhand_ui の道具 35 種類が対象で、元の盾は変更しません。右手と三人称は前の値を維持します。
+
+以前の Blockbench プレビューは左腕を右腕の鏡像として置いており、バニラの一人称の左右別の姿勢を再現できていませんでした。公式の [player_firstperson.animation.json](https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/animations/player_firstperson.animation.json) の stationary empty_hand を確認し、新しいプレビューでは右腕だけにその変形を使い、左腕に鏡像の変形を作りません。スロット binding はプレビュー用の複製へ再現するため、これも実機描画の合格結果ではありません。静止中・arm height 1 のモデル確認であり、歩行・持ち替え時の腕の高さやクライアントの画面表示は実機で判定します。
+
+- [斧・一人称](previews/ui-tools-shield/iron_axe-first-paired.png) / [剣・一人称](previews/ui-tools-shield/diamond_sword-first-paired.png)
+- [斧・三人称](previews/ui-tools-shield/iron_axe-third-paired.png) / [剣・三人称](previews/ui-tools-shield/diamond_sword-third-paired.png)
+- [実モデルの SHA-256](previews/ui-tools-shield/verification.json) / [盾の基準値と出典の SHA-256](previews/ui-tools-shield/shield-basis.json)
+- [検証記録](../tests/results/2026-10-10-ui-tool-shield-basis.json)
