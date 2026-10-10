@@ -1,0 +1,362 @@
+{
+  "application": "Blockbench",
+  "version": "5.2.2",
+  "format": "bedrock",
+  "resourcePackVersion": [
+    0,
+    2,
+    7
+  ],
+  "scope": "Actual pack texture meshes and transforms, previewed on vanilla player item pivots. Slot binding and its 24-unit origin are simulated in the preview clone; Blockbench does not execute the Bedrock inventory or certify retail screen position.",
+  "samples": {
+    "iron_axe_first": {
+      "format": "bedrock",
+      "meshes": 2,
+      "bones": [
+        {
+          "name": "tool_right",
+          "position": [
+            5.5,
+            -3,
+            -3
+          ],
+          "matrix": [
+            0.9949935413060214,
+            -0.0005023710258068026,
+            -0.09993798268254052,
+            0,
+            -0.0936820204754252,
+            -0.3529662974803928,
+            -0.9309341930999341,
+            0,
+            -0.0348070653595699,
+            0.9356359016553052,
+            -0.3512462494244161,
+            0,
+            -12.455698165446213,
+            23.135136470048593,
+            14.571223019747464,
+            1
+          ],
+          "determinant": 1.0000000000000007
+        },
+        {
+          "name": "tool_left",
+          "position": [
+            -5.5,
+            -3,
+            -3
+          ],
+          "matrix": [
+            0.9949935413060214,
+            0.0005023710258068026,
+            0.09993798268254052,
+            0,
+            0.0936820204754252,
+            -0.3529662974803928,
+            -0.9309341930999341,
+            0,
+            0.0348070653595699,
+            0.9356359016553052,
+            -0.3512462494244161,
+            0,
+            12.455698165446213,
+            23.135136470048593,
+            14.571223019747464,
+            1
+          ],
+          "determinant": 1.0000000000000007
+        }
+      ],
+      "resolvedPackTransforms": {
+        "right": {
+          "position": [
+            -5.5,
+            21,
+            -3
+          ],
+          "rotation": [
+            38,
+            -120,
+            -63
+          ]
+        },
+        "left": {
+          "position": [
+            5.5,
+            21,
+            -3
+          ],
+          "rotation": [
+            38,
+            120,
+            63
+          ]
+        }
+      }
+    },
+    "iron_axe_third": {
+      "format": "bedrock",
+      "meshes": 2,
+      "bones": [
+        {
+          "name": "tool_right",
+          "position": [
+            -0.5,
+            -2.5,
+            1
+          ],
+          "matrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            5.5,
+            12.5,
+            2,
+            1
+          ],
+          "determinant": 1
+        },
+        {
+          "name": "tool_left",
+          "position": [
+            0.5,
+            -2.5,
+            1
+          ],
+          "matrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -5.5,
+            12.5,
+            2,
+            1
+          ],
+          "determinant": 1
+        }
+      ],
+      "resolvedPackTransforms": {
+        "right": {
+          "position": [
+            0.5,
+            21.5,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "left": {
+          "position": [
+            -0.5,
+            21.5,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "diamond_sword_first": {
+      "format": "bedrock",
+      "meshes": 2,
+      "bones": [
+        {
+          "name": "tool_right",
+          "position": [
+            5.5,
+            -3,
+            -3
+          ],
+          "matrix": [
+            0.9949935413060214,
+            -0.0005023710258068026,
+            -0.09993798268254052,
+            0,
+            -0.0936820204754252,
+            -0.3529662974803928,
+            -0.9309341930999341,
+            0,
+            -0.0348070653595699,
+            0.9356359016553052,
+            -0.3512462494244161,
+            0,
+            -12.455698165446213,
+            23.135136470048593,
+            14.571223019747464,
+            1
+          ],
+          "determinant": 1.0000000000000007
+        },
+        {
+          "name": "tool_left",
+          "position": [
+            -5.5,
+            -3,
+            -3
+          ],
+          "matrix": [
+            0.9949935413060214,
+            0.0005023710258068026,
+            0.09993798268254052,
+            0,
+            0.0936820204754252,
+            -0.3529662974803928,
+            -0.9309341930999341,
+            0,
+            0.0348070653595699,
+            0.9356359016553052,
+            -0.3512462494244161,
+            0,
+            12.455698165446213,
+            23.135136470048593,
+            14.571223019747464,
+            1
+          ],
+          "determinant": 1.0000000000000007
+        }
+      ],
+      "resolvedPackTransforms": {
+        "right": {
+          "position": [
+            -5.5,
+            21,
+            -3
+          ],
+          "rotation": [
+            38,
+            -120,
+            -63
+          ]
+        },
+        "left": {
+          "position": [
+            5.5,
+            21,
+            -3
+          ],
+          "rotation": [
+            38,
+            120,
+            63
+          ]
+        }
+      }
+    },
+    "diamond_sword_third": {
+      "format": "bedrock",
+      "meshes": 2,
+      "bones": [
+        {
+          "name": "tool_right",
+          "position": [
+            -0.5,
+            -2.5,
+            1
+          ],
+          "matrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            5.5,
+            12.5,
+            2,
+            1
+          ],
+          "determinant": 1
+        },
+        {
+          "name": "tool_left",
+          "position": [
+            0.5,
+            -2.5,
+            1
+          ],
+          "matrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -5.5,
+            12.5,
+            2,
+            1
+          ],
+          "determinant": 1
+        }
+      ],
+      "resolvedPackTransforms": {
+        "right": {
+          "position": [
+            0.5,
+            21.5,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "left": {
+          "position": [
+            -0.5,
+            21.5,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    }
+  },
+  "sourceSha256": {
+    "models/entity/nativeoffhand_ui_tool.geo.json": "c6eac7d72d3fecdbdf2aeaf8c452f0f97db03fda2d594a938f722dbdc527c675",
+    "animations/nativeoffhand_ui_tool.animation.json": "2567c2910a568aab9803655b14364aa32d8b204839dbf52e7bc0e212aa69f26a",
+    "render_controllers/nativeoffhand_ui_tool.render_controllers.json": "a28b1c3ec81a114c37bdbcdc9349277096b9dcb748c0839d9b80a65751885e4f"
+  }
+}

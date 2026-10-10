@@ -29,7 +29,6 @@ final class NativeInventoryView {
             if (old == null) SCOPE.remove(); else SCOPE.set(old);
         }
         if (wasOpen && !open(session)) restoreNativeView(session);
-        else if (open(session)) refreshNativeEquipment(session);
     }
 
     private static boolean aliased(GeyserItemStack stack) {
@@ -52,27 +51,6 @@ final class NativeInventoryView {
         packet.setInventorySlot(slot);
         packet.setHotbarSlot(container == ContainerId.OFFHAND ? -1 : slot);
         session.sendUpstreamPacket(packet);
-    }
-
-    /** Equipment is an entity presentation, not a movable UI stack. */
-    private static void refreshNativeEquipment(GeyserSession session) {
-        var old = SCOPE.get();
-        SCOPE.remove();
-        try {
-            var inventory = session.getPlayerInventory();
-            int hotbar = inventory.getHeldItemSlot();
-            // Translate outside the UI alias scope, as Geyser does for living
-            // entity equipment. Do not associate the render-only item with the
-            // UI stack's network identity.
-            var main = inventory.getItemInHand().getItemData(session).toBuilder()
-                .usingNetId(false).netId(0).build();
-            var off = inventory.getOffhand().getItemData(session).toBuilder()
-                .usingNetId(false).netId(0).build();
-            equip(session, main, ContainerId.INVENTORY, hotbar);
-            equip(session, off, ContainerId.OFFHAND, 0);
-        } finally {
-            if (old != null) SCOPE.set(old);
-        }
     }
 
     static void restoreNativeView(GeyserSession session) {

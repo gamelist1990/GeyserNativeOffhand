@@ -1,0 +1,209 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.nativeoffhand.ui_tool.first_right",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "nativeoffhand_tool",
+          "binding": "q.item_slot_to_bone_name(c.item_slot)",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "texture_meshes": [
+            {
+              "texture": "default",
+              "local_pivot": [
+                9,
+                0,
+                6
+              ],
+              "position": [
+                2.01,
+                -0.5,
+                -1
+              ],
+              "rotation": [
+                0,
+                -135,
+                90
+              ],
+              "use_pixel_depth": true,
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": {
+        "identifier": "geometry.nativeoffhand.ui_tool.first_left",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "nativeoffhand_tool",
+          "binding": "q.item_slot_to_bone_name(c.item_slot)",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "texture_meshes": [
+            {
+              "texture": "default",
+              "local_pivot": [
+                -9,
+                0,
+                6
+              ],
+              "position": [
+                -2.01,
+                -0.5,
+                -1
+              ],
+              "rotation": [
+                0,
+                135,
+                -90
+              ],
+              "use_pixel_depth": true,
+              "scale": [
+                -1,
+                -1,
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": {
+        "identifier": "geometry.nativeoffhand.ui_tool.third_right",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "nativeoffhand_tool",
+          "binding": "q.item_slot_to_bone_name(c.item_slot)",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "texture_meshes": [
+            {
+              "texture": "default",
+              "local_pivot": [
+                6,
+                0,
+                7
+              ],
+              "position": [
+                -1,
+                -1,
+                -9
+              ],
+              "rotation": [
+                0,
+                30,
+                -90
+              ],
+              "use_pixel_depth": true,
+              "scale": [
+                1,
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": {
+        "identifier": "geometry.nativeoffhand.ui_tool.third_left",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "nativeoffhand_tool",
+          "binding": "q.item_slot_to_bone_name(c.item_slot)",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "texture_meshes": [
+            {
+              "texture": "default",
+              "local_pivot": [
+                -6,
+                0,
+                7
+              ],
+              "position": [
+                1,
+                -1,
+                -9
+              ],
+              "rotation": [
+                0,
+                -30,
+                90
+              ],
+              "use_pixel_depth": true,
+              "scale": [
+                -1,
+                -1,
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

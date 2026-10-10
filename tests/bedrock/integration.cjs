@@ -65,15 +65,10 @@ async function transferRoundTrip(id,count) {
       && nbt.simplify(state.inventory[0].extra.nbt.nbt).display?.Name?.includes('Movable named stone'))
   }
   const original=state.inventory[0],ui=uiDefinition(id)
-  const equipmentStart=state.equipment.length
   state.opened=null
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
   await until('inventory open',()=>state.opened)
   await until('inventory definition '+id,()=>state.inventory[0]?.network_id===(ui || definition(id)).runtime_id)
-  const mainEquipment=()=>state.equipment.slice(equipmentStart).find(p=>(p.window_id===0||p.window_id==='inventory') && p.item.network_id===original.network_id && p.item.count===count)
-  await until('native MAIN equipment while inventory is open '+id,mainEquipment)
-  assert.equal(mainEquipment().item.block_runtime_id,original.block_runtime_id,id+' MAIN equipment preserves native block state')
-  assert.equal(mainEquipment().item.metadata,original.metadata,id+' MAIN equipment preserves native data value')
   const from=state.inventory[0],forward=stackId++
   assert.equal(from.stack_id,original.stack_id,id+' presentation must retain stack ID')
   assert.equal(from.count,count)
@@ -96,10 +91,6 @@ async function transferRoundTrip(id,count) {
     equipped=await cmd('data get entity NativeOH equipment.offhand')
     return equipped.includes('minecraft:'+id) && equipped.includes('count: '+count)
   })
-  const offEquipment=()=>state.equipment.slice(equipmentStart).find(p=>(p.window_id===119||p.window_id==='offhand') && p.item.network_id===original.network_id && p.item.count===count)
-  await until('native OFFHAND equipment while inventory is open '+id,offEquipment)
-  assert.equal(offEquipment().item.block_runtime_id,original.block_runtime_id,id+' OFFHAND equipment preserves native block state')
-  assert.equal(offEquipment().item.metadata,original.metadata,id+' OFFHAND equipment preserves native data value')
   if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
   if(id==='stone' || id==='iron_axe') await checkHud(original,count,'HUD keeps native '+id+' texture while the inventory uses a move alias')
   if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
@@ -504,8 +495,6 @@ async function main() {
   assert((await cmd('execute if block -2 65 1 minecraft:stone')).includes('Test passed'))
   check('After eating, main-hand stone placement keeps priority over offhand food')
   for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['stone_bricks',16],['diamond_sword',1],['iron_axe',1],['apple',4],['bread',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
-  check('Native MAIN equipment remains separate from movable inventory aliases for 23 item types')
-  check('Native OFFHAND equipment remains separate from movable inventory aliases for 23 item types')
   // Leave a transferred block in OFFHAND while closing, then place it and
   // reopen the inventory. This exercises both representations of the same
   // authoritative Java stack without relying on manually filled equipment.
