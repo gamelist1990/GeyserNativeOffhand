@@ -83,4 +83,4 @@ attachable 試作の実機確認では、一人称で右手に剣・左手にり
 
 attachable.8 では、石が元の minecraft:stone ID と非ゼロの描画用 block runtime ID を保つことを追加で確認します。板材・色付き羊毛・ガラス・フェンス・階段・チェスト・シュルカーボックス・色付きベッド・色付き旗・看板・植木鉢も、通常のインベントリ要求でオフハンドとの往復移動を検証します。スタック上限の異なる種類を含めます。
 
-attachable.9 の道具の向きは、hand_equipped が有効なフォールバックだけに専用タグが送られることを確認します。Blockbench の Java バニラ参考プレビューは docs/previews にあります。Bedrock の leftitem 回転は実機で、右手の表示を保ったまま左手の剣と斧が意図した向きになるか確認してください。
+attachable.10 の道具の向きは、hand_equipped が有効なフォールバックだけに専用タグが送られることを確認します。変更した Bedrock のボーン補正を読み込んだ Blockbench の結果は docs/previews/bedrock にあります。Blockbench の代用形状とパケット検査は、Bedrock 本体の内蔵アイテム描画を検証しません。実機で、右手の表示を保ったまま左手の剣と斧の刃が外側へ向くか確認してください。
