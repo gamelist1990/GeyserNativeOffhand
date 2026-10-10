@@ -59,3 +59,9 @@ Blockbench に読み込んだ斧・剣の一人称・三人称、4 つの左手�
 - [斧・三人称](previews/ui-tools-shield/iron_axe-third-paired.png) / [剣・三人称](previews/ui-tools-shield/diamond_sword-third-paired.png)
 - [実モデルの SHA-256](previews/ui-tools-shield/verification.json) / [盾の基準値と出典の SHA-256](previews/ui-tools-shield/shield-basis.json)
 - [検証記録](../tests/results/2026-10-10-ui-tool-shield-basis.json)
+
+## 0.2.9 の実機報告と次の切り分け
+
+0.2.9 の再接続確認を依頼した後、ユーザーから「見えん」との報告を受けました。提示画像では、インベントリ内の斧のアイコンと右手の剣は表示されますが、背景の左手の斧はありません。盾の座標を使ったカスタムメッシュの修正は、実機で成功したとは判定できません。画像にはパックの番号がありません。
+
+検証鯖専用の診断版 0.2.10 は、鉄の斧の UI 別名だけを、バニラの盾の geometry・texture・animation controller・render controller へ差し替えます。独自メッシュを使わない比較です。識別用の静的な `NOH 0.2.10 D` 表示と新しいパック UUID を使い、パック適用とモデル描画を分けて確認します。インベントリを閉じると元の斧へ戻り、スロットのアイコンと Java 側の種類・機能は斧のままです。これは一時的な診断であり、修正済みの公開版ではありません。

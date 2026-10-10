@@ -721,8 +721,15 @@
     "geyserSha256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
   },
   "retailClient": {
-    "status": "pending",
-    "source": "PEXkurann RP 0.2.9 reconnect check requested",
-    "limitation": "Headless checks and static Blockbench previews do not execute retail inventory background rendering or arm-height transitions."
+    "status": "failed_reported",
+    "source": "PEXkurann: 見えん, with inventory screenshot after the RP 0.2.9 reconnect request",
+    "observed": "The iron-axe slot icon is present but the left-hand axe is absent from the inventory background. The main-hand sword remains visible.",
+    "expectedResourcePackVersion": [
+      0,
+      2,
+      9
+    ],
+    "appliedResourcePackVersionVerified": false,
+    "limitation": "The screenshot does not expose a pack version. Headless checks and Blockbench previews do not execute retail inventory background rendering or arm-height transitions."
   }
 }
