@@ -11,7 +11,7 @@ const locale = process.env.TEST_LOCALE || "ja_JP"
 const propertySchemas = []
 const propertyPackets = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
-const state = { inventory: [], offhand: { network_id: 0 }, responses: [], equipment: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
+const state = { inventory: [], offhand: { network_id: 0 }, cursor: { network_id: 0 }, responses: [], equipment: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
 async function until(label, predicate, timeout=15000) {
   const end=Date.now()+timeout
@@ -109,6 +109,105 @@ async function transferRoundTrip(id,count) {
     nbt.simplify(original.extra.nbt.nbt).display.Name,'Custom name survives native restoration')
   check('Native inventory offhand round trip: '+id,equipped)
 }
+function inventorySlot(container,slot) {
+  if(container==='offhand')return state.offhand
+  if(container==='cursor')return state.cursor
+  return state.inventory[slot] || {network_id:0}
+}
+function updateInventorySlot(container,slot,item) {
+  if(container==='offhand')state.offhand=item
+  else if(container==='cursor')state.cursor=item
+  else state.inventory[slot]=item
+}
+function requestSlot(container,slot) {
+  return {slot_type:{container_id:container},slot,stack_id:inventorySlot(container,slot).stack_id || 0}
+}
+async function nativeAction(type,count,sourceContainer,sourceSlot,destContainer,destSlot) {
+  const source={...inventorySlot(sourceContainer,sourceSlot)},dest={...inventorySlot(destContainer,destSlot)}
+  const action={type_id:type,source:requestSlot(sourceContainer,sourceSlot),destination:requestSlot(destContainer,destSlot)}
+  if(type!=='swap')action.count=count
+  const id=stackId++
+  client.queue('item_stack_request',{requests:[{request_id:id,actions:[action],custom_names:[],cause:'slash_command_chat'}]})
+  await until('native '+type+' response',()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===id))
+  const response=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===id)
+  assert.equal(response.status,'ok',JSON.stringify(response))
+  if(type==='swap') {
+    updateInventorySlot(sourceContainer,sourceSlot,dest)
+    updateInventorySlot(destContainer,destSlot,source)
+  } else {
+    updateInventorySlot(sourceContainer,sourceSlot,source.count>count ? {...source,count:source.count-count} : {network_id:0})
+    updateInventorySlot(destContainer,destSlot,{...(dest.network_id ? dest : source),count:(dest.count || 0)+count})
+  }
+  for(const container of response.containers) {
+    for(const slot of container.slots) {
+      const name=container.slot_type.container_id
+      const old=inventorySlot(name,slot.slot)
+      updateInventorySlot(name,slot.slot,slot.count ? {...old,count:slot.count,stack_id:slot.item_stack_id} : {network_id:0})
+    }
+  }
+  return response
+}
+async function checkJavaCount(javaPath,count) {
+  const actual=await cmd('data get entity NativeOH '+javaPath)
+  assert(new RegExp('(?:^|[: ])'+count+'(?:$|\\D)').test(actual),actual)
+}
+async function nativeInventoryOperations() {
+  await cmd('clear NativeOH')
+  await setMain('diamond_sword')
+  await cmd('item replace entity NativeOH inventory.0 with minecraft:stone 16')
+  await cmd('item replace entity NativeOH inventory.1 with minecraft:apple 4')
+  await cmd('item replace entity NativeOH inventory.2 with minecraft:diamond_sword[damage=17,custom_name={text:"Named blade"},enchantments={"minecraft:sharpness":3}] 1')
+  await until('ordinary inventory setup',()=>state.inventory[9]?.count===16 && state.inventory[10]?.count===4 && state.inventory[11]?.count===1)
+  const blade={...state.inventory[11]}
+  state.opened=null
+  client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+  await until('ordinary inventory aliases',()=>state.opened
+    && state.inventory[9]?.network_id===(uiDefinition('stone') || definition('stone')).runtime_id
+    && state.inventory[11]?.network_id===(uiDefinition('diamond_sword') || definition('diamond_sword')).runtime_id)
+  await nativeAction('place',6,'inventory',9,'offhand',1)
+  await checkJavaCount('equipment.offhand.count',6)
+  await checkJavaCount('Inventory[{Slot:9b}].count',10)
+  check('Ordinary inventory slots directly place part of a stack into OFFHAND')
+  await nativeAction('place',4,'inventory',9,'offhand',1)
+  await checkJavaCount('equipment.offhand.count',10)
+  await checkJavaCount('Inventory[{Slot:9b}].count',6)
+  check('Ordinary inventory merges a matching stack into occupied OFFHAND without duplication')
+  await nativeAction('take',3,'offhand',1,'cursor',0)
+  assert.equal(state.cursor.count,3)
+  await nativeAction('place',3,'cursor',0,'inventory',9)
+  assert(!state.cursor.network_id)
+  await checkJavaCount('equipment.offhand.count',7)
+  await checkJavaCount('Inventory[{Slot:9b}].count',9)
+  check('Native cursor splits OFFHAND and returns items to an ordinary inventory slot')
+  await nativeAction('swap',0,'inventory',10,'offhand',1)
+  assert.equal(state.offhand.network_id,(uiDefinition('apple') || definition('apple')).runtime_id)
+  await checkJavaCount('equipment.offhand.count',4)
+  await checkJavaCount('Inventory[{Slot:10b}].count',7)
+  assert((await cmd('execute if items entity NativeOH weapon.offhand minecraft:apple')).includes('Test passed'))
+  check('Native inventory swaps food with a block already held in OFFHAND')
+  await nativeAction('swap',0,'inventory',11,'offhand',1)
+  assert((await cmd('execute if items entity NativeOH weapon.offhand minecraft:diamond_sword[damage=17,enchantments={"minecraft:sharpness":3}]')).includes('Test passed'))
+  assert(nbt.simplify(state.offhand.extra.nbt.nbt).display.Name.includes('Named blade'))
+  client.queue('container_close',{window_id:state.opened.window_id,server:false})
+  await until('native named blade restoration',()=>state.offhand.network_id===blade.network_id && state.offhand.count===1)
+  assert.equal(state.offhand.metadata,blade.metadata)
+  assert.deepEqual(nbt.simplify(state.offhand.extra.nbt.nbt),nbt.simplify(blade.extra.nbt.nbt))
+  check('OFFHAND inventory swap preserves sword damage, enchantment and custom name after closing')
+  state.opened=null
+  client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+  await until('reopen named offhand item',()=>state.opened && state.offhand.network_id===(uiDefinition('diamond_sword') || definition('diamond_sword')).runtime_id)
+  await nativeAction('take',1,'offhand',1,'cursor',0)
+  await nativeAction('place',1,'cursor',0,'inventory',12)
+  client.queue('container_close',{window_id:state.opened.window_id,server:false})
+  await until('named blade returned to ordinary inventory',()=>!state.offhand.network_id && state.inventory[12]?.network_id===blade.network_id)
+  assert.deepEqual(nbt.simplify(state.inventory[12].extra.nbt.nbt),nbt.simplify(blade.extra.nbt.nbt))
+  await checkJavaCount('Inventory[{Slot:9b}].count',9)
+  await checkJavaCount('Inventory[{Slot:10b}].count',7)
+  await checkJavaCount('Inventory[{Slot:11b}].count',4)
+  assert((await cmd('execute if items entity NativeOH inventory.3 minecraft:diamond_sword[damage=17,enchantments={"minecraft:sharpness":3}]')).includes('Test passed'))
+  check('Reopening native inventory returns OFFHAND through cursor and preserves all remaining items')
+}
+
 function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0},runtime=0) {
   client.queue('inventory_transaction',{transaction:{legacy:{legacy_request_id:0},transaction_type:'item_use',actions:[],transaction_data:{
     action_type:action,trigger_type:'player_input',block_position:block,face:1,hotbar_slot:0,
@@ -134,6 +233,7 @@ async function main() {
     debug('DEBUG_SLOT',p.window_id,p.slot,JSON.stringify(p.item))
     if(p.window_id===0||p.window_id==='inventory')state.inventory[p.slot]=p.item
     if(p.window_id===119||p.window_id==='offhand')state.offhand=p.item
+    if((p.window_id===124||p.window_id==='ui') && p.slot===0)state.cursor=p.item
   })
   client.on('item_stack_response',p=>{state.responses.push(p);debug('DEBUG_STACK',JSON.stringify(p))})
   client.on('update_block',p=>state.blocks.push(p))
@@ -356,6 +456,7 @@ async function main() {
     check('Reopening inventory restores movable '+id+' and returns remaining count')
     await cmd('item replace entity NativeOH hotbar.1 with minecraft:air')
   }
+  await nativeInventoryOperations()
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
   fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and attachable rendering require a retail client test.']},null,2)+'\n')
 }
