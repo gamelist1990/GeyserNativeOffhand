@@ -19,8 +19,8 @@
         },
         "nativeoffhand_left_food": {
           "position": [
-            "context.is_first_person ? -13.5 : -1.6",
-            "context.is_first_person ? 0.2 : 9.0",
+            "context.is_first_person ? -17.0 : -1.6",
+            "context.is_first_person ? 2.2 : 9.0",
             "context.is_first_person ? 5.1 : 9.3"
           ],
           "rotation": [

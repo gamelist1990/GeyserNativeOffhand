@@ -40,7 +40,9 @@ async function connectRcon() {
   await send(3,settings.rconPassword)
   return {command:cmd=>send(2,cmd),close:()=>socket.end()}
 }
-const definition = id => state.registry.find(i=>i.name==='nativeoffhand:'+id) || state.registry.find(i=>i.name==='minecraft:'+id)
+// Native colored beds and banners share their identifier; damage/NBT carries color.
+const definition = id => state.registry.find(i=>i.name==='nativeoffhand:'+id)
+  || state.registry.find(i=>i.name==='minecraft:'+(id.endsWith('_bed') ? 'bed' : id.endsWith('_banner') ? 'banner' : id))
 const check = (label,evidence) => { checks.push({label,evidence});console.log('PASS',label,evidence||'') }
 async function cmd(command) { const result=await rcon.command(command);if(/Unknown|Incorrect|No entity was found|No player was found/.test(result))throw Error(command+': '+result);return result }
 async function inventoryData() { return cmd('data get entity NativeOH equipment') }
@@ -140,7 +142,7 @@ async function main() {
     assert.equal(data.components.item_properties.allow_off_hand,1,item.name)
   }
   check('All transmitted non-air definitions permit offhand',state.registry.filter(i=>i.runtime_id!==0).length)
-  for(const id of ['stone','ender_pearl','diamond_sword']) {
+  for(const id of ['ender_pearl','diamond_sword']) {
     const components=nbt.simplify(definition(id).nbt).components
     assert(components.item_tags.includes('nativeoffhand:vanilla_offhand_pose'),id)
     assert(!components['minecraft:render_offsets'],id)
@@ -169,6 +171,12 @@ async function main() {
   assert(state.registry.some(i=>i.name==='minecraft:shield'))
   check('Shield keeps its vanilla identifier for native rendering')
   await setMain('stone',2)
+  assert.equal(definition('stone').name,'minecraft:stone')
+  assert(!state.registry.some(i=>i.name==='nativeoffhand:stone'))
+  assert(state.inventory[0].block_runtime_id>0,JSON.stringify(state.inventory[0]))
+  assert.equal(nbt.simplify(definition('stone').nbt).components['minecraft:block_placer'].block,'minecraft:stone')
+  check('Stone retains its original native item identifier and nonzero block-runtime rendering state')
+
   const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
   assert(stoneName.includes(locale.toLowerCase()==='ja_jp' ? '石' : 'Stone'),stoneName)
   assert(!stoneName.includes('tile.stone'),stoneName)
@@ -289,7 +297,7 @@ async function main() {
   assert.equal(state.offhand.count,1)
   assert((await cmd('execute if block -2 65 1 minecraft:stone')).includes('Test passed'))
   check('After eating, main-hand stone placement keeps priority over offhand food')
-  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1]]) await transferRoundTrip(id,count)
+  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
   fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and attachable rendering require a retail client test.']},null,2)+'\n')
 }

@@ -5,6 +5,7 @@ import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryTransactionPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
 import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomItemsEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
@@ -17,8 +18,9 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 public final class NativeOffhandExtension implements Extension {
-    private record Original(boolean componentBased, NbtMap data) {}
+    private record Original(ItemVersion version, boolean componentBased, NbtMap data) {}
     private final Map<ItemDefinition, Original> originals = new IdentityHashMap<>();
+    private Field itemVersion;
     private Field componentBased;
     private Field componentData;
     private Field translationString;
@@ -31,7 +33,11 @@ public final class NativeOffhandExtension implements Extension {
 
     @Subscribe
     public void defineItems(GeyserDefineCustomItemsEvent event) {
-        try { logger().info("Registered " + ItemCatalog.register(event) + " automatic data-driven item fallbacks."); }
+        try {
+            int fallbacks = ItemCatalog.register(event);
+            logger().info("Registered " + fallbacks + " automatic data-driven item fallbacks; retained native block mappings for "
+                + ItemCatalog.nativeBlockCount() + " Java items.");
+        }
         catch (Exception failure) { throw new IllegalStateException("Cannot register native offhand item catalog", failure); }
     }
 
@@ -57,11 +63,13 @@ public final class NativeOffhandExtension implements Extension {
     @Subscribe
     public void initialize(GeyserPostInitializeEvent event) {
         try {
-            // The allow_off_hand property is also used by Geyser's vanilla cake,
-            // armor stand and firework overrides. Preserve identifier, runtime ID,
-            // item version, native components, textures and Java mapping.
+            // Enable offhand like Geyser's native item overrides. Blocks retain
+            // their identifiers and state-aware mappings; only their version
+            // becomes data-driven. Save and restore all original definitions.
             translationString = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
             translationString.setAccessible(true);
+            itemVersion = SimpleItemDefinition.class.getDeclaredField("version");
+            itemVersion.setAccessible(true);
             componentBased = SimpleItemDefinition.class.getDeclaredField("componentBased");
             componentData = SimpleItemDefinition.class.getDeclaredField("componentData");
             componentBased.setAccessible(true);
@@ -74,8 +82,15 @@ public final class NativeOffhandExtension implements Extension {
                 names.keySet().forEach(name -> foodDefinitions.add("nativeoffhand:" + name));
             }
             for (var mappings : Registries.ITEMS.get().values()) {
+                var nativeBlockStackSizes = new java.util.HashMap<String, Integer>();
                 for (var mapping : mappings.getItems()) {
-                    if (mapping == null || !ItemCatalog.isFallback(mapping.getJavaItem().javaKey().asString())
+                    if (mapping != null && ItemCatalog.usesNativeBlock(mapping.getJavaItem().javaKey().asString()))
+                        nativeBlockStackSizes.putIfAbsent(mapping.getBedrockDefinition().getIdentifier(),
+                            mapping.getJavaItem().defaultMaxStackSize());
+                }
+                for (var mapping : mappings.getItems()) {
+                    if (mapping == null || (!ItemCatalog.isFallback(mapping.getJavaItem().javaKey().asString())
+                            && !ItemCatalog.usesNativeBlock(mapping.getJavaItem().javaKey().asString()))
                             || originalTranslations.containsKey(mapping)) continue;
                     originalTranslations.put(mapping, mapping.getTranslationString());
                     // Use Geyser's per-session Java locale, preserving custom names,
@@ -87,12 +102,25 @@ public final class NativeOffhandExtension implements Extension {
                     if (!(definition instanceof SimpleItemDefinition))
                         throw new IllegalStateException("Unsupported item definition: " + definition.getClass());
                     NbtMap old = definition.getComponentData();
-                    originals.put(definition, new Original(definition.isComponentBased(), old));
+                    originals.put(definition, new Original(definition.getVersion(), definition.isComponentBased(), old));
                     NbtMap root = old == null ? NbtMap.EMPTY : old;
                     NbtMap components = root.getCompound("components");
-                    NbtMap properties = components.getCompound("item_properties").toBuilder()
-                        .putBoolean("allow_off_hand", true).build();
-                    var patchedComponents = components.toBuilder().putCompound("item_properties", properties);
+                    var properties = components.getCompound("item_properties").toBuilder()
+                        .putBoolean("allow_off_hand", true);
+                    String nativeBlock = ItemCatalog.nativeBlock(definition.getIdentifier());
+                    if (nativeBlock != null) {
+                        // Use the original item ID and Geyser block runtime state.
+                        // DATA_DRIVEN is required for the native inventory to honor
+                        // allow_off_hand; the block icon is still the vanilla block.
+                        itemVersion.set(definition, ItemVersion.DATA_DRIVEN);
+                        properties.putInt("max_stack_size", nativeBlockStackSizes.getOrDefault(definition.getIdentifier(), 64));
+                    }
+                    var patchedComponents = components.toBuilder().putCompound("item_properties", properties.build());
+                    if (nativeBlock != null) {
+                        patchedComponents.putCompound("minecraft:block_placer", components.getCompound("minecraft:block_placer")
+                            .toBuilder().putString("block", nativeBlock).putBoolean("canUseBlockAsIcon", true)
+                            .putList("use_on", NbtType.COMPOUND, java.util.List.of()).build());
+                    }
                     if (definition.getIdentifier().startsWith("nativeoffhand:")
                             && !foodDefinitions.contains(definition.getIdentifier())
                             && !definition.getIdentifier().endsWith(":torch")
@@ -145,6 +173,7 @@ public final class NativeOffhandExtension implements Extension {
             Registries.BEDROCK_PACKET_TRANSLATORS.register(InventoryTransactionPacket.class, previous);
         originals.forEach((definition, old) -> {
             try {
+                itemVersion.set(definition, old.version());
                 componentBased.setBoolean(definition, old.componentBased());
                 componentData.set(definition, old.data());
             } catch (IllegalAccessException e) {

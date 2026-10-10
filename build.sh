@@ -9,6 +9,7 @@ find src/main/java -name '*.java' > build/sources.txt
 javac --release 25 -cp "$GEYSER_JAR:${EXTRA_CP:-}" -d build/classes @build/sources.txt
 cp -a src/main/resources/. build/classes/
 cp LICENSE build/classes/LICENSE
+cp THIRD_PARTY_NOTICES.md build/classes/THIRD_PARTY_NOTICES.md
 python3 - <<'PYZIP'
 from pathlib import Path
 import zipfile
@@ -16,5 +17,5 @@ with zipfile.ZipFile('build/classes/GeyserNativeOffhand.mcpack','w',zipfile.ZIP_
     for path in sorted(Path('resource-pack').rglob('*')):
         if path.is_file():pack.write(path,str(path.relative_to('resource-pack')))
 PYZIP
-jar --create --file build/GeyserNativeOffhand-0.1.3-attachable.7.jar -C build/classes .
-echo "Built build/GeyserNativeOffhand-0.1.3-attachable.7.jar"
+jar --create --file build/GeyserNativeOffhand-0.1.3-attachable.8.jar -C build/classes .
+echo "Built build/GeyserNativeOffhand-0.1.3-attachable.8.jar"
