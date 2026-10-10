@@ -1,0 +1,140 @@
+{
+  "namespace": "doublehands_hud",
+
+  "offhand_slot_content": {
+    "type": "panel",
+    "size": [ "100%", "100%" ],
+    "controls": [
+      {
+        "background": {
+          "type": "image",
+          "texture": "textures/ui/offhand_slot",
+          "size": [ "100%", "100%" ],
+          "layer": 1
+        }
+      },
+      {
+        "item_image": {
+          "type": "image",
+          "layer": 2,
+          "size": [ 16, 16 ],
+          "anchor_from": "center",
+          "anchor_to": "center",
+          "offset": [ 0, 0 ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#texture"
+            }
+          ]
+        }
+      },
+      {
+        "item_count": {
+          "type": "label",
+          "layer": 4,
+          "anchor_from": "bottom_right",
+          "anchor_to": "bottom_right",
+          "offset": [ -1, 0 ],
+          "color": [ 1, 1, 1 ],
+          "shadow": true,
+          "localize": false,
+          "text": "#count_text",
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_subtitle_text_string",
+              "binding_name_override": "#count_text"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(not (#count_text = ''))",
+              "target_property_name": "#visible"
+            }
+          ]
+        }
+      }
+    ]
+  },
+
+  "offhand_slot_panel": {
+    "type": "panel",
+    "layer": 100,
+    "size": [ "100%", "100%" ],
+    "controls": [
+      {
+        "slot_classic": {
+          "type": "panel",
+          "size": [ 22, 22 ],
+          "anchor_from": "bottom_middle",
+          "anchor_to": "bottom_middle",
+          "offset": [ -110, -1.5 ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#slot_tex"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_left_visible",
+              "binding_name_override": "#elipses_left"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_right_visible",
+              "binding_name_override": "#elipses_right"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((not (#elipses_left or #elipses_right)) and not (#slot_tex = '') and not (#slot_tex = 'empty') and not (#slot_tex = 'textures/ui/empty'))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "content@doublehands_hud.offhand_slot_content": {}
+            }
+          ]
+        }
+      },
+      {
+        "slot_touch": {
+          "type": "panel",
+          "size": [ 22, 22 ],
+          "anchor_from": "bottom_middle",
+          "anchor_to": "bottom_middle",
+          "offset": [ -128, -1.5 ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#slot_tex"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_left_visible",
+              "binding_name_override": "#elipses_left"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_right_visible",
+              "binding_name_override": "#elipses_right"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((#elipses_left or #elipses_right) and not (#slot_tex = '') and not (#slot_tex = 'empty') and not (#slot_tex = 'textures/ui/empty'))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "content@doublehands_hud.offhand_slot_content": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

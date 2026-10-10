@@ -12,7 +12,6 @@ import org.geysermc.geyser.translator.protocol.PacketTranslator;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.*;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.title.*;
-import java.util.function.BiConsumer;
 import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket;
 import java.lang.reflect.Field;
 import java.nio.file.*;
@@ -81,10 +80,10 @@ public final class NativeOffhandExtension implements Extension {
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, InventoryTransactionPacket.class, true);
             hookInventoryLatency();
             hookMetadata();
-            hookHud(ClientboundSetTitleTextPacket.class, hud::beforeTitle);
-            hookHud(ClientboundSetSubtitleTextPacket.class, hud::subtitle);
-            hookHud(ClientboundSetTitlesAnimationPacket.class, hud::times);
-            hookHud(ClientboundClearTitlesPacket.class, hud::clearTitles);
+            hookHud(ClientboundSetTitleTextPacket.class);
+            hookHud(ClientboundSetSubtitleTextPacket.class);
+            hookHud(ClientboundSetTitlesAnimationPacket.class);
+            hookHud(ClientboundClearTitlesPacket.class);
             logger().info("Native renderer rewrite enabled; no player pose, attachable or animation overrides.");
         } catch (Throwable error) {
             restoreAll();
@@ -139,15 +138,13 @@ public final class NativeOffhandExtension implements Extension {
             Registries.BEDROCK_PACKET_TRANSLATORS.register(type, delegate); });
     }
 
-    private <P extends org.geysermc.mcprotocollib.network.packet.Packet> void hookHud(Class<P> type, BiConsumer<GeyserSession, P> before) {
+    private <P extends org.geysermc.mcprotocollib.network.packet.Packet> void hookHud(Class<P> type) {
         @SuppressWarnings("unchecked")
         var delegate = (PacketTranslator<P>) Registries.JAVA_PACKET_TRANSLATORS.get(type);
         if (delegate == null) throw new IllegalStateException("Missing title translator: " + type);
         PacketTranslator<P> wrapper = new PacketTranslator<>() {
             @Override public void translate(GeyserSession session, P packet) {
-                before.accept(session, packet);
-                delegate.translate(session, packet);
-                hud.update(session);
+                hud.refresh(session);
             }
             @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
         };

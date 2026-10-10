@@ -2,24 +2,29 @@ package org.pexserver.nativeoffhand;
 
 import org.cloudburstmc.protocol.bedrock.packet.SetTitlePacket;
 import org.geysermc.geyser.session.GeyserSession;
-import org.geysermc.geyser.translator.text.MessageTranslator;
-import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.title.*;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import java.util.concurrent.*;
 
-/** DoubleHands-style HUD transport; actual inventory stacks are never changed. */
+/** Uses the unmodified DoubleHands image-path/count HUD protocol. */
 final class NativeOffhandHud {
-    static final String ITEM_PREFIX = "nativeoffhandhud:item:";
-    static final String COUNT_PREFIX = "nativeoffhandhud:count:";
-    private final ConcurrentMap<GeyserSession, State> states = new ConcurrentHashMap<>();
+    private static final String EMPTY = "textures/ui/empty";
+    private static final Properties TEXTURES = new Properties();
+    static {
+        try (var stream = NativeOffhandHud.class.getResourceAsStream("/offhand-hud-textures.properties")) {
+            if (stream == null) throw new IllegalStateException("Missing DoubleHands HUD texture map");
+            TEXTURES.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        } catch (Exception error) { throw new ExceptionInInitializerError(error); }
+    }
 
-    private record Snapshot(int itemAux, int count) {}
+    private record Snapshot(String texture, int count) {}
     private static final class State {
         Snapshot last;
-        int fadeIn = 10, stay = 70, fadeOut = 20;
-        long blockedUntil;
-        String subtitle = "";
+        long lastSent;
         ScheduledFuture<?> poll;
     }
+    private final ConcurrentMap<GeyserSession, State> states = new ConcurrentHashMap<>();
 
     void start(GeyserSession session) {
         session.executeInEventLoop(() -> {
@@ -36,66 +41,43 @@ final class NativeOffhandHud {
 
     void update(GeyserSession session) {
         var state = states.get(session);
-        if (state == null || !session.isSpawned() || session.isClosed()
-                || System.nanoTime() < state.blockedUntil) return;
+        if (state == null || !session.isSpawned() || session.isClosed()) return;
         var stack = session.getPlayerInventory().getOffhand();
         Snapshot snapshot;
-        if (stack.isEmpty()) snapshot = new Snapshot(0, 0);
+        if (stack.isEmpty()) snapshot = new Snapshot(EMPTY, 0);
         else {
-            // Outside NativeInventoryView's translation scope, this selects the
-            // actual held definition, not our temporary inventory-move alias.
-            var item = stack.getItemData(session);
-            int aux = (item.getDefinition().getRuntimeId() << 16) | (item.getDamage() & 0xffff);
-            snapshot = new Snapshot(aux, stack.getAmount());
+            // Resolve outside the inventory-move translation scope. The map is
+            // keyed by vanilla Bedrock item names, just as DoubleHands is.
+            String identifier = stack.getItemData(session).getDefinition().getIdentifier();
+            String name = identifier.startsWith("minecraft:") ? identifier.substring(10) : identifier;
+            String javaName = stack.asItem().javaKey().value();
+            String texture = TEXTURES.getProperty(name,
+                TEXTURES.getProperty(javaName, "textures/items/" + name));
+            snapshot = new Snapshot(texture, stack.getAmount());
         }
-        if (snapshot.equals(state.last)) return;
+        long now = System.nanoTime();
+        // Original UI binds live title values rather than keeping local memory.
+        // Refresh before the two-second title expires, even if nothing changed.
+        if (snapshot.equals(state.last) && now - state.lastSent < TimeUnit.SECONDS.toNanos(1)) return;
         state.last = snapshot;
+        state.lastSent = now;
         var times = packet(SetTitlePacket.Type.TIMES, "");
         times.setFadeInTime(0);
-        times.setStayTime(20);
+        times.setStayTime(40);
         times.setFadeOutTime(0);
         session.sendUpstreamPacket(times);
-        // The next real server title must regain its own fade/stay timings.
         session.getWorldCache().markTitleTimesAsIncorrect();
-        session.sendUpstreamPacket(packet(SetTitlePacket.Type.SUBTITLE, COUNT_PREFIX + snapshot.count()));
-        session.sendUpstreamPacket(packet(SetTitlePacket.Type.TITLE, ITEM_PREFIX + snapshot.itemAux()));
+        session.sendUpstreamPacket(packet(SetTitlePacket.Type.SUBTITLE,
+            snapshot.count() > 1 ? Integer.toString(snapshot.count()) : ""));
+        session.sendUpstreamPacket(packet(SetTitlePacket.Type.TITLE, snapshot.texture()));
     }
 
-    void beforeTitle(GeyserSession session, ClientboundSetTitleTextPacket packet) {
+    // The copied UI hides normal titles. Reserve their data channels for the
+    // offhand icon/count so server titles cannot become invalid image paths.
+    // Actionbar packets continue through Geyser's original translator.
+    void refresh(GeyserSession session) {
         var state = states.get(session);
-        if (state == null) return;
-        long ticks = (long) state.fadeIn + state.stay + state.fadeOut;
-        long millis = Math.max(0, (long) (ticks * session.getMillisecondsPerTick()));
-        state.blockedUntil = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(millis + 100);
-        // Do not let our count payload become the subtitle of a server title.
-        session.sendUpstreamPacket(packet(SetTitlePacket.Type.SUBTITLE, state.subtitle));
-    }
-
-    void subtitle(GeyserSession session, ClientboundSetSubtitleTextPacket packet) {
-        var state = states.get(session);
-        if (state == null) return;
-        state.subtitle = packet.getText() == null ? " " : MessageTranslator.convertMessage(packet.getText(), session.locale());
-        // Subtitle commonly arrives immediately before its title. Keep HUD
-        // updates out of that gap, even when inventory packets are interleaved.
-        state.blockedUntil = Math.max(state.blockedUntil,
-            System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(500));
-    }
-
-    void times(GeyserSession session, ClientboundSetTitlesAnimationPacket packet) {
-        var state = states.get(session);
-        if (state == null) return;
-        if (packet.getFadeIn() >= 0) state.fadeIn = packet.getFadeIn();
-        if (packet.getStay() >= 0) state.stay = packet.getStay();
-        if (packet.getFadeOut() >= 0) state.fadeOut = packet.getFadeOut();
-    }
-
-    void clearTitles(GeyserSession session, ClientboundClearTitlesPacket packet) {
-        var state = states.get(session);
-        if (state == null) return;
-        state.subtitle = "";
-        state.blockedUntil = 0;
-        state.last = null;
-        if (packet.isResetTimes()) { state.fadeIn = 10; state.stay = 70; state.fadeOut = 20; }
+        if (state != null) { state.last = null; update(session); }
     }
 
     private static SetTitlePacket packet(SetTitlePacket.Type type, String text) {

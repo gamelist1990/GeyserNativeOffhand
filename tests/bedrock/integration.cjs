@@ -91,7 +91,7 @@ async function transferRoundTrip(id,count) {
     return equipped.includes('minecraft:'+id) && equipped.includes('count: '+count)
   })
   if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
-  if(id==='stone' || id==='iron_axe') await checkHud(original,count,'HUD keeps native '+id+' ID while the inventory uses a move alias')
+  if(id==='stone' || id==='iron_axe') await checkHud(original,count,'HUD keeps native '+id+' texture while the inventory uses a move alias')
   if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
@@ -223,49 +223,48 @@ function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0}
     block_runtime_id:runtime,client_prediction:'failure'
   }}})
 }
-const hudItemPrefix='nativeoffhandhud:item:'
-const hudCountPrefix='nativeoffhandhud:count:'
 const plainTitle = packet => packet?.text?.replace(/§./g,'')
-const latestHud = prefix => state.titles.findLast(p=>p.text?.startsWith(prefix))?.text.slice(prefix.length)
+const latestHud = type => state.titles.findLast(p=>p.type===type)?.text
+const hudTextures = Object.fromEntries(fs.readFileSync(path.resolve(__dirname,
+  '../../src/main/resources/offhand-hud-textures.properties'),'utf8').trim().split('\n').map(line=>line.split('=')))
 async function checkHud(item,count,label) {
-  const aux=item.network_id ? (item.network_id<<16) | ((item.metadata||0)&65535) : 0
-  await until('offhand HUD '+label,()=>latestHud(hudItemPrefix)===String(aux) && latestHud(hudCountPrefix)===String(count))
-  check(label,{itemAux:aux,count})
+  const name=state.registry.find(d=>d.runtime_id===item.network_id)?.name?.replace(/^minecraft:/,'')
+  const texture=item.network_id ? (hudTextures[name] || 'textures/items/'+name) : 'textures/ui/empty'
+  const countText=count>1 ? String(count) : ''
+  await until('offhand HUD '+label,()=>latestHud('set_title')===texture && latestHud('set_subtitle')===countText)
+  assert(fs.existsSync(path.resolve(__dirname,'../../resource-pack',texture+'.png')),'HUD texture must be bundled: '+texture)
+  check(label,{texture,countText})
 }
 async function hudOperations() {
   await cmd('title NativeOH reset')
   await setOffhand('stone',64)
-  await checkHud(state.offhand,64,'HUD publishes native block renderer ID and stack count')
+  await checkHud(state.offhand,64,'Original DoubleHands HUD receives block texture and stack count')
   await setOffhand('bread',7)
-  await checkHud(state.offhand,7,'HUD replaces the icon when OFFHAND changes from a block to food')
+  await checkHud(state.offhand,7,'Original DoubleHands HUD replaces the block icon with food')
   await setOffhand('bread',1)
-  await checkHud(state.offhand,1,'HUD publishes count one for hiding the extra count label')
+  await checkHud(state.offhand,1,'One item sends empty subtitle to hide the count')
   await setOffhand('air')
-  await checkHud(state.offhand,0,'Empty OFFHAND publishes zero so the HUD slot hides')
+  await checkHud(state.offhand,0,'Empty OFFHAND sends the original empty texture to hide the slot')
   await setOffhand('iron_axe',1)
-  await checkHud(state.offhand,1,'HUD uses the native tool ID without changing the equipped item')
+  await checkHud(state.offhand,1,'Original DoubleHands tool icon leaves native equipment unchanged')
   const still=state.titles.length
-  await pause(600)
-  assert.equal(state.titles.slice(still).filter(p=>p.text?.startsWith('nativeoffhandhud:')).length,0)
-  check('Unchanged OFFHAND does not repeatedly overwrite title or subtitle')
+  await pause(1500)
+  assert(state.titles.slice(still).some(p=>p.type==='set_title' && p.text==='textures/items/iso_renders/iron_axe'))
+  check('Unchanged HUD data refreshes before the original live title binding expires')
 
+  const noticeStart=state.titles.length
   await cmd('title NativeOH times 4 12 4')
-  await cmd('title NativeOH subtitle {"text":"HUD subtitle preserved"}')
-  await cmd('title NativeOH title {"text":"HUD test title"}')
-  await until('ordinary title',()=>state.titles.some(p=>plainTitle(p)==='HUD test title'))
-  const titleIndex=state.titles.findLastIndex(p=>plainTitle(p)==='HUD test title'),real=state.titles[titleIndex]
-  const previousTimes=state.titles.slice(0,titleIndex).findLast(p=>p.type==='set_durations')
-  assert(previousTimes,'Server title times are forwarded')
-  assert.equal(previousTimes.fade_in_time,4);assert.equal(previousTimes.stay_time,12);assert.equal(previousTimes.fade_out_time,4)
-  assert.equal(plainTitle(state.titles.slice(0,titleIndex).findLast(p=>p.type==='set_subtitle')),'HUD subtitle preserved')
+  await cmd('title NativeOH subtitle {"text":"Reserved subtitle test"}')
+  await cmd('title NativeOH title {"text":"Reserved title test"}')
   await setOffhand('stone',3)
   await cmd('title NativeOH actionbar {"text":"HUD actionbar preserved"}')
-  await until('ordinary actionbar',()=>state.titles.some(p=>plainTitle(p)==='HUD actionbar preserved'))
-  await pause(500)
-  assert(!state.titles.slice(titleIndex+1).some(p=>p.text?.startsWith('nativeoffhandhud:') && p.received-real.received<900),'HUD must not replace an active server title')
-  check('Server title/subtitle/timings and actionbar remain intact while OFFHAND changes')
-  await checkHud(state.offhand,3,'Deferred HUD update resumes after the real server title ends')
+  await until('ordinary actionbar',()=>state.titles.slice(noticeStart).some(p=>plainTitle(p)==='HUD actionbar preserved'))
+  await pause(300)
+  assert(!state.titles.slice(noticeStart).some(p=>plainTitle(p)==='Reserved title test' || plainTitle(p)==='Reserved subtitle test'),
+    'The original DoubleHands title channels are reserved for HUD data')
+  check('Server title/subtitle cannot replace the copied HUD data; actionbar is preserved')
   await cmd('title NativeOH reset')
+  await checkHud(state.offhand,3,'Server title reset refreshes rather than clearing the copied HUD slot')
 }
 
 async function main() {

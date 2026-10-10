@@ -1,0 +1,51 @@
+{
+  "namespace": "hud",
+  "root_panel": {
+    "modifications": [
+      {
+        "array_name": "controls",
+        "operation": "insert_back",
+        "value": [
+          {
+            "offhand_slot@doublehands_hud.offhand_slot_panel": {}
+          }
+        ]
+      }
+    ]
+  },
+  "hud_title_text": {
+    "type": "stack_panel",
+    "orientation": "vertical",
+    "size": [ 0, 0 ],
+    "visible": false,
+    "controls": []
+  },
+  "anim_title_text_alpha_in": {
+    "anim_type": "alpha",
+    "from": 0,
+    "to": 0,
+    "duration": 0.001,
+    "next": "@hud.anim_title_text_alpha_stay"
+  },
+  "anim_title_background_alpha_in": {
+    "anim_type": "alpha",
+    "from": 0,
+    "to": 0,
+    "duration": 0.001,
+    "next": "@hud.anim_title_background_alpha_stay"
+  },
+  "anim_subtitle_text_alpha_in": {
+    "anim_type": "alpha",
+    "from": 0,
+    "to": 0,
+    "duration": 0.001,
+    "next": "@hud.anim_subtitle_text_alpha_stay"
+  },
+  "anim_subtitle_background_alpha_in": {
+    "anim_type": "alpha",
+    "from": 0,
+    "to": 0,
+    "duration": 0.001,
+    "next": "@hud.anim_subtitle_background_alpha_stay"
+  }
+}

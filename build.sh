@@ -16,5 +16,5 @@ with zipfile.ZipFile('build/classes/GeyserNativeOffhand.mcpack','w',zipfile.ZIP_
     for path in sorted(Path('resource-pack').rglob('*')):
         if path.is_file():pack.write(path,str(path.relative_to('resource-pack')))
 PYZIP
-jar --create --file build/GeyserNativeOffhand-0.2.3-rewrite.4.jar -C build/classes .
-echo "Built build/GeyserNativeOffhand-0.2.3-rewrite.4.jar"
+jar --create --file build/GeyserNativeOffhand-0.2.4-rewrite.5.jar -C build/classes .
+echo "Built build/GeyserNativeOffhand-0.2.4-rewrite.5.jar"

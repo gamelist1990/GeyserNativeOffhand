@@ -310,8 +310,8 @@
     "geyserJarSha256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
   },
   "retailFeedback": {
-    "offhandHudRendering": "pending",
-    "touchHudPosition": "pending",
+    "offhandHudRendering": "failed: user screenshot shows the hotbar, health and hunger HUD missing with RP 0.2.3",
+    "touchHudPosition": "not verified because the ordinary HUD disappeared",
     "inventoryDrag": "pending for current candidate",
     "heldPositionAndOrientation": "pending for current candidate",
     "smallOffhandBlockRendering": "Bedrock limitation accepted by user"
