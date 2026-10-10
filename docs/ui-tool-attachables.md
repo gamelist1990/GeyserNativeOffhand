@@ -33,3 +33,16 @@ Blockbench Web 5.2.2 の Bedrock 形式に、パックに含める texture mesh 
 独立した Paper + Geyser にパックを同梱した JAR を配置します。自動試験はオフハンドへの移動・分割・交換・設置・食品の消費・HUD を確認します。装備パケット補正専用だった 2 項目を除いた 68 項目です。別に 35 個の attachable の名前・モデル参照・binding・左右の支点を確認し、元の DoubleHands HUD 1,679 ファイルを入力と照合します。
 
 実機では RP 0.2.7 へ再接続し、右手に剣・左手に斧を持ってインベントリを開閉します。左手の向き・大きさと、出し入れを確認します。閉じた通常画面の松明・ブロック・食品の表示も確認してください。実機の合否は [結果 JSON](../tests/results/2026-10-10-ui-tool-attachables.json) に別に記録します。
+
+## 0.2.8 の比較候補
+
+0.2.7 の実機では、インベントリを開いた時に背景の左手の斧が消える／ずれるとの報告を受けました。0.2.8-rewrite.9 / RP 0.2.8 は、左手の texture mesh の倍率を全て正の 1 にします。回転と支点を対応する値へ変え、左右別の binding とアニメーションは維持します。負の倍率が実機での症状の原因かは未確定です。
+
+Blockbench に読み込んだ斧・剣の一人称・三人称、4 つの左手メッシュで変更前後のワールド座標を比較しました。最大差は約 7.2×10⁻¹⁵ 単位で、Blockbench 上では同じ形です。これは Bedrock 本体のメッシュ生成を実行した結果ではありません。実機で改善するかを比較するための候補です。
+
+- [正の倍率の斧・一人称](previews/ui-tools-positive/iron_axe-first-paired.png)
+- [正の倍率の斧・三人称](previews/ui-tools-positive/iron_axe-third-paired.png)
+- [正の倍率の剣・一人称](previews/ui-tools-positive/diamond_sword-first-paired.png)
+- [正の倍率の剣・三人称](previews/ui-tools-positive/diamond_sword-third-paired.png)
+- [実モデルの SHA-256](previews/ui-tools-positive/verification.json) / [頂点の比較結果](previews/ui-tools-positive/equivalence.json)
+- [サーバー試験と実機の記録](../tests/results/2026-10-10-ui-tool-positive-scale.json)

@@ -672,7 +672,7 @@
   "retailClient": {
     "status": "failed",
     "source": "PEXkurann user feedback",
-    "report": "表示が消える／位置や大きさがおかしい",
-    "limitation": "Affected render context and exact symptom are being clarified. Blockbench previews did not certify retail screen rendering."
+    "report": "インベントリを開いた時、背景の左手の斧が消える／ずれる",
+    "limitation": "Exact displacement and whether disappearance or displacement predominates were not separately reported. Blockbench previews did not certify retail screen rendering."
   }
 }

@@ -1,0 +1,27 @@
+{
+  "application": "Blockbench",
+  "version": "5.2.2",
+  "scope": "World-space vertex equivalence in Blockbench only; Bedrock mesh extrusion is not executed.",
+  "samples": [
+    {
+      "name": "UI tool actual texture mesh - iron_axe - first",
+      "vertices": 240,
+      "maxPositionDifference": 3.552713678800501e-15
+    },
+    {
+      "name": "UI tool actual texture mesh - iron_axe - third",
+      "vertices": 240,
+      "maxPositionDifference": 1.7763568394002505e-15
+    },
+    {
+      "name": "UI tool actual texture mesh - diamond_sword - first",
+      "vertices": 328,
+      "maxPositionDifference": 7.105427357601002e-15
+    },
+    {
+      "name": "UI tool actual texture mesh - diamond_sword - third",
+      "vertices": 328,
+      "maxPositionDifference": 1.7763568394002505e-15
+    }
+  ]
+}

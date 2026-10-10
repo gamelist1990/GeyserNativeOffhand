@@ -18,14 +18,12 @@ for perspective in ['first', 'third']:
         local_pivot = [9, 0, 6] if first else [6, 0, 7]
         if off:
             position[0] *= -1
-            local_pivot[0] *= -1
-            rotation[1] *= -1
-            rotation[2] *= -1
         mesh = {'texture': 'default', 'local_pivot': local_pivot,
                 'position': position, 'rotation': rotation, 'use_pixel_depth': True,
-                # Texture meshes occupy X/Z with Y as extrusion depth. Reflect
-                # texture X and depth Y together, keeping determinant positive.
-                'scale': [-1, -1, 1] if off else [1, 1, 1]}
+                # Use only positive voxel scales. The mirrored bone rotation
+                # and mesh position produce the left-hand view without making
+                # the voxel extrusion consume negative dimensions.
+                'scale': [1, 1, 1]}
         models.append({'description': {'identifier': 'geometry.nativeoffhand.ui_tool.' + perspective + '_' + hand,
                           'texture_width': 16, 'texture_height': 16,
                           'visible_bounds_width': 4, 'visible_bounds_height': 4, 'visible_bounds_offset': [0, 1, 0]},
