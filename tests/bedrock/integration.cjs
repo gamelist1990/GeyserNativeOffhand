@@ -11,7 +11,7 @@ const locale = process.env.TEST_LOCALE || "ja_JP"
 const propertySchemas = []
 const propertyPackets = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
-const state = { inventory: [], offhand: { network_id: 0 }, responses: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
+const state = { inventory: [], offhand: { network_id: 0 }, responses: [], equipment: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
 async function until(label, predicate, timeout=15000) {
   const end=Date.now()+timeout
@@ -47,14 +47,6 @@ const uiDefinition = id => state.registry.find(i=>i.name==='nativeoffhand_ui:'+i
 const check = (label,evidence) => { checks.push({label,evidence});console.log('PASS',label,evidence||'') }
 async function cmd(command) { const result=await rcon.command(command);if(/Unknown|Incorrect|No entity was found|No player was found/.test(result))throw Error(command+': '+result);return result }
 async function inventoryData() { return cmd('data get entity NativeOH equipment') }
-function latestPose() {
-  const schema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:offhand_pose'))
-  if(!schema)return undefined
-  const propertyIndex=schema.properties.findIndex(p=>p.name==='nativeoffhand:offhand_pose')
-  return propertyPackets.filter(p=>String(p.runtime_entity_id)===String(state.runtimeId))
-    .flatMap(p=>(p.properties?.ints || []).filter(v=>v.index===propertyIndex).map(v=>v.value)).at(-1)
-}
-async function expectPose(mode,label) { await until('synchronized offhand pose '+label,()=>latestPose()===mode) }
 async function setOffhand(id,count=1) {
   await cmd('item replace entity NativeOH weapon.offhand with minecraft:'+id+' '+count)
   await until('offhand '+id,()=>id==='air' ? !state.offhand.network_id : state.offhand.network_id===definition(id)?.runtime_id && state.offhand.count===count)
@@ -96,12 +88,7 @@ async function transferRoundTrip(id,count) {
   const equipped=await inventoryData()
   assert(equipped.includes('minecraft:'+id) && equipped.includes('count: '+count),equipped)
   if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
-  if(ui) {
-    assert.equal(definition(id).version,'none',id+' native item version')
-    assert(!nbt.simplify(definition(id).nbt).components['minecraft:block_placer'],id+' native block renderer')
-  }
-  const expectedPose=ui ? 0 : ({shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1)
-  await expectPose(expectedPose,'inventory transfer '+id)
+  if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
   client.queue('item_stack_request',{requests:[{request_id:backward,actions:[{type_id:'place',count,
@@ -115,12 +102,11 @@ async function transferRoundTrip(id,count) {
   assert((await cmd('execute if items entity NativeOH hotbar.0 minecraft:'+id)).includes('Test passed'))
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
   await until('native definition restored '+id,()=>state.inventory[0]?.network_id===original.network_id
-    && state.inventory[0]?.count===count && state.inventory[0]?.stack_id===returned.item_stack_id)
+    && state.inventory[0]?.count===count && (ui ? state.inventory[0]?.stack_id!==returned.item_stack_id : state.inventory[0]?.stack_id===returned.item_stack_id))
   assert.equal(state.inventory[0].block_runtime_id,original.block_runtime_id,id+' native block state')
   assert.equal(state.inventory[0].metadata,original.metadata,id+' native data value')
   if(id==='stone') assert.equal(nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name,
     nbt.simplify(original.extra.nbt.nbt).display.Name,'Custom name survives native restoration')
-  await expectPose(0,'inventory return '+id)
   check('Native inventory offhand round trip: '+id,equipped)
 }
 function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0},runtime=0) {
@@ -154,6 +140,7 @@ async function main() {
   client.on('sync_entity_property',p=>propertySchemas.push(nbt.simplify(p.nbt)))
   client.on('set_entity_data',p=>propertyPackets.push(p))
   client.on('animate_entity',p=>state.animations.push(p))
+  client.on('mob_equipment',p=>{if(String(p.runtime_entity_id)===String(state.runtimeId))state.equipment.push(p)})
   client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
     debug('DEBUG_MOVE',JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v))
@@ -172,38 +159,16 @@ async function main() {
   })
   await until('spawn',()=>state.spawned && state.registry.length,60000)
   check('Bedrock 1.26.51 joined actual Paper/Geyser server')
-  for(const item of state.registry.filter(i=>i.runtime_id!==0)) {
+  const uiItems=state.registry.filter(i=>i.name.startsWith('nativeoffhand_ui:'))
+  assert(uiItems.length>1500,'Automatic aliases cover ordinary blocks, tools and items')
+  for(const item of state.registry.filter(i=>i.version==='data_driven')) {
     assert.equal(item.component_based,true,item.name)
-    const data=nbt.simplify(item.nbt)
-    assert.equal(data.components.item_properties.allow_off_hand,1,item.name)
+    assert.equal(nbt.simplify(item.nbt).components.item_properties.allow_off_hand,1,item.name)
   }
-  check('All transmitted non-air definitions permit offhand',state.registry.filter(i=>i.runtime_id!==0).length)
-  for(const id of ['ender_pearl','diamond_sword']) {
-    const components=nbt.simplify(definition(id).nbt).components
-    assert(components.item_tags.includes('nativeoffhand:vanilla_offhand_pose'),id)
-    assert(!components['minecraft:render_offsets'],id)
-  }
-  check('Fallback registry retains pose tags without deprecated render offsets')
-  for(const id of ['torch','soul_torch','redstone_torch','apple','bread','carrot','shield']) {
-    const components=nbt.simplify(definition(id).nbt).components
-    assert(!(components.item_tags || []).includes('nativeoffhand:vanilla_offhand_pose'),id)
-    assert(!components['minecraft:render_offsets'],id)
-  }
-  check('Torch, food and shield definitions have no legacy generic pose tag')
-  for(const entry of state.registry.filter(i=>i.name.startsWith('nativeoffhand:'))) {
-    const components=nbt.simplify(entry.nbt).components
-    assert.equal((components.item_tags || []).includes('nativeoffhand:handheld_pose'),!!components.item_properties.hand_equipped,entry.name)
-  }
-  for(const id of ['diamond_sword','iron_axe']) assert(nbt.simplify(definition(id).nbt).components.item_tags.includes('nativeoffhand:handheld_pose'),id)
-  for(const id of ['ender_pearl','stone','torch','apple','shield']) assert(!(nbt.simplify(definition(id).nbt).components.item_tags || []).includes('nativeoffhand:handheld_pose'),id)
-  check('Fallback handheld tags agree with hand_equipped definitions')
-
-  const poseSchema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:offhand_pose'))
-  assert(poseSchema,'Missing synchronized offhand renderer property')
-  check('Player defines the server-synchronized offhand renderer property')
-  const poseCases=[['air',0],['stone',0],['oak_stairs',0],['ender_pearl',1],['diamond_sword',2],['iron_axe',2],['bread',3],['apple',3],['torch',0],['shield',0],['air',0]]
-  for(const [id,mode] of poseCases) { await setOffhand(id);await expectPose(mode,id) }
-  check('Inventory updates synchronize block, tool, food and native held poses',poseCases)
+  check('Data-driven native items and inventory-only aliases permit offhand',uiItems.length)
+  assert(!state.registry.some(i=>i.name.startsWith('nativeoffhand:')),'No custom held item definitions')
+  assert(!propertySchemas.some(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name.startsWith('nativeoffhand:'))),'No custom player pose or consume properties')
+  check('Rewrite registers no custom held items or player pose/consume properties')
 
   await cmd('execute as @e[type=minecraft:ender_pearl] at @s on owner if entity @s[name=NativeOH] run kill @e[type=minecraft:ender_pearl,distance=..0.01,limit=1]')
   await cmd('clear NativeOH')
@@ -226,7 +191,7 @@ async function main() {
   assert(!state.registry.some(i=>i.name==='nativeoffhand:stone'))
   assert(state.inventory[0].block_runtime_id>0,JSON.stringify(state.inventory[0]))
   assert.equal(definition('stone').version,'none','Stone retains its native item version')
-  assert(!nbt.simplify(definition('stone').nbt).components['minecraft:block_placer'],'Native stone renderer must not be replaced with a data-driven block placer')
+  assert(!nbt.simplify(definition('stone').nbt).components?.['minecraft:block_placer'],'Native stone renderer must not be replaced with a data-driven block placer')
   check('Stone retains ItemVersion.NONE, original ID and block state outside the inventory')
 
   const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
@@ -321,19 +286,6 @@ async function main() {
   check('Native offhand food completes timed use',await inventoryData())
   assert(!state.animations.some(p=>p.animation.startsWith('animation.nativeoffhand.')))
   check('Offhand food and potion use emit no custom PlayAnimation')
-  const schema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:consume_mode'))
-  assert(schema, 'Missing attachable consumption property definition')
-  const modeIndex=schema.properties.findIndex(p=>p.name==='nativeoffhand:consume_mode')
-  const modes=propertyPackets.filter(p=>String(p.runtime_entity_id)===String(state.runtimeId))
-    .flatMap(p=>p.properties.ints.filter(v=>v.index===modeIndex).map(v=>v.value))
-  let cursor=0
-  for(const mode of modes) if(mode===[2,0,1,0][cursor])cursor++
-  assert.equal(cursor,4,JSON.stringify(modes))
-  check('Attachable use state follows drink/idle/eat/idle while the main hand holds a sword',modes)
-  const latestMode=propertyPackets.filter(p=>String(p.runtime_entity_id)===String(state.runtimeId))
-    .flatMap(p=>p.properties.ints.filter(v=>v.index===modeIndex).map(v=>v.value)).at(-1)
-  assert.equal(latestMode,0)
-  check('Consumption animation state resets before selecting a normal block')
   await setMain('diamond_sword')
   await setOffhand('stone',4)
   await cmd('setblock -1 65 1 minecraft:air')
@@ -367,13 +319,20 @@ async function main() {
     }],custom_names:[],cause:'slash_command_chat'}]})
     await until('block equipped '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===forward && r.status==='ok'))
     const moved=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===forward).containers.find(c=>c.slot_type.container_id==='offhand').slots[0]
+    const equipmentStart=state.equipment.length
     client.queue('container_close',{window_id:state.opened.window_id,server:false})
     await until('offhand native restoration '+id,()=>state.offhand.network_id===original.network_id && state.offhand.count===3)
-    assert.equal(state.offhand.stack_id,moved.item_stack_id,id+' close preserves offhand stack ID')
+    assert.notEqual(state.offhand.stack_id,moved.item_stack_id,id+' close refreshes protocol render identity')
     assert.equal(state.offhand.block_runtime_id,original.block_runtime_id)
     assert.equal(state.offhand.metadata,original.metadata)
-    await expectPose(0,'native block after close '+id)
-    check('Closing inventory restores native OFFHAND block '+id+' with unchanged state and stack ID')
+    check('Closing inventory restores native OFFHAND block '+id+' with preserved state and fresh render identity')
+    await until('native equipment refresh '+id,()=>state.equipment.slice(equipmentStart)
+      .some(p=>(p.window_id===119 || p.window_id==='offhand') && p.item.network_id===original.network_id))
+    const offPackets=state.equipment.slice(equipmentStart).filter(p=>p.window_id===119 || p.window_id==='offhand')
+    assert(offPackets.some(p=>!p.item.network_id),'Offhand render is cleared first')
+    assert.equal(offPackets.at(-1).item.network_id,original.network_id)
+    assert.equal(offPackets.at(-1).item.block_runtime_id,original.block_runtime_id)
+    check('OFFHAND equipment refresh sends AIR then native '+id+' with its block state')
     await setMain('diamond_sword')
     await cmd('setblock 3 65 1 minecraft:air')
     use('click_block',{x:3,y:64,z:1})

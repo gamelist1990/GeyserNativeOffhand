@@ -2,7 +2,6 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 : "${GEYSER_JAR:?Set GEYSER_JAR to the tested Geyser-Spigot.jar}"
-python3 scripts/generate-food-attachables.py "$GEYSER_JAR"
 mkdir -p build/classes
 find build/classes -type f -delete
 find src/main/java -name '*.java' > build/sources.txt
@@ -17,5 +16,5 @@ with zipfile.ZipFile('build/classes/GeyserNativeOffhand.mcpack','w',zipfile.ZIP_
     for path in sorted(Path('resource-pack').rglob('*')):
         if path.is_file():pack.write(path,str(path.relative_to('resource-pack')))
 PYZIP
-jar --create --file build/GeyserNativeOffhand-0.1.3-attachable.14.jar -C build/classes .
-echo "Built build/GeyserNativeOffhand-0.1.3-attachable.14.jar"
+jar --create --file build/GeyserNativeOffhand-0.2.0-rewrite.1.jar -C build/classes .
+echo "Built build/GeyserNativeOffhand-0.2.0-rewrite.1.jar"
