@@ -67,9 +67,9 @@ public final class NativeOffhandExtension implements Extension {
     @Subscribe
     public void initialize(GeyserPostInitializeEvent event) {
         try {
-            // Enable offhand permission while retaining the original native block
-            // item class, identifier and state-aware mapping. Save and restore
-            // every original definition.
+            // Trial legacy component loading for offhand permission on native
+            // blocks, retaining the identifier and state-aware mapping. Save
+            // and restore every original definition.
             translationString = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
             translationString.setAccessible(true);
             itemVersion = SimpleItemDefinition.class.getDeclaredField("version");
@@ -112,9 +112,13 @@ public final class NativeOffhandExtension implements Extension {
                     var properties = components.getCompound("item_properties").toBuilder()
                         .putBoolean("allow_off_hand", true);
                     String nativeBlock = ItemCatalog.nativeBlock(definition.getIdentifier());
-                    // Native block renderers must retain ItemVersion.NONE and
-                    // their original components. Converting them to DATA_DRIVEN
-                    // changes the client-held renderer even with a block state.
+                    // NONE preserves the native renderer but the retail client
+                    // ignores its offhand permission. Test the legacy component
+                    // loader without injecting a data-driven block placer.
+                    if (nativeBlock != null) {
+                        itemVersion.set(definition, ItemVersion.LEGACY);
+                        properties.putInt("max_stack_size", nativeBlockStackSizes.getOrDefault(definition.getIdentifier(), 64));
+                    }
                     var patchedComponents = components.toBuilder().putCompound("item_properties", properties.build());
                     if (definition.getIdentifier().startsWith("nativeoffhand:")
                             && !foodDefinitions.contains(definition.getIdentifier())

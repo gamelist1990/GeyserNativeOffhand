@@ -82,7 +82,7 @@ async function transferRoundTrip(id,count) {
   assert(equipped.includes('minecraft:'+id) && equipped.includes('count: '+count),equipped)
   const nativeBlocks=new Set(['lantern','soul_lantern','stone','stone_bricks','oak_planks','red_wool','glass','oak_fence','oak_stairs','chest','white_shulker_box','red_bed','red_banner','oak_sign','flower_pot'])
   if(nativeBlocks.has(id)) {
-    assert.equal(definition(id).version,'none',id+' native item version')
+    assert.equal(definition(id).version,'legacy',id+' native item version')
     assert(!nbt.simplify(definition(id).nbt).components['minecraft:block_placer'],id+' native block renderer')
   }
   const expectedPose=nativeBlocks.has(id) ? 0 : ({shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1)
@@ -205,9 +205,9 @@ async function main() {
   assert.equal(definition('stone').name,'minecraft:stone')
   assert(!state.registry.some(i=>i.name==='nativeoffhand:stone'))
   assert(state.inventory[0].block_runtime_id>0,JSON.stringify(state.inventory[0]))
-  assert.equal(definition('stone').version,'none','Stone must retain native ItemVersion.NONE')
+  assert.equal(definition('stone').version,'legacy','Stone uses the legacy component loader')
   assert(!nbt.simplify(definition('stone').nbt).components['minecraft:block_placer'],'Native stone renderer must not be replaced with a data-driven block placer')
-  check('Stone retains native ItemVersion.NONE, original ID and block rendering state')
+  check('Stone uses ItemVersion.LEGACY without a custom block placer and retains original ID and block state')
 
   const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
   assert(stoneName.includes(locale.toLowerCase()==='ja_jp' ? '石' : 'Stone'),stoneName)
