@@ -2,7 +2,7 @@
 
 Bedrock の通常のインベントリで、松明・ランタン・ブロック・剣などをオフハンドへ移動できるようにする Geyser-Spigot 拡張です。Java サーバーへオフハンドの設置・使用を送ります。食事・飲用も Java 側で処理します。
 
-**v0.1.3-attachable.5 は、一人称のオフハンド食事モーションを試す版です。実機での描画は確認待ちです。** 対応する Geyser の内部実装に依存します。
+**v0.1.3-attachable.6 は、一人称のオフハンド食事モーションと通常アイテムの保持位置を試す版です。食品の表示は実機で改善を確認しました。通常アイテムの補正は確認待ちです。** 対応する Geyser の内部実装に依存します。
 
 モーションを追加しない従来版は [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2) と `main` にあります。この試作は `attachable-consumption` ブランチで公開します。
 
@@ -50,9 +50,15 @@ Geyser の食品・消費コンポーネントから 40 種類を列挙し、バ
 
 Cooldown と同じ attachable の仕組みを参考にし、モデルとアニメーションを本拡張用に作成しました。Cooldown のモデルやアニメーション資産、Minecraft の画像はコピーしていません。プレイヤーの定義や Cooldown のコントローラー ID を上書きしません。ただし、同じ食品を変更する別のパックとの表示互換性は未検証です。
 
+## 通常アイテムの保持位置の試作
+
+非食品の `nativeoffhand:` フォールバックへ `minecraft:render_offsets.off_hand.first_person.position` を追加し、Z を -0.25 とする方式を試しています。食品とバニラの盾は対象外です。右手・三人称の補正値は追加しません。
+
+この項目は Bedrock の公開ドキュメントでは廃止扱いです。現行クライアントで描画に反映されるかは実機確認中です。統合テストでは設定が送信されたことを確認します。食品の attachable の中身は変更していません。
+
 ## 検証状況
 
-実際の独立した Paper + Geyser サーバーと [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) を使った **26 項目が通過**しました。
+実際の独立した Paper + Geyser サーバーと [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) を使った **31 項目が通過**しました。
 
 - 通常のインベントリから松明をオフハンドへ移動。
 - 空の右手／右手の剣で、左手の松明を 1 個ずつ設置。
@@ -61,13 +67,16 @@ Cooldown と同じ attachable の仕組みを参考にし、モデルとアニ�
 - 右手に剣を持った状態で食事・飲用が完了し、プロパティが「飲用 → 待機 → 食事 → 待機」と変化すること。独自の PlayAnimation は送らないこと。
 - 日本語クライアントへ送る石の表示名、カスタム名の維持、盾のバニラ ID とオフハンド往復移動。
 - ランタン・魂のランタン・魂の松明・石・剣・りんご・水バケツ・記入済みの本のオフハンド往復移動。
+- 食事の終了後にアニメーション状態が戻り、右手の剣＋左手の石で設置できること。
+- 食事後も、右手の石が左手の食品より優先されること。
+- 通常アイテムの保持位置設定が左手・一人称だけに送られ、食品と盾を除外すること。
 - 範囲外の操作と不正な保持アイテム定義を拒否。
 
-実機では、プレイヤーが松明のインベントリからの移動・設置、りんごの消費、全アイテム対応版でのオフハンドへの移動を確認しています。表示名と盾の ID は v0.1.1 で修正しました。従来の v0.1.2 は食事・飲用のカスタムモーションを削除した版です。このブランチで attachable 方式を再検証しています。40 個の attachable の ID と JSON も確認していますが、パケットテストは実機の描画を検証しません。attachable.1・.2 では左手の食品が見えませんでした。attachable.3 では右手のりんごは正常ですが、左手では一人称・三人称とも見えないとの実機報告がありました。インベントリ上の装備は正常です。attachable.4 は右手の正常な表示を保ち、左手に専用 geometry とバニラの盾の左手座標系を使う構成へ変更しました。attachable.4 の実機では、食事中に画面中央下へ食品が見えるようになりましたが、待機位置は画面の下に隠れていました。attachable.5 は一人称の待機位置を 6 モデル単位上げています。補正後の位置・動きは確認待ちです。サーバー側の 26 項目は attachable.1 で検証した結果で、以降の変更はリソースパックです。
+実機では、プレイヤーが松明のインベントリからの移動・設置、りんごの消費、全アイテム対応版でのオフハンドへの移動を確認しています。表示名と盾の ID は v0.1.1 で修正しました。従来の v0.1.2 は食事・飲用のカスタムモーションを削除した版です。このブランチで attachable 方式を再検証しています。40 個の attachable の ID と JSON も確認していますが、パケットテストは実機の描画を検証しません。attachable.5 の一人称の食品表示と食事モーションについて、実機で「いい感じ」との確認を受けました。通常アイテムが奥に表示される報告もあるため、attachable.6 は非食品フォールバックの左手・一人称の保持位置を手前へ補正する方式を試しています。食品パックの各ファイルは、実機で確認した attachable.5 と同じ内容です。通常アイテムの補正後の描画は確認待ちです。
 
 特殊なアイテムの表示・翻訳名・attachable、他のカスタムアイテム拡張やリソースパックとの同時使用も網羅していません。フォールバックの優先度は低くしていますが、個別の互換性確認が必要です。
 
-[サーバー側の検証結果](tests/results/2026-10-09-attachable.1.json) / [補正版の確認結果](tests/results/2026-10-09-attachable.5.json) / [再実行手順](tests/bedrock/README.md)
+[サーバー側の検証結果](tests/results/2026-10-10-attachable.6.json) / [補正版の確認結果](tests/results/2026-10-10-block-regression-before.json) / [再実行手順](tests/bedrock/README.md)
 
 ## ビルド
 
@@ -80,7 +89,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.1.3-attachable.5.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
+出力は `build/GeyserNativeOffhand-0.1.3-attachable.6.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
 
 ## ライセンスと出典
 

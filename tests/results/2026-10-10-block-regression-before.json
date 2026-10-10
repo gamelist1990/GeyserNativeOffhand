@@ -1,0 +1,131 @@
+{
+  "timestamp": "2026-10-10T00:02:38.288Z",
+  "bedrockVersion": "1.26.51",
+  "locale": "ja_JP",
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "All transmitted non-air definitions permit offhand",
+      "evidence": 3702
+    },
+    {
+      "label": "Shield keeps its vanilla identifier for native rendering"
+    },
+    {
+      "label": "Stone display name is localized for the client",
+      "evidence": "§r§f石"
+    },
+    {
+      "label": "A user custom item name retains priority over the localized fallback"
+    },
+    {
+      "label": "Native ItemStackRequest moved torches from hotbar into OFFHAND",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 8}}"
+    },
+    {
+      "label": "Out-of-range offhand interaction is rejected without consumption"
+    },
+    {
+      "label": "Forged held definition is rejected without consumption"
+    },
+    {
+      "label": "Empty main hand places exactly one native offhand torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 7}}"
+    },
+    {
+      "label": "Sword in main hand allows offhand torch placement",
+      "evidence": "Test passed"
+    },
+    {
+      "label": "Useful main hand retains priority; no offhand duplicate",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 6}}"
+    },
+    {
+      "label": "Native offhand water bucket places source water and returns empty bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:bucket\", count: 1}}"
+    },
+    {
+      "label": "Native offhand air-use consumes one ender pearl",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:ender_pearl\", count: 2}}"
+    },
+    {
+      "label": "Native offhand potion completes timed use",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:glass_bottle\", count: 1}}"
+    },
+    {
+      "label": "Native offhand food completes timed use",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:apple\", count: 1}}"
+    },
+    {
+      "label": "Offhand food and potion use emit no custom PlayAnimation"
+    },
+    {
+      "label": "Attachable use state follows drink/idle/eat/idle while the main hand holds a sword",
+      "evidence": [
+        0,
+        2,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "label": "Consumption animation state resets before selecting a normal block"
+    },
+    {
+      "label": "After eating, a sword in main hand allows native offhand stone placement",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:stone\", count: 3}}"
+    },
+    {
+      "label": "After eating, main-hand stone placement keeps priority over offhand food"
+    },
+    {
+      "label": "Native inventory offhand round trip: shield",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:shield\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: lantern",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:lantern\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_lantern",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:soul_lantern\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:soul_torch\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: stone",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:stone\", count: 16}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:diamond_sword\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: apple",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:apple\", count: 4}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: water_bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:water_bucket\", count: 1}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: written_book",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:written_book\", count: 1}}"
+    }
+  ],
+  "limitations": [
+    "Headless packet tests do not render or automate the Bedrock inventory UI.",
+    "Retail inventory drag behavior and attachable rendering require a retail client test."
+  ],
+  "extensionVersion": "0.1.3-attachable.5",
+  "resourcePackVersion": "0.1.8",
+  "retailFeedback": {
+    "food": "good according to human player",
+    "normalItems": "appear farther into the screen; hand and fresh-login behavior not yet specified"
+  }
+}

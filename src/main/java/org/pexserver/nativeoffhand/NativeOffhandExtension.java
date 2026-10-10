@@ -1,6 +1,7 @@
 package org.pexserver.nativeoffhand;
 
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryTransactionPacket;
@@ -65,6 +66,13 @@ public final class NativeOffhandExtension implements Extension {
             componentData = SimpleItemDefinition.class.getDeclaredField("componentData");
             componentBased.setAccessible(true);
             componentData.setAccessible(true);
+            java.util.Set<String> foodDefinitions = new java.util.HashSet<>();
+            try (var stream = getClass().getResourceAsStream("/food-textures.json")) {
+                if (stream == null) throw new java.io.IOException("Food texture catalog is missing");
+                var names = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(stream,
+                    java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                names.keySet().forEach(name -> foodDefinitions.add("nativeoffhand:" + name));
+            }
             for (var mappings : Registries.ITEMS.get().values()) {
                 for (var mapping : mappings.getItems()) {
                     if (mapping == null || !ItemCatalog.isFallback(mapping.getJavaItem().javaKey().asString())
@@ -84,10 +92,24 @@ public final class NativeOffhandExtension implements Extension {
                     NbtMap components = root.getCompound("components");
                     NbtMap properties = components.getCompound("item_properties").toBuilder()
                         .putBoolean("allow_off_hand", true).build();
+                    var patchedComponents = components.toBuilder().putCompound("item_properties", properties);
+                    if (definition.getIdentifier().startsWith("nativeoffhand:")
+                            && !foodDefinitions.contains(definition.getIdentifier())) {
+                        // The generic custom-item offhand pose can put its model
+                        // farther into the view than the corresponding vanilla item.
+                        // Correct only this extension's non-food first-person pose.
+                        // Food attachables already supply their own tested pose.
+                        NbtMap offsets = components.getCompound("minecraft:render_offsets");
+                        NbtMap offhand = offsets.getCompound("off_hand");
+                        NbtMap firstPerson = offhand.getCompound("first_person").toBuilder()
+                            .putList("position", NbtType.FLOAT, 0.0f, 0.0f, -0.25f).build();
+                        patchedComponents.putCompound("minecraft:render_offsets", offsets.toBuilder()
+                            .putCompound("off_hand", offhand.toBuilder()
+                                .putCompound("first_person", firstPerson).build()).build());
+                    }
                     NbtMap patched = root.toBuilder()
                         .putString("name", definition.getIdentifier()).putInt("id", definition.getRuntimeId())
-                        .putCompound("components", components.toBuilder()
-                            .putCompound("item_properties", properties).build()).build();
+                        .putCompound("components", patchedComponents.build()).build();
                     componentData.set(definition, patched);
                     componentBased.setBoolean(definition, true);
                 }
