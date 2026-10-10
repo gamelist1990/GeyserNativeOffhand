@@ -25,6 +25,8 @@ public final class NativeOffhandExtension implements Extension {
     private Field componentData;
     private Field translationString;
     private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> originalTranslations = new IdentityHashMap<>();
+    private org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty offhandPose;
+    private final java.util.List<Runnable> visualRestorers = new java.util.ArrayList<>();
     private PacketTranslator<InventoryTransactionPacket> previous;
     private OffhandInventoryTransactionTranslator installed;
     private org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty consumeMode;
@@ -45,6 +47,8 @@ public final class NativeOffhandExtension implements Extension {
     public void defineProperties(org.geysermc.geyser.api.event.lifecycle.GeyserDefineEntityPropertiesEvent event) {
         consumeMode = event.registerIntegerProperty(org.geysermc.geyser.api.util.Identifier.of("minecraft:player"),
             org.geysermc.geyser.api.util.Identifier.of("nativeoffhand:consume_mode"), 0, 2, 0);
+        offhandPose = event.registerIntegerProperty(org.geysermc.geyser.api.util.Identifier.of("minecraft:player"),
+            org.geysermc.geyser.api.util.Identifier.of("nativeoffhand:offhand_pose"), 0, 3, 0);
     }
 
     @Subscribe
@@ -160,6 +164,14 @@ public final class NativeOffhandExtension implements Extension {
                 }
             };
             Registries.JAVA_PACKET_TRANSLATORS.register(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class, metadataHook);
+            var visualState = new OffhandVisualState(offhandPose);
+            hookVisual(Registries.JAVA_PACKET_TRANSLATORS,
+                org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.ClientboundContainerSetSlotPacket.class, visualState);
+            hookVisual(Registries.JAVA_PACKET_TRANSLATORS,
+                org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.ClientboundContainerSetContentPacket.class, visualState);
+            hookVisual(Registries.BEDROCK_PACKET_TRANSLATORS,
+                org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket.class, visualState);
+            hookVisual(Registries.BEDROCK_PACKET_TRANSLATORS, InventoryTransactionPacket.class, visualState);
             logger().info("Enabled native offhand permission on " + originals.size()
                 + " item definitions; installed validated native Java hand routing.");
         } catch (Throwable failure) {
@@ -168,7 +180,28 @@ public final class NativeOffhandExtension implements Extension {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private <T, P extends T> void hookVisual(org.geysermc.geyser.registry.PacketTranslatorRegistry<T> registry,
+            Class<P> packetType, OffhandVisualState visualState) {
+        var delegate = (PacketTranslator<P>) registry.get(packetType);
+        if (delegate == null) throw new IllegalStateException("Missing inventory translator: " + packetType);
+        PacketTranslator<P> wrapper = new PacketTranslator<>() {
+            @Override public void translate(org.geysermc.geyser.session.GeyserSession session, P packet) {
+                delegate.translate(session, packet);
+                visualState.update(session);
+            }
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        registry.register(packetType, wrapper);
+        visualRestorers.add(() -> {
+            if (registry.get(packetType) == wrapper) registry.register(packetType, delegate);
+        });
+    }
+
     private void restore() {
+        for (int i = visualRestorers.size() - 1; i >= 0; i--) visualRestorers.get(i).run();
+        visualRestorers.clear();
+        OffhandVisualState.clear();
         if (metadataHook != null && Registries.JAVA_PACKET_TRANSLATORS.get(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class) == metadataHook)
             Registries.JAVA_PACKET_TRANSLATORS.register(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class, previousMetadata);
         OffhandUseState.clear();
@@ -194,7 +227,10 @@ public final class NativeOffhandExtension implements Extension {
 
     @Subscribe
     public void disconnect(org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent event) {
-        if (event.connection() instanceof org.geysermc.geyser.session.GeyserSession session) OffhandUseState.disconnect(session);
+        if (event.connection() instanceof org.geysermc.geyser.session.GeyserSession session) {
+            OffhandUseState.disconnect(session);
+            OffhandVisualState.disconnect(session);
+        }
     }
 
     @Subscribe

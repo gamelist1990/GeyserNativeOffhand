@@ -46,6 +46,14 @@ const definition = id => state.registry.find(i=>i.name==='nativeoffhand:'+id)
 const check = (label,evidence) => { checks.push({label,evidence});console.log('PASS',label,evidence||'') }
 async function cmd(command) { const result=await rcon.command(command);if(/Unknown|Incorrect|No entity was found|No player was found/.test(result))throw Error(command+': '+result);return result }
 async function inventoryData() { return cmd('data get entity NativeOH equipment') }
+function latestPose() {
+  const schema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:offhand_pose'))
+  if(!schema)return undefined
+  const propertyIndex=schema.properties.findIndex(p=>p.name==='nativeoffhand:offhand_pose')
+  return propertyPackets.filter(p=>String(p.runtime_entity_id)===String(state.runtimeId))
+    .flatMap(p=>(p.properties?.ints || []).filter(v=>v.index===propertyIndex).map(v=>v.value)).at(-1)
+}
+async function expectPose(mode,label) { await until('synchronized offhand pose '+label,()=>latestPose()===mode) }
 async function setOffhand(id,count=1) {
   await cmd('item replace entity NativeOH weapon.offhand with minecraft:'+id+' '+count)
   await until('offhand '+id,()=>id==='air' ? !state.offhand.network_id : state.offhand.network_id===definition(id)?.runtime_id && state.offhand.count===count)
@@ -72,6 +80,8 @@ async function transferRoundTrip(id,count) {
   assert.equal(moved.count,count)
   const equipped=await inventoryData()
   assert(equipped.includes('minecraft:'+id) && equipped.includes('count: '+count),equipped)
+  const expectedPose={shield:0,soul_torch:0,diamond_sword:2,iron_axe:2,apple:3,bread:3}[id] ?? 1
+  await expectPose(expectedPose,'inventory transfer '+id)
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
   client.queue('item_stack_request',{requests:[{request_id:backward,actions:[{type_id:'place',count,
@@ -85,6 +95,7 @@ async function transferRoundTrip(id,count) {
   assert((await cmd('execute if items entity NativeOH hotbar.0 minecraft:'+id)).includes('Test passed'))
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
   await pause(150)
+  await expectPose(0,'inventory return '+id)
   check('Native inventory offhand round trip: '+id,equipped)
 }
 function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0},runtime=0) {
@@ -147,20 +158,27 @@ async function main() {
     assert(components.item_tags.includes('nativeoffhand:vanilla_offhand_pose'),id)
     assert(!components['minecraft:render_offsets'],id)
   }
-  check('Ordinary offhand items select the mirrored vanilla arm pose without legacy offsets')
+  check('Fallback registry retains pose tags without deprecated render offsets')
   for(const id of ['torch','soul_torch','redstone_torch','apple','bread','carrot','shield']) {
     const components=nbt.simplify(definition(id).nbt).components
     assert(!(components.item_tags || []).includes('nativeoffhand:vanilla_offhand_pose'),id)
     assert(!components['minecraft:render_offsets'],id)
   }
-  check('Vanilla arm-pose correction excludes torches, food attachables and the native shield')
+  check('Torch, food and shield definitions have no legacy generic pose tag')
   for(const entry of state.registry.filter(i=>i.name.startsWith('nativeoffhand:'))) {
     const components=nbt.simplify(entry.nbt).components
     assert.equal((components.item_tags || []).includes('nativeoffhand:handheld_pose'),!!components.item_properties.hand_equipped,entry.name)
   }
   for(const id of ['diamond_sword','iron_axe']) assert(nbt.simplify(definition(id).nbt).components.item_tags.includes('nativeoffhand:handheld_pose'),id)
   for(const id of ['ender_pearl','stone','torch','apple','shield']) assert(!(nbt.simplify(definition(id).nbt).components.item_tags || []).includes('nativeoffhand:handheld_pose'),id)
-  check('Tool-facing correction selects handheld fallbacks and excludes ordinary items, blocks, torches, food and shield')
+  check('Fallback handheld tags agree with hand_equipped definitions')
+
+  const poseSchema=propertySchemas.find(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name==='nativeoffhand:offhand_pose'))
+  assert(poseSchema,'Missing synchronized offhand renderer property')
+  check('Player defines the server-synchronized offhand renderer property')
+  const poseCases=[['air',0],['stone',1],['oak_stairs',1],['ender_pearl',1],['diamond_sword',2],['iron_axe',2],['bread',3],['apple',3],['torch',0],['shield',0],['air',0]]
+  for(const [id,mode] of poseCases) { await setOffhand(id);await expectPose(mode,id) }
+  check('Inventory updates synchronize block, tool, food and native held poses',poseCases)
 
   await cmd('execute as @e[type=minecraft:ender_pearl] at @s on owner if entity @s[name=NativeOH] run kill @e[type=minecraft:ender_pearl,distance=..0.01,limit=1]')
   await cmd('clear NativeOH')
@@ -305,7 +323,7 @@ async function main() {
   assert.equal(state.offhand.count,1)
   assert((await cmd('execute if block -2 65 1 minecraft:stone')).includes('Test passed'))
   check('After eating, main-hand stone placement keeps priority over offhand food')
-  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['diamond_sword',1],['apple',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
+  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['stone_bricks',16],['diamond_sword',1],['iron_axe',1],['apple',4],['bread',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
   fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and attachable rendering require a retail client test.']},null,2)+'\n')
 }

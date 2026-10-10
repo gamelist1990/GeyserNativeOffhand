@@ -19,19 +19,19 @@
         },
         "nativeoffhand_left_food": {
           "position": [
-            "context.is_first_person ? -17.0 : -1.6",
-            "context.is_first_person ? 2.2 : 9.0",
-            "context.is_first_person ? 5.1 : 9.3"
+            "context.is_first_person ? 5.5 : -0.5",
+            "context.is_first_person ? 21.0 : 21.5",
+            "context.is_first_person ? -3.0 : 1.0"
           ],
           "rotation": [
-            "context.is_first_person ? 1.0 : -90.0",
-            "context.is_first_person ? 176.0 : 0.0",
-            "context.is_first_person ? -2.5 : 90.0"
+            "context.is_first_person ? 38.0 : 0.0",
+            "context.is_first_person ? 120.0 : 0.0",
+            "context.is_first_person ? 63.0 : 0.0"
           ],
           "scale": [
-            "context.is_first_person ? 1.0 : -1.0",
-            "context.is_first_person ? 1.0 : -1.0",
-            1
+            "context.is_first_person ? -0.75 : -0.5",
+            "context.is_first_person ? 0.75 : 0.5",
+            "context.is_first_person ? 0.75 : 0.5"
           ]
         }
       }
@@ -42,14 +42,14 @@
       "bones": {
         "nativeoffhand_left_food": {
           "position": [
-            "3.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "3.2 * math.min(query.anim_time * 5.0, 1.0) + 0.6 * math.abs(math.sin(query.anim_time * 1080.0))",
-            "1.5 * math.min(query.anim_time * 5.0, 1.0)"
+            "3.4231505177 * math.min(query.anim_time * 5.0, 1.0) + 0.2242997337 * math.abs(math.sin(query.anim_time * 1080.0)) * math.min(query.anim_time * 5.0, 1.0)",
+            "-0.0923325351 * math.min(query.anim_time * 5.0, 1.0) + -0.2105544425 * math.abs(math.sin(query.anim_time * 1080.0)) * math.min(query.anim_time * 5.0, 1.0)",
+            "-5.7683199665 * math.min(query.anim_time * 5.0, 1.0) + -0.1669025350 * math.abs(math.sin(query.anim_time * 1080.0)) * math.min(query.anim_time * 5.0, 1.0)"
           ],
           "rotation": [
-            "-15.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * math.abs(math.sin(query.anim_time * 1080.0))",
-            "-10.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "10.0 * math.min(query.anim_time * 5.0, 1.0)"
+            0,
+            0,
+            0
           ]
         }
       }
@@ -60,14 +60,14 @@
       "bones": {
         "nativeoffhand_left_food": {
           "position": [
-            "3.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "3.2 * math.min(query.anim_time * 5.0, 1.0) + 0.6 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
-            "1.5 * math.min(query.anim_time * 5.0, 1.0)"
+            "3.4231505177 * math.min(query.anim_time * 5.0, 1.0) + 0.2242997337 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) * math.min(query.anim_time * 5.0, 1.0)",
+            "-0.0923325351 * math.min(query.anim_time * 5.0, 1.0) + -0.2105544425 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) * math.min(query.anim_time * 5.0, 1.0)",
+            "-5.7683199665 * math.min(query.anim_time * 5.0, 1.0) + -0.1669025350 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0)) * math.min(query.anim_time * 5.0, 1.0)"
           ],
           "rotation": [
-            "-15.0 * math.min(query.anim_time * 5.0, 1.0) + 4.0 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
-            "-10.0 * math.min(query.anim_time * 5.0, 1.0)",
-            "10.0 * math.min(query.anim_time * 5.0, 1.0)"
+            0,
+            0,
+            0
           ]
         }
       }

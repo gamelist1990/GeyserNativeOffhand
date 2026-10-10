@@ -21,6 +21,11 @@ final class ItemCatalog {
     static String nativeBlock(String bedrockId) { return NATIVE_BLOCK_DEFINITIONS.get(bedrockId); }
     static int nativeBlockCount() { return NATIVE_BLOCK_ITEMS.size(); }
     static boolean isFallback(String javaId) { return FALLBACK_IDS.contains(javaId); }
+    static boolean isHandheld(String name) {
+        return name.endsWith("_sword") || name.endsWith("_pickaxe") || name.endsWith("_axe")
+            || name.endsWith("_hoe") || name.endsWith("_shovel") || name.equals("bow")
+            || name.equals("crossbow") || name.equals("trident");
+    }
     private static String readableName(String name) {
         StringJoiner words = new StringJoiner(" ");
         for (String word : name.split("_")) words.add(Character.toUpperCase(word.charAt(0)) + word.substring(1));
@@ -70,9 +75,7 @@ final class ItemCatalog {
             Identifier javaItem = Identifier.of(javaId);
             var builder = new GeyserCustomItemDefinition.Builder(Identifier.of("nativeoffhand", name), javaItem);
             var options = CustomItemBedrockOptions.builder().allowOffhand(true)
-                .displayHandheld(name.endsWith("_sword") || name.endsWith("_pickaxe")
-                    || name.endsWith("_axe") || name.endsWith("_hoe") || name.endsWith("_shovel")
-                    || name.equals("bow") || name.equals("crossbow") || name.equals("trident"));
+                .displayHandheld(isHandheld(name));
             if (block) {
                 builder.geyserComponent(GeyserItemDataComponents.BLOCK_PLACER,
                     GeyserBlockPlacer.of(Identifier.of(placedBlock), true));
