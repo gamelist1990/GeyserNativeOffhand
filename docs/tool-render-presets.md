@@ -30,3 +30,7 @@
 - [Geyser の登録処理（検証した commit）](https://github.com/GeyserMC/Geyser/blob/e215fa5cf1ffc3874c4d46c579d25800b20f17e4/core/src/main/java/org/geysermc/geyser/registry/populator/CustomItemRegistryPopulator.java)
 - [古い Bedrock のプリセット一覧](https://gist.github.com/toka7290/c457abb9454289b1ceef3fecb009e58f): 古いバージョンの記録のため、現在の描画を保証しません。
 - [Microsoft の minecraft:render_offsets 説明](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_render_offsets?view=minecraft-bedrock-stable): 公開の数値変換コンポーネントは非推奨で、現行版では使われないとされています。本候補はその数値変換 API を使わず、Geyser が送る内部プリセットを検証します。
+
+## 実機での結果
+
+0.2.5 を受け取ったユーザーの画像でも、インベントリ表示中の左手の斧の向きは改善しませんでした。プリセットの送信確認は描画の成功を示しません。0.2.6 はこのプリセットを取り除き、[バニラ装備パケットを送る候補](native-equipment-view.md)で表示と操作を切り分けます。

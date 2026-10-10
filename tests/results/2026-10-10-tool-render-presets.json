@@ -317,7 +317,7 @@
   "retailFeedback": {
     "ordinaryHotbarHealthHungerRecovery": "confirmed by user on 0.2.4",
     "offhandHudRendering": "confirmed by user on 0.2.4",
-    "inventoryToolPositionAndOrientation": "pending for 0.2.5; failed on 0.2.4",
+    "inventoryToolPositionAndOrientation": "failed on 0.2.5: user screenshot still shows incorrect offhand axe/tool definition and orientation while native inventory is open",
     "smallOffhandBlockRendering": "Bedrock limitation accepted by user"
   },
   "renderPresetVerification": {
@@ -325,7 +325,8 @@
     "ordinaryTypesWithoutAddedPreset": 6,
     "component": "components.render_offsets",
     "retailRenderingVerified": false,
-    "usesInternalGeyserRegistryData": true
+    "usesInternalGeyserRegistryData": true,
+    "retailOutcome": "did not fix reported offhand tool orientation"
   },
   "testEnvironmentNotes": [
     "Only the headless test player receives resistance against incidental endermite damage.",
