@@ -65,3 +65,21 @@ Blockbench に読み込んだ斧・剣の一人称・三人称、4 つの左手�
 0.2.9 の再接続確認を依頼した後、ユーザーから「見えん」との報告を受けました。提示画像では、インベントリ内の斧のアイコンと右手の剣は表示されますが、背景の左手の斧はありません。盾の座標を使ったカスタムメッシュの修正は、実機で成功したとは判定できません。画像にはパックの番号がありません。
 
 検証鯖専用の診断版 0.2.10 は、鉄の斧の UI 別名だけを、バニラの盾の geometry・texture・animation controller・render controller へ差し替えます。独自メッシュを使わない比較です。識別用の静的な `NOH 0.2.10 D` 表示と新しいパック UUID を使い、パック適用とモデル描画を分けて確認します。インベントリを閉じると元の斧へ戻り、スロットのアイコンと Java 側の種類・機能は斧のままです。これは一時的な診断であり、修正済みの公開版ではありません。
+
+## 0.2.10 の診断結果: バニラの盾は表示できる
+
+ユーザーから「盾が出てきた」と画像付きの報告を受けました。インベントリ背景の左手に盾の形が見え、スロットのアイコンは鉄の斧のままです。UI 別名を使った attachable の描画経路は動作しています。この比較では geometry、texture、animation、render controller をまとめて変えたため、以前の失敗の原因を一つの項目だけに特定したとは扱いません。
+
+## 0.2.11: 左手の道具を立方体で描く候補
+
+左手・一人称では `texture_mesh` を使いません。16×16 の各ピクセルを一辺 0.75 の立方体にし、6 面ともそのピクセルを UV で参照します。256 個の立方体の透明部分は `entity_alphatest` で除かれます。画像は元のバニラのパスを参照し、ゲームの画像ファイルは同梱しません。形は画像のアルファから決まるため、35 種類の道具に同じ geometry を使えます。
+
+ボーンはバニラの盾の animation が対象にする `shield` とし、支点 `[1, 15.5, 3]`、スロット binding、左手の保持位置 `[-13.5, -5.8, 5.1]`、回転 `[1, 176, -2.5]` を診断版と同じ値にします。画像の範囲は X=-5..7、Y=30..42 で、盾の板の上端 Y=39 より 3 単位上です。画像の縦横比とピクセルの厚みを保ちます。これは候補の配置であり、実機の表示位置の合格結果ではありません。
+
+左手・一人称は `Geometry.default` と、実機で表示できた `controller.render.item_default` / `controller.animation.shield.wield` を参照します。右手・三人称は以前のメッシュを維持し、geometry を条件式で選んでいた render controller を、各 geometry を固定で参照する controller と attachable 側の選択条件へ分けます。右手の保持位置・回転と、三人称の位置・回転の数値は維持します。ゲーム画面の元のバニラの保持定義、食品、ブロック、盾、DoubleHands の 1,679 ファイルは変更しません。
+
+Blockbench 5.2.2 の Bedrock 形式へ実パックを読み込み、斧・剣の一人称と三人称をプレビューしました。ボーン binding をプレビュー用の複製で再現し、静止中のバニラの item pivot と first-person empty_hand を使います。実機のインベントリ背景のカメラや腕の高さの遷移は Blockbench では実行できません。
+
+- [斧・一人称](previews/ui-tools-cubes/iron_axe-first-paired.png) / [剣・一人称](previews/ui-tools-cubes/diamond_sword-first-paired.png)
+- [斧・三人称](previews/ui-tools-cubes/iron_axe-third-paired.png) / [剣・三人称](previews/ui-tools-cubes/diamond_sword-third-paired.png)
+- [モデルと変形の確認記録](previews/ui-tools-cubes/verification.json)

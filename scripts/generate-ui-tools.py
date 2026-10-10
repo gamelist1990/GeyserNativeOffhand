@@ -1,67 +1,109 @@
+"""Inventory-only tool models. The first-person left hand uses the proven shield path."""
 from pathlib import Path
 import json
+
 root = Path(__file__).resolve().parent.parent
 pack = root / 'resource-pack'
 icons = json.loads((root / 'src/main/resources/icons.json').read_text())
 tools = sorted(k for k in icons if k.endswith(('_sword', '_axe', '_pickaxe', '_shovel', '_hoe')))
+
 def write(path, data):
     p = pack / path
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(data, indent=2) + '\n')
-models = []
-for perspective in ['first', 'third']:
-    for hand in ['right', 'left']:
-        off = hand == 'left'
-        first = perspective == 'first'
-        position = [2.01, -0.5, -1] if first else [-1, -1, -9]
-        rotation = [0, -135, 90] if first else [0, 30, -90]
-        local_pivot = [9, 0, 6] if first else [6, 0, 7]
-        if off:
-            position[0] *= -1
-        bone_pivot = [0, 0, 0]
-        if first and off:
-            # Match vanilla shield's offhand model origin and panel center.
-            # Hold position is shield's (-13.5, -5.8, 5.1), lifted two units.
-            bone_pivot = [1, 15.5, 3]
-            local_pivot = [8, 0, 8]
-            position = [1, 28, -0.5]
-            rotation = [-90, 0, 0]
-        mesh = {'texture': 'default', 'local_pivot': local_pivot,
-                'position': position, 'rotation': rotation, 'use_pixel_depth': True,
-                # Use only positive voxel scales. The mirrored bone rotation
-                # and mesh position produce the left-hand view without making
-                # the voxel extrusion consume negative dimensions.
-                'scale': [1, 1, 1]}
-        models.append({'description': {'identifier': 'geometry.nativeoffhand.ui_tool.' + perspective + '_' + hand,
-                          'texture_width': 16, 'texture_height': 16,
-                          'visible_bounds_width': 4, 'visible_bounds_height': 4, 'visible_bounds_offset': [0, 1, 0]},
-                       'bones': [{'name': 'nativeoffhand_tool', 'binding': 'q.item_slot_to_bone_name(c.item_slot)',
-                                  'pivot': bone_pivot, 'texture_meshes': [mesh]}]})
-write('models/entity/nativeoffhand_ui_tool.geo.json', {'format_version': '1.16.0', 'minecraft:geometry': models})
-write('animations/nativeoffhand_ui_tool.animation.json', {'format_version': '1.10.0', 'animations': {
-    'animation.nativeoffhand.ui_tool.hold': {'loop': True, 'bones': {'nativeoffhand_tool': {
-        # Offhand first-person uses the shield coordinate convention, whose
-        # model is centered at Y=28. The other views retain the previous basis.
-        'position': ["c.is_first_person ? (c.item_slot == 'off_hand' ? -13.5 : -5.5) : (c.item_slot == 'off_hand' ? -0.5 : 0.5)",
-                     "c.is_first_person ? (c.item_slot == 'off_hand' ? -3.8 : 21.0) : 21.5", "c.is_first_person ? (c.item_slot == 'off_hand' ? 5.1 : -3.0) : 1.0"],
-        'rotation': ["c.is_first_person ? (c.item_slot == 'off_hand' ? 1.0 : 38.0) : 0.0",
-                     "c.is_first_person ? (c.item_slot == 'off_hand' ? 176.0 : -120.0) : 0.0",
-                     "c.is_first_person ? (c.item_slot == 'off_hand' ? -2.5 : -63.0) : 0.0"]}}}}})
-write('render_controllers/nativeoffhand_ui_tool.render_controllers.json', {'format_version': '1.10.0', 'render_controllers': {
-    'controller.render.nativeoffhand.ui_tool': {
-        'geometry': "c.is_first_person ? (c.item_slot == 'off_hand' ? Geometry.first_left : Geometry.first_right) : (c.item_slot == 'off_hand' ? Geometry.third_left : Geometry.third_right)",
+
+def description(identifier):
+    return {'identifier': identifier, 'texture_width': 16, 'texture_height': 16,
+            'visible_bounds_width': 4, 'visible_bounds_height': 4,
+            'visible_bounds_offset': [0, 1, 0]}
+
+# Each voxel samples one native texture pixel on every face. Transparent pixels
+# are discarded by the same alpha-test material as the vanilla shield.
+# This keeps native textures and pixel depth without texture_mesh orientation.
+pixel = 0.75
+cubes = []
+for y in range(16):
+    for x in range(16):
+        cubes.append({'origin': [-5 + x * pixel, 30 + (15 - y) * pixel, -0.5],
+                      'size': [pixel, pixel, pixel],
+                      'uv': {face: {'uv': [x, y], 'uv_size': [1, 1]}
+                             for face in ['north', 'south', 'east', 'west', 'up', 'down']}})
+models = [{'description': description('geometry.nativeoffhand.ui_tool.first_left'),
+           'bones': [{'name': 'shield', 'binding': 'q.item_slot_to_bone_name(c.item_slot)',
+                      'pivot': [1, 15.5, 3], 'cubes': cubes}]}]
+# Keep the previous main-hand and third-person geometry. Only first-person
+# offhand changes to cubes. All bones use the name targeted by shield animations.
+for perspective, hand in [('first', 'right'), ('third', 'right'), ('third', 'left')]:
+    first, off = perspective == 'first', hand == 'left'
+    position = [2.01, -0.5, -1] if first else [-1, -1, -9]
+    if off:
+        position[0] *= -1
+    mesh = {'texture': 'default', 'local_pivot': [9, 0, 6] if first else [6, 0, 7],
+            'position': position, 'rotation': [0, -135, 90] if first else [0, 30, -90],
+            'use_pixel_depth': True, 'scale': [1, 1, 1]}
+    models.append({'description': description('geometry.nativeoffhand.ui_tool.' + perspective + '_' + hand),
+                   'bones': [{'name': 'shield', 'binding': 'q.item_slot_to_bone_name(c.item_slot)',
+                              'pivot': [0, 0, 0], 'texture_meshes': [mesh]}]})
+write('models/entity/nativeoffhand_ui_tool.geo.json',
+      {'format_version': '1.16.0', 'minecraft:geometry': models})
+
+# Native shield animation controller selects explicit first-person animations.
+# Third-person retains the previous tool transform rather than the shield pose.
+write('animations/nativeoffhand_ui_tool.animation.json',
+      {'format_version': '1.10.0', 'animations': {
+          'animation.nativeoffhand.ui_tool.third_person': {'loop': True, 'bones': {'shield': {
+              'position': ["c.item_slot == 'main_hand' ? 0.5 : -0.5", 21.5, 1.0],
+              'rotation': [0, 0, 0]}}}}})
+controllers = {}
+for view in ['first_right', 'third_right', 'third_left']:
+    controllers['controller.render.nativeoffhand.ui_tool.' + view] = {
+        'geometry': 'Geometry.' + view,
         'materials': [{'*': 'q.is_enchanted ? Material.enchanted : Material.default'}],
-        'textures': ['Texture.default', 'Texture.enchanted']}}})
+        'textures': ['Texture.default', 'Texture.enchanted']}
+write('render_controllers/nativeoffhand_ui_tool.render_controllers.json',
+      {'format_version': '1.10.0', 'render_controllers': controllers})
+
+# Offhand values are exactly the shield values that rendered in the user's
+# diagnostic. Sprite geometry has width/height 12 and top Y=42 (shield top=39).
+poses = {
+    'main_hand_first_person_pos_x': -5.5, 'main_hand_first_person_pos_y': 21.0,
+    'main_hand_first_person_pos_z': -3.0, 'main_hand_first_person_rot_x': 38.0,
+    'main_hand_first_person_rot_y': -120.0, 'main_hand_first_person_rot_z': -63.0,
+    'off_hand_first_person_pos_x': -13.5, 'off_hand_first_person_pos_y': -5.8,
+    'off_hand_first_person_pos_z': 5.1, 'off_hand_first_person_with_bow_pos_z': -25.0,
+    'off_hand_first_person_rot_x': 1.0, 'off_hand_first_person_rot_y': 176.0,
+    'off_hand_first_person_rot_z': -2.5}
 for name in tools:
     icon = icons[name]
     texture = icon if isinstance(icon, str) else icon['textures']
-    write('attachables/nativeoffhand_ui/' + name + '.json', {'format_version': '1.10.0', 'minecraft:attachable': {'description': {
-        'identifier': 'nativeoffhand_ui:' + name,
-        'materials': {'default': 'entity_alphatest', 'enchanted': 'entity_alphatest_glint'},
-        'textures': {'default': texture, 'enchanted': 'textures/misc/enchanted_item_glint'},
-        'geometry': {perspective + '_' + hand: 'geometry.nativeoffhand.ui_tool.' + perspective + '_' + hand
-                     for perspective in ['first', 'third'] for hand in ['left', 'right']},
-        'animations': {'hold': 'animation.nativeoffhand.ui_tool.hold'},
-        'scripts': {'animate': ['hold']},
-        'render_controllers': ['controller.render.nativeoffhand.ui_tool']}}})
-print('Generated', len(tools), 'inventory-only sprite tool attachables and four slot/perspective geometries.')
+    identifier = 'nativeoffhand_ui:' + name
+    write('attachables/nativeoffhand_ui/' + name + '.json', {
+        'format_version': '1.10.0', 'minecraft:attachable': {'description': {
+            'identifier': identifier,
+            'item': {identifier: "query.owner_identifier == 'minecraft:player'"},
+            'materials': {'default': 'entity_alphatest', 'enchanted': 'entity_alphatest_glint'},
+            'textures': {'default': texture, 'enchanted': 'textures/misc/enchanted_item_glint'},
+            'geometry': {'default': 'geometry.nativeoffhand.ui_tool.first_left',
+                         **{v: 'geometry.nativeoffhand.ui_tool.' + v
+                            for v in ['first_right', 'third_right', 'third_left']}},
+            'animations': {
+                'wield': 'controller.animation.shield.wield',
+                'wield_main_hand_first_person': 'animation.shield.wield_main_hand_first_person',
+                'wield_off_hand_first_person': 'animation.shield.wield_off_hand_first_person',
+                'wield_first_person_block': 'animation.shield.wield_first_person_blocking',
+                'wield_main_hand_first_person_block': 'animation.shield.wield_main_hand_first_person_blocking',
+                'wield_off_hand_first_person_block': 'animation.shield.wield_off_hand_first_person_blocking',
+                'wield_third_person': 'animation.nativeoffhand.ui_tool.third_person'},
+            'scripts': {
+                'initialize': ['variable.' + k + ' = ' + str(v) + ';' for k, v in poses.items()],
+                'pre_animation': [
+                    "variable.is_blocking_main_hand = query.blocking && !query.is_item_name_any('slot.weapon.offhand', 'minecraft:shield') && query.is_item_name_any('slot.weapon.mainhand', 'minecraft:shield');",
+                    "variable.is_blocking_off_hand = query.blocking && query.is_item_name_any('slot.weapon.offhand', 'minecraft:shield');",
+                    "variable.is_using_bow = (query.get_equipped_item_name == 'bow') && (query.main_hand_item_use_duration > 0.0f);"],
+                'animate': ['wield']},
+            'render_controllers': [
+                {'controller.render.item_default': "c.is_first_person && c.item_slot != 'main_hand'"},
+                {'controller.render.nativeoffhand.ui_tool.first_right': "c.is_first_person && c.item_slot == 'main_hand'"},
+                {'controller.render.nativeoffhand.ui_tool.third_right': "!c.is_first_person && c.item_slot == 'main_hand'"},
+                {'controller.render.nativeoffhand.ui_tool.third_left': "!c.is_first_person && c.item_slot != 'main_hand'"}]}}})
+print('Generated', len(tools), 'inventory-only tools with shield-bound left-hand cubes.')

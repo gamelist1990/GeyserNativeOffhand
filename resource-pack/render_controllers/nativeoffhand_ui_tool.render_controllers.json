@@ -1,8 +1,32 @@
 {
   "format_version": "1.10.0",
   "render_controllers": {
-    "controller.render.nativeoffhand.ui_tool": {
-      "geometry": "c.is_first_person ? (c.item_slot == 'off_hand' ? Geometry.first_left : Geometry.first_right) : (c.item_slot == 'off_hand' ? Geometry.third_left : Geometry.third_right)",
+    "controller.render.nativeoffhand.ui_tool.first_right": {
+      "geometry": "Geometry.first_right",
+      "materials": [
+        {
+          "*": "q.is_enchanted ? Material.enchanted : Material.default"
+        }
+      ],
+      "textures": [
+        "Texture.default",
+        "Texture.enchanted"
+      ]
+    },
+    "controller.render.nativeoffhand.ui_tool.third_right": {
+      "geometry": "Geometry.third_right",
+      "materials": [
+        {
+          "*": "q.is_enchanted ? Material.enchanted : Material.default"
+        }
+      ],
+      "textures": [
+        "Texture.default",
+        "Texture.enchanted"
+      ]
+    },
+    "controller.render.nativeoffhand.ui_tool.third_left": {
+      "geometry": "Geometry.third_left",
       "materials": [
         {
           "*": "q.is_enchanted ? Material.enchanted : Material.default"

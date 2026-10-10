@@ -1,19 +1,19 @@
 {
   "format_version": "1.10.0",
   "animations": {
-    "animation.nativeoffhand.ui_tool.hold": {
+    "animation.nativeoffhand.ui_tool.third_person": {
       "loop": true,
       "bones": {
-        "nativeoffhand_tool": {
+        "shield": {
           "position": [
-            "c.is_first_person ? (c.item_slot == 'off_hand' ? -13.5 : -5.5) : (c.item_slot == 'off_hand' ? -0.5 : 0.5)",
-            "c.is_first_person ? (c.item_slot == 'off_hand' ? -3.8 : 21.0) : 21.5",
-            "c.is_first_person ? (c.item_slot == 'off_hand' ? 5.1 : -3.0) : 1.0"
+            "c.item_slot == 'main_hand' ? 0.5 : -0.5",
+            21.5,
+            1.0
           ],
           "rotation": [
-            "c.is_first_person ? (c.item_slot == 'off_hand' ? 1.0 : 38.0) : 0.0",
-            "c.is_first_person ? (c.item_slot == 'off_hand' ? 176.0 : -120.0) : 0.0",
-            "c.is_first_person ? (c.item_slot == 'off_hand' ? -2.5 : -63.0) : 0.0"
+            0,
+            0,
+            0
           ]
         }
       }

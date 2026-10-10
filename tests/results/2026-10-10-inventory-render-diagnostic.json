@@ -115,8 +115,9 @@
     "confirmed": true
   },
   "retailClient": {
-    "status": "pending",
-    "instructions": "Confirm NOH 0.2.10 D outside inventory, then hold an iron axe offhand and open inventory. Determine whether the vanilla shield shape appears in the background.",
-    "successMeaning": "A visible shield proves the alias attachable path can render; it does not fix tool pose or represent a final release."
+    "status": "shield_visible",
+    "source": "PEXkurann: 盾が出てきた, with inventory screenshot",
+    "observed": "The native vanilla shield shape is visible in the left-hand inventory background while the iron-axe slot icon remains correct. The main-hand sword is visible.",
+    "conclusion": "The UI alias attachable can render using vanilla shield assets. The previous custom geometry/controller/animation combination remains suspect; this test does not isolate one component or certify a final tool pose."
   }
 }

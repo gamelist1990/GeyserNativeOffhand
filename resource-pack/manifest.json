@@ -3,11 +3,11 @@
   "header": {
     "name": "Geyser Native Offhand Rewrite",
     "description": "Native offhand inventory with the original DoubleHands HUD",
-    "uuid": "ccfef51b-c350-4a05-8cd7-8be9328f8daf",
+    "uuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
     "version": [
       0,
       2,
-      9
+      11
     ],
     "min_engine_version": [
       1,
@@ -18,11 +18,11 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "6bf32fe1-38c0-4063-8a1a-a1cacc6aa762",
+      "uuid": "7d52797c-81ea-4797-91e3-51c4d2d3386a",
       "version": [
         0,
         2,
-        9
+        11
       ]
     }
   ]
