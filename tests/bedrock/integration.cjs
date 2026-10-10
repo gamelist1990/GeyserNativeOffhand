@@ -140,14 +140,18 @@ async function main() {
     assert.equal(data.components.item_properties.allow_off_hand,1,item.name)
   }
   check('All transmitted non-air definitions permit offhand',state.registry.filter(i=>i.runtime_id!==0).length)
-  const offsets=nbt.simplify(definition('stone').nbt).components['minecraft:render_offsets']
-  assert.deepEqual(offsets.off_hand.first_person.position,[0,0,-0.25])
-  assert(!offsets.main_hand && !offsets.off_hand.third_person)
-  check('Normal-item position correction is limited to offhand first-person rendering')
-  for(const id of ['apple','bread','carrot','shield']) {
-    assert(!nbt.simplify(definition(id).nbt).components['minecraft:render_offsets'],id)
+  for(const id of ['stone','ender_pearl','diamond_sword']) {
+    const components=nbt.simplify(definition(id).nbt).components
+    assert(components.item_tags.includes('nativeoffhand:vanilla_offhand_pose'),id)
+    assert(!components['minecraft:render_offsets'],id)
   }
-  check('Normal-item position correction excludes food attachables and the vanilla shield')
+  check('Ordinary offhand items select the mirrored vanilla arm pose without legacy offsets')
+  for(const id of ['torch','soul_torch','redstone_torch','apple','bread','carrot','shield']) {
+    const components=nbt.simplify(definition(id).nbt).components
+    assert(!(components.item_tags || []).includes('nativeoffhand:vanilla_offhand_pose'),id)
+    assert(!components['minecraft:render_offsets'],id)
+  }
+  check('Vanilla arm-pose correction excludes torches, food attachables and the native shield')
   await cmd('execute as @e[type=minecraft:ender_pearl] at @s on owner if entity @s[name=NativeOH] run kill @e[type=minecraft:ender_pearl,distance=..0.01,limit=1]')
   await cmd('clear NativeOH')
   await cmd('gamemode survival NativeOH')

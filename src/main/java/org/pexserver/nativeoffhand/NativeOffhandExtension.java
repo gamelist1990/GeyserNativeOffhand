@@ -94,18 +94,18 @@ public final class NativeOffhandExtension implements Extension {
                         .putBoolean("allow_off_hand", true).build();
                     var patchedComponents = components.toBuilder().putCompound("item_properties", properties);
                     if (definition.getIdentifier().startsWith("nativeoffhand:")
-                            && !foodDefinitions.contains(definition.getIdentifier())) {
-                        // The generic custom-item offhand pose can put its model
-                        // farther into the view than the corresponding vanilla item.
-                        // Correct only this extension's non-food first-person pose.
-                        // Food attachables already supply their own tested pose.
-                        NbtMap offsets = components.getCompound("minecraft:render_offsets");
-                        NbtMap offhand = offsets.getCompound("off_hand");
-                        NbtMap firstPerson = offhand.getCompound("first_person").toBuilder()
-                            .putList("position", NbtType.FLOAT, 0.0f, 0.0f, -0.25f).build();
-                        patchedComponents.putCompound("minecraft:render_offsets", offsets.toBuilder()
-                            .putCompound("off_hand", offhand.toBuilder()
-                                .putCompound("first_person", firstPerson).build()).build());
+                            && !foodDefinitions.contains(definition.getIdentifier())
+                            && !definition.getIdentifier().endsWith(":torch")
+                            && !definition.getIdentifier().endsWith("_torch")) {
+                        // Native first-person empty_hand positions the right arm,
+                        // but not the left arm for generic items. The pack mirrors
+                        // that vanilla pose only for these owned fallbacks.
+                        // Food attachables and native torch rendering retain their
+                        // existing positions; other packs' items are not tagged.
+                        var tags = new java.util.ArrayList<>(components.getList("item_tags", NbtType.STRING));
+                        if (!tags.contains("nativeoffhand:vanilla_offhand_pose"))
+                            tags.add("nativeoffhand:vanilla_offhand_pose");
+                        patchedComponents.putList("item_tags", NbtType.STRING, tags);
                     }
                     NbtMap patched = root.toBuilder()
                         .putString("name", definition.getIdentifier()).putInt("id", definition.getRuntimeId())
