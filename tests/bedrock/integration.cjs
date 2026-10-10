@@ -266,6 +266,21 @@ async function main() {
     assert.equal(nbt.simplify(item.nbt).components.item_properties.allow_off_hand,1,item.name)
   }
   check('Data-driven native items and inventory-only aliases permit offhand',uiItems.length)
+  // Inventory aliases also appear in the held view while the native inventory
+  // is open. Their tool flag must not fall back to the ordinary-item pose.
+  const handheldAliases = ['diamond_sword','iron_axe','diamond_pickaxe','iron_shovel','golden_hoe',
+    'mace','trident','bow','crossbow','fishing_rod','carrot_on_a_stick','warped_fungus_on_a_stick','brush']
+  for (const id of handheldAliases) {
+    const alias=uiDefinition(id)
+    assert(alias,'Missing tool alias '+id)
+    assert.equal(nbt.simplify(alias.nbt).components.item_properties.hand_equipped,1,id+' must retain the handheld pose in the inventory')
+  }
+  for (const id of ['bread','ender_pearl','stone','stone_bricks','torch','water_bucket']) {
+    const alias=uiDefinition(id)
+    assert(alias,'Missing ordinary-item alias '+id)
+    assert.equal(nbt.simplify(alias.nbt).components.item_properties.hand_equipped,0,id+' must retain the ordinary-item pose')
+  }
+  check('Inventory tool aliases retain handheld rendering; ordinary items and blocks keep their own pose', {handheld:handheldAliases.length,ordinary:6})
   assert(!state.registry.some(i=>i.name.startsWith('nativeoffhand:')),'No custom held item definitions')
   assert(!propertySchemas.some(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name.startsWith('nativeoffhand:'))),'No custom player pose or consume properties')
   check('Rewrite registers no custom held items or player pose/consume properties')
@@ -458,7 +473,7 @@ async function main() {
   }
   await nativeInventoryOperations()
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
-  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag behavior and attachable rendering require a retail client test.']},null,2)+'\n')
+  fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',locale,checks,limitations:['Headless packet tests do not render or automate the Bedrock inventory UI.','Retail inventory drag restrictions and held-item appearance require a retail client test.']},null,2)+'\n')
 }
 main().catch(error=>{console.error(error);process.exitCode=1}).finally(async()=>{
   state.closing=true

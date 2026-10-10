@@ -2,7 +2,7 @@
 
 Bedrock の通常のインベントリで、アイテムをオフハンドへ移動し、Java サーバーへ設置・使用を送る Geyser-Spigot 拡張です。
 
-**0.2.0-rewrite.1 / RP 0.2.0 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、この基準版に独自の食事モーションはありません。実機の保持位置・向きは確認中です。
+**0.2.1-rewrite.2 / RP 0.2.1 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、この基準版に独自の食事モーションはありません。0.2.0 の実機画像で、インベントリを開くと剣・斧の向きと大きさが変わる問題を確認しました。0.2.1 は移動用定義の `hand_equipped` を道具に合わせて修正した候補で、実機での開閉時の表示は確認待ちです。
 
 開発ブランチは `native-renderer-rewrite`。従来の公開版は `main` / [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2)、失敗した表示補正の記録は `attachable-consumption` に残します。本拡張は Geyser の公式機能ではありません。
 
@@ -24,6 +24,7 @@ Bedrock の通常のインベントリで、アイテムをオフハンドへ移
 
 - Geyser のアイテムマッピングとブロックパレットから自動列挙し、通常のプレイヤーインベントリ用に 1,625 件の低優先度の data-driven 定義を登録します。
 - 通常のインベントリが開いている間だけ、移動を許可する `nativeoffhand_ui:` 定義を選びます。通常の ItemStackRequest を Geyser の処理へ渡します。
+- インベントリ内の定義が背景の手元にも描画されるため、剣・斧・ツルハシ・シャベル・クワなどの道具には `hand_equipped=true` を設定します。食品・一般アイテム・ブロックには道具の姿勢を適用しません。
 - 閉じると元のバニラ ID とブロック状態へ戻します。両手の表示を更新し、移動用の定義から保持用の定義へ変わるアイテムには新しい Bedrock のスタック ID を割り当てます。Java 側の種類・個数・名前・コンポーネントは維持します。
 - 元の NONE・LEGACY のアイテム定義、保持モデル、プレイヤーの定義・ボーン・アニメーションを変更しません。元から data-driven のアイテムにはオフハンド許可だけを設定します。
 - 食品や道具も、ゲーム画面ではバニラの ID を使います。リソースパックは manifest と、クライアント内のバニラの画像パスを参照するアイコン一覧だけです。
@@ -35,8 +36,9 @@ Bedrock の使用パケットには手の指定がないため、Java の全て�
 
 ## 検証
 
-独立した Paper + Geyser 検証鯖と [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) で **57 項目が通過しました**。自動テストは Bedrock 本体のドラッグ制限や画面描画を実行しません。
+独立した Paper + Geyser 検証鯖と [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) で **58 項目が通過しました**。自動テストは Bedrock 本体のドラッグ制限や画面描画を実行しません。
 
+- 剣・斧など 13 種類の移動用定義が道具の姿勢、食品・ブロックなど 6 種類が一般アイテムの姿勢であることを受信パケットから確認。
 - 松明・ランタン・魂の松明・石・石レンガ・剣・斧・食品・バケツ・本など 23 種類をインベントリとオフハンドの間で往復移動。
 - 板材、色付き羊毛、ガラス、フェンス、階段、チェスト、シュルカーボックス、ベッド、旗、看板、植木鉢などの個数・Java 側の種類・元のブロック状態を維持。
 - 通常の持ち物欄から部分スタックをオフハンドへ移動し、同じ種類をまとめ、カーソルで分けて持ち物欄へ戻す。
@@ -47,7 +49,7 @@ Bedrock の使用パケットには手の指定がないため、Java の全て�
 - 右手のブロックを優先し、二重設置を防ぐ。範囲外の操作と不正な保持定義を拒否。
 - 日本語の石の名前と、名前付きの石を開く・移動・閉じる各段階で維持。
 
-[実行手順](tests/bedrock/README.md) / [通常のインベントリ操作を追加した結果](tests/results/2026-10-10-native-inventory.json) / [最初の検証結果](tests/results/2026-10-10-rewrite.1.json)
+[実行手順](tests/bedrock/README.md) / [開閉時の道具描画設定を修正した結果](tests/results/2026-10-10-handheld-pose.json) / [通常のインベントリ操作を追加した結果](tests/results/2026-10-10-native-inventory.json) / [最初の検証結果](tests/results/2026-10-10-rewrite.1.json)
 
 前の RP 0.1.14 は、実機で石の位置が正常になりましたが移動できませんでした。0.1.15 も移動できませんでした。0.1.16 は移動できましたが、ブロックが左上に離れて表示されました。これらを修正完了とは扱いません。[最後の失敗記録](tests/results/2026-10-10-attachable.14.json)と過去の Blockbench プレビューは履歴として残します。
 
@@ -76,7 +78,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.2.0-rewrite.1.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
+出力は `build/GeyserNativeOffhand-0.2.1-rewrite.2.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
 
 ## ライセンスと出典
 

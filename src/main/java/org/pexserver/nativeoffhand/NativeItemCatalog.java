@@ -18,6 +18,18 @@ final class NativeItemCatalog {
 
     static boolean hasAlias(String javaId) { return ALIASED.contains(javaId); }
 
+    /** Built-in Bedrock tools whose native pose uses hand_equipped.
+     * Legacy item definitions do not expose these built-in properties in NBT.
+     * Match the Bedrock identifier, including Java items remapped by Geyser.
+     */
+    private static boolean handheld(String bedrockId) {
+        String name = bedrockId.substring(bedrockId.indexOf(':') + 1);
+        return name.endsWith("_sword") || name.endsWith("_axe") || name.endsWith("_pickaxe")
+            || name.endsWith("_shovel") || name.endsWith("_hoe")
+            || Set.of("mace", "trident", "bow", "crossbow", "fishing_rod",
+                "carrot_on_a_stick", "warped_fungus_on_a_stick", "brush").contains(name);
+    }
+
     private static JsonElement resource(Class<?> owner, String path) throws IOException {
         try (var stream = owner.getResourceAsStream(path)) {
             if (stream == null) throw new IOException("Missing " + path);
@@ -44,7 +56,11 @@ final class NativeItemCatalog {
             if (name.equals("air") || nativeComponents.contains(mapping.get("bedrock_identifier").getAsString())) continue;
             var id = Identifier.of(javaId);
             var alias = new GeyserCustomItemDefinition.Builder(Identifier.of("nativeoffhand_ui", name), id);
-            var options = CustomItemBedrockOptions.builder().allowOffhand(true).displayHandheld(false);
+            // These aliases are rendered in both hands while the inventory is
+            // open. Giving every item the ordinary-item pose makes tools turn
+            // and change size when the native inventory opens or closes.
+            var options = CustomItemBedrockOptions.builder().allowOffhand(true)
+                .displayHandheld(handheld(mapping.get("bedrock_identifier").getAsString()));
             if (mapping.has("firstBlockRuntimeId") && !mapping.get("firstBlockRuntimeId").isJsonNull()) {
                 var block = blocks.getBedrockBlock(mapping.get("firstBlockRuntimeId").getAsInt());
                 alias.geyserComponent(GeyserItemDataComponents.BLOCK_PLACER,

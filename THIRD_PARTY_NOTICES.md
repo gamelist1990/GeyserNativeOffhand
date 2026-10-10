@@ -4,6 +4,6 @@ The extension is MIT-licensed. Inventory validation and interaction conventions 
 
 The user-supplied DoubleHands 5.6.0 add-on, credited to Areed Elahi in its manifest, was inspected as a behavioral reference. No DoubleHands source code, UI files or texture assets are redistributed. See [the inspection record](docs/doublehands-reference.md).
 
-The 0.2.0 resource pack contains only its manifest and vanilla texture-path aliases. It bundles no Minecraft images, player models, attachables or animation definitions. Geyser's integrated pack is loaded separately by Geyser.
+The 0.2.x resource pack contains only its manifest and vanilla texture-path aliases. It bundles no Minecraft images, player models, attachables or animation definitions. Geyser's integrated pack is loaded separately by Geyser.
 
 Historical files in `docs/previews` contain Blockbench screenshots and texture-free inspection projects from the previous experimental implementation. Minecraft imagery remains the property of Mojang. Bedrock bone hierarchy/pivots in those historical projects were taken from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples), copyright Mojang AB, under its Minecraft EULA notice. Those previews do not verify the Bedrock runtime renderer and are not used by the rewrite.
