@@ -249,7 +249,7 @@
     "sharedSenderAndUiAuxList": true,
     "longOrExclusionRemoved": true,
     "limitations": [
-      "B-prefixed fallback rendering awaits retail confirmation.",
+      "Retail switching passed for bread, stone, apple and lantern; remaining item types are not individually confirmed.",
       "Headless tests do not execute retail JSON UI."
     ]
   },
@@ -353,19 +353,26 @@
     "dynamicFallback": "Server selects literal A values from the generated list; otherwise sends B-prefixed native AUX. B strips the prefix for numeric rendering, and A parent is hidden for B.",
     "limitations": [
       "Static carried-item controls match metadata zero. Other metadata keeps the original dynamic AUX renderer.",
-      "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and B-prefixed fallback still requires retail confirmation."
+      "Retail0.2.23 confirms bread, stone, apple and lantern switching; remaining generated item types are not individually confirmed."
     ]
   },
   "retail": {
     "previousCandidate": "0.2.22",
     "previousFeedback": "ランタン系とかA系は完璧だがAが無くBの時表示されない 多分Aに掻き消されてる？",
     "change": "Keep A literal controls; remove long OR exclusion; sender chooses A/B; B selection hides the complete A parent panel.",
-    "currentStatus": "awaiting retail bread, stone, apple and lantern switching feedback"
+    "currentStatus": "passed for bread, stone, apple and lantern switching",
+    "userQuestion": "RP 0.2.23で入り直し、パン・石・りんごを順にオフハンドへ移し、最後にランタンへ戻してください。左端の枠内のアイコンはどうですか？ 今回はBの時にAのパネル全体を隠しています。",
+    "userAnswer": "全部正しく出る",
+    "confirmedCurrentItems": [
+      "minecraft:bread",
+      "minecraft:stone",
+      "minecraft:apple",
+      "minecraft:lantern"
+    ]
   },
   "limitations": [
-    "Headless tests verify real inventory movement and A/B title transport, not retail rendering.",
-    "The exact reason for dynamic B being invisible in0.2.22 is unconfirmed.",
-    "0.2.23 short conditions and B-prefixed numeric binding still require retail verification.",
-    "65 A literals are not all individually retail-tested."
+    "Headless tests verify real inventory movement and A/B title transport; the retail confirmation is separately recorded.",
+    "The exact internal reason for dynamic B being invisible in0.2.22 remains unconfirmed.",
+    "Retail0.2.23 establishes correct switching for four requested items, not individual rendering of all65 A literals."
   ]
 }

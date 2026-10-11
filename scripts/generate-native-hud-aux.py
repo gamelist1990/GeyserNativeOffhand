@@ -91,7 +91,7 @@ audit = {
     "bundledItemPngs": 0,
     "dynamicFallback": "Server selects literal A values from the generated list; otherwise sends B-prefixed native AUX. B strips the prefix for numeric rendering, and A parent is hidden for B.",
     "limitations": ["Static carried-item controls match metadata zero. Other metadata keeps the original dynamic AUX renderer.",
-                    "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and B-prefixed fallback still requires retail confirmation."]
+                    "Retail 0.2.23 confirms bread, stone, apple and lantern switching; remaining generated item types are not individually confirmed."]
 }
 (ROOT / "docs/research/native-hud-aux-literals.json").write_text(json.dumps(audit, indent=2) + "\n")
 print("Generated", len(literals), "native AUX literal controls; no item PNGs")
