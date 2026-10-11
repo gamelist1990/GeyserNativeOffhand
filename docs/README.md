@@ -14,6 +14,7 @@ GeyserNativeOffhand 0.2.23の利用・開発資料です。概要と導入は[�
 
 ## 詳細資料・調査
 
+- [食事アニメーションの調査・比較](eating-animation-research.md)
 - [DoubleHandsの解析](doublehands-reference.md)
 - [オフハンドHUDの変更記録](offhand-hud.md)
 - [既存のバニラ資産を使うHUDの調査](hud-texture-research.md)
