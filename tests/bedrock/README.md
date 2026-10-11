@@ -116,3 +116,5 @@ HUD と通常通知の同期だけを短く試す場合は `TEST_HUD_ONLY=1 npm 
 0.2.12 の重点試験 12 項目、配信パック、Blockbench 比較の記録: [2026-10-11-ui-tool-vanilla-pose.json](../results/2026-10-11-ui-tool-vanilla-pose.json)。Bedrock 実機の見た目は確認待ちです。
 
 0.2.12 の向きは実機で確認済みです。0.2.13 はインベントリ背景の左手の位置を合わせる候補です。斧・剣を出し入れし、同じアイテムの通常画面と開いた画面で位置を比較します。
+
+0.2.13 の重点試験 12 項目、配信パック、位置補正の記録: [2026-10-11-ui-tool-position.json](../results/2026-10-11-ui-tool-position.json)。実機の位置確認は待機中です。
