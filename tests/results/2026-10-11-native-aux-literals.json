@@ -325,11 +325,13 @@
       "item": "minecraft:soul_torch",
       "userAnswer": "Aだわ Aに出てる"
     },
-    "finalSlotStatus": "awaiting soul torch, lantern and apple feedback after integration"
+    "finalSlotStatus": "partial success: lantern-type and soul-torch icons visible, apple icon missing",
+    "finalFeedback": "ランタン等が正常に出たけど りんご等が 消えた",
+    "nextCandidate": "0.2.22 restores the original B conversion and native AUX while retaining the working A literals."
   },
   "limitations": [
     "Headless tests do not execute retail JSON UI or item rendering.",
-    "The retail result proves the diagnostic A path for soul torch; all 65 items are not individually verified.",
-    "Final-slot position/layers and apple UI-ID correction still require final retail feedback."
+    "The user confirmed lantern-type and soul-torch icons in the final slot; all 65 items are not individually verified.",
+    "The apple UI-ID correction failed retail rendering and is withdrawn in 0.2.22."
   ]
 }

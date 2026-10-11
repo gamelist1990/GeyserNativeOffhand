@@ -67,6 +67,9 @@ for identifier, aux in literals.items():
 content.insert(2, {"native_aux_icons": {"type": "panel", "size": ["100%", "100%"],
                                       "layer": 0, "controls": controls}})
 conditions = " or ".join("(#nativeoffhand_aux_string = '" + str(aux) + "')" for aux in literals.values())
+# Restore diagnostic B's proven numeric conversion without altering its AUX.
+# A owns only exact generated native values; B remains the fallback elsewhere.
+content[1]["item_renderer"]["bindings"][1]["source_property_name"] = "(0 + #nativeoffhand_aux_string)"
 content[1]["item_renderer"]["bindings"][-1]["source_property_name"] = (
     "(not ((#nativeoffhand_aux_string = '') or (#nativeoffhand_aux_string = '0')) and not (" + conditions + "))"
 )
@@ -76,8 +79,9 @@ audit = {
     "count": len(literals), "nativeAuxLiterals": literals,
     "mechanism": "Native inventory_item_renderer with integer property_bag AUX; title equality selects the matching control.",
     "bundledItemPngs": 0,
+    "dynamicFallback": "Diagnostic B: (0 + #nativeoffhand_aux_string), using unshifted native runtime AUX. Mutually exclusive with A by exact title matches.",
     "limitations": ["Static carried-item controls match metadata zero. Other metadata keeps the original dynamic AUX renderer.",
-                    "Retail confirmation currently establishes diagnostic A for soul torch, not every generated item."]
+                    "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and restored apple fallback still require individual checks."]
 }
 (ROOT / "docs/research/native-hud-aux-literals.json").write_text(json.dumps(audit, indent=2) + "\n")
 print("Generated", len(literals), "native AUX literal controls; no item PNGs")

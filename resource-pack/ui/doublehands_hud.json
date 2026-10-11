@@ -40,7 +40,7 @@
             },
             {
               "binding_type": "view",
-              "source_property_name": "((0 + (#nativeoffhand_aux_string - '-')) * (1 - (2 * (not ((#nativeoffhand_aux_string - '-') = #nativeoffhand_aux_string)))))",
+              "source_property_name": "(0 + #nativeoffhand_aux_string)",
               "target_property_name": "#item_id_aux"
             },
             {

@@ -92,7 +92,7 @@ async function transferRoundTrip(id,count) {
     return equipped.includes('minecraft:'+id) && equipped.includes('count: '+count)
   })
   if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
-  if(['stone','iron_axe','lantern','soul_lantern','soul_torch'].includes(id)) await checkHud(original,count,'HUD keeps native '+id+' AUX while the inventory uses a move alias')
+  if(['stone','iron_axe','lantern','soul_lantern','soul_torch','apple'].includes(id)) await checkHud(original,count,'HUD keeps native '+id+' AUX while the inventory uses a move alias')
   if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
@@ -228,17 +228,9 @@ const plainTitle = packet => packet?.text?.replace(/§./g,'')
 const latestHud = type => state.titles.findLast(p=>p.type===type)?.text
 function nativeHudAux(item) {
   if(!item.network_id) return 0
-  const def=state.registry.find(d=>d.runtime_id===item.network_id)
-  const apple=state.registry.find(d=>d.name==='minecraft:apple')
-  const shrub=state.registry.find(d=>d.name==='minecraft:red_shrub')
-  let id=item.network_id
-  if(apple?.runtime_id===882 && apple.version==='data_driven' && shrub?.runtime_id===852
-      && def?.name.startsWith('minecraft:') && def.version==='data_driven' && id>=852 && id<=883) {
-    const customCount=state.registry.filter(d=>d.runtime_id>0 && d.version==='data_driven' && !d.name.startsWith('minecraft:')).length
-    id+=Math.min(customCount,1569)
-  }
-  return (id << 16) | ((item.metadata || 0) & 0xffff)
+  return (item.network_id << 16) | ((item.metadata || 0) & 0xffff)
 }
+
 async function checkHud(item,count,label) {
   const definition=state.registry.find(d=>d.runtime_id===item.network_id)
   if(item.network_id) {
@@ -264,8 +256,8 @@ async function hudOperations() {
     await checkHud(state.offhand,16,'Native HUD sends signed AUX for '+id)
   }
   await setOffhand('apple',2)
-  await checkHud(state.offhand,2,'Native HUD corrects the local UI ID for data-driven apple')
-  assert.equal(nativeHudAux(state.offhand),160628736,'Apple occupies local slot 2451 after custom-item shift saturation')
+  await checkHud(state.offhand,2,'Diagnostic B fallback keeps apple native AUX without a guessed local-ID shift')
+  assert.equal(nativeHudAux(state.offhand),57802752,'Apple uses original native ID 882 as diagnostic B did')
   await setOffhand('bread',1)
   await checkHud(state.offhand,1,'One item sends empty subtitle to hide the count')
   await setOffhand('air')
@@ -342,7 +334,7 @@ async function main() {
   check('Bedrock 1.26.51 joined actual Paper/Geyser server')
   if(process.env.TEST_HUD_ONLY==='1') {
     await hudOperations()
-    for(const [id,count] of [['stone',4],['iron_axe',1],['diamond_sword',1],['lantern',16],['soul_lantern',16],['soul_torch',16]])
+    for(const [id,count] of [['stone',4],['iron_axe',1],['diamond_sword',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['apple',16]])
       await transferRoundTrip(id,count)
     const version=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../resource-pack/manifest.json'))).header.version
     const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')

@@ -1,7 +1,6 @@
 package org.pexserver.nativeoffhand;
 
 import org.cloudburstmc.protocol.bedrock.packet.SetTitlePacket;
-import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
 import org.geysermc.geyser.session.GeyserSession;
 import java.util.concurrent.*;
 
@@ -9,8 +8,6 @@ import java.util.concurrent.*;
 final class NativeOffhandHud {
     private record Snapshot(int itemAux, int count) {}
     private static final class State {
-        final int modernItemShift;
-        State(int modernItemShift) { this.modernItemShift = modernItemShift; }
         Snapshot last;
         long lastSent;
         ScheduledFuture<?> poll;
@@ -19,28 +16,9 @@ final class NativeOffhandHud {
 
     void start(GeyserSession session) {
         session.executeInEventLoop(() -> {
-            var state = new State(modernItemShift(session));
+            var state = new State();
             if (states.putIfAbsent(session, state) == null) poll(session, state);
         });
-    }
-
-    // JSON UI's local IDs differ from network runtime IDs for 26.50's
-    // data-driven vanilla items. Custom items occupy the preceding slots.
-    // Only enable this version-specific rule when the native registry matches
-    // the verified 852..883 layout; other layouts keep their network IDs.
-    private static int modernItemShift(GeyserSession session) {
-        var mappings = session.getItemMappings();
-        var apple = mappings.getDefinition("minecraft:apple");
-        var shrub = mappings.getDefinition("minecraft:red_shrub");
-        if (apple == null || apple.getRuntimeId() != 882 || apple.getVersion() != ItemVersion.DATA_DRIVEN
-            || shrub == null || shrub.getRuntimeId() != 852) return 0;
-        int customCount = 0;
-        for (var definition : mappings.getItemDefinitions().values()) {
-            if (definition.getRuntimeId() > 0 && definition.getVersion() == ItemVersion.DATA_DRIVEN
-                && !definition.getIdentifier().startsWith("minecraft:")) customCount++;
-        }
-        // Later custom items are inserted after the vanilla range.
-        return Math.min(customCount, 1569);
     }
 
     private void poll(GeyserSession session, State state) {
@@ -60,11 +38,7 @@ final class NativeOffhandHud {
             // The HUD must use the client's native definition, even while the
             // inventory is showing an offhand-permitted move alias.
             var item = stack.getItemData(session);
-            var definition = item.getDefinition();
-            int hudId = definition.getRuntimeId();
-            if (hudId >= 852 && hudId <= 883 && definition.getVersion() == ItemVersion.DATA_DRIVEN
-                && definition.getIdentifier().startsWith("minecraft:")) hudId += state.modernItemShift;
-            int aux = (hudId << 16) | (item.getDamage() & 0xffff);
+            int aux = (item.getDefinition().getRuntimeId() << 16) | (item.getDamage() & 0xffff);
             snapshot = new Snapshot(aux, stack.getAmount());
         }
         long now = System.nanoTime();
