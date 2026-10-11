@@ -71,9 +71,9 @@
   },
   "mechanism": "Native inventory_item_renderer with integer property_bag AUX; title equality selects the matching control.",
   "bundledItemPngs": 0,
-  "dynamicFallback": "Diagnostic B: (0 + #nativeoffhand_aux_string), using unshifted native runtime AUX. Mutually exclusive with A by exact title matches.",
+  "dynamicFallback": "Server selects literal A values from the generated list; otherwise sends B-prefixed native AUX. B strips the prefix for numeric rendering, and A parent is hidden for B.",
   "limitations": [
     "Static carried-item controls match metadata zero. Other metadata keeps the original dynamic AUX renderer.",
-    "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and restored apple fallback still require individual checks."
+    "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and B-prefixed fallback still requires retail confirmation."
   ]
 }

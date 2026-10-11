@@ -40,12 +40,12 @@
             },
             {
               "binding_type": "view",
-              "source_property_name": "(0 + #nativeoffhand_aux_string)",
+              "source_property_name": "(0 + (#nativeoffhand_aux_string - 'B'))",
               "target_property_name": "#item_id_aux"
             },
             {
               "binding_type": "view",
-              "source_property_name": "(not ((#nativeoffhand_aux_string = '') or (#nativeoffhand_aux_string = '0')) and not ((#nativeoffhand_aux_string = '-10682368') or (#nativeoffhand_aux_string = '-10747904') or (#nativeoffhand_aux_string = '-13500416') or (#nativeoffhand_aux_string = '-28049408') or (#nativeoffhand_aux_string = '-27787264') or (#nativeoffhand_aux_string = '-27852800') or (#nativeoffhand_aux_string = '-67043328') or (#nativeoffhand_aux_string = '-27000832') or (#nativeoffhand_aux_string = '-70385664') or (#nativeoffhand_aux_string = '-70975488') or (#nativeoffhand_aux_string = '-70909952') or (#nativeoffhand_aux_string = '-27656192') or (#nativeoffhand_aux_string = '-70451200') or (#nativeoffhand_aux_string = '-71041024') or (#nativeoffhand_aux_string = '-67174400') or (#nativeoffhand_aux_string = '-27525120') or (#nativeoffhand_aux_string = '-27918336') or (#nativeoffhand_aux_string = '-13631488') or (#nativeoffhand_aux_string = '-14090240') or (#nativeoffhand_aux_string = '-60882944') or (#nativeoffhand_aux_string = '-61472768') or (#nativeoffhand_aux_string = '-61538304') or (#nativeoffhand_aux_string = '-61603840') or (#nativeoffhand_aux_string = '-61669376') or (#nativeoffhand_aux_string = '-61734912') or (#nativeoffhand_aux_string = '-61800448') or (#nativeoffhand_aux_string = '-60948480') or (#nativeoffhand_aux_string = '-61014016') or (#nativeoffhand_aux_string = '-61079552') or (#nativeoffhand_aux_string = '-61145088') or (#nativeoffhand_aux_string = '-61210624') or (#nativeoffhand_aux_string = '-61276160') or (#nativeoffhand_aux_string = '-61341696') or (#nativeoffhand_aux_string = '-61407232') or (#nativeoffhand_aux_string = '-27262976') or (#nativeoffhand_aux_string = '-27590656') or (#nativeoffhand_aux_string = '-27394048') or (#nativeoffhand_aux_string = '-27197440') or (#nativeoffhand_aux_string = '-31064064') or (#nativeoffhand_aux_string = '-27131904') or (#nativeoffhand_aux_string = '-70582272') or (#nativeoffhand_aux_string = '-71172096') or (#nativeoffhand_aux_string = '-27459584') or (#nativeoffhand_aux_string = '-35979264') or (#nativeoffhand_aux_string = '-27721728') or (#nativeoffhand_aux_string = '-27983872') or (#nativeoffhand_aux_string = '-66977792') or (#nativeoffhand_aux_string = '-10223616') or (#nativeoffhand_aux_string = '-39059456') or (#nativeoffhand_aux_string = '-17629184') or (#nativeoffhand_aux_string = '-17563648') or (#nativeoffhand_aux_string = '-13565952') or (#nativeoffhand_aux_string = '-10420224') or (#nativeoffhand_aux_string = '-70647808') or (#nativeoffhand_aux_string = '-71237632') or (#nativeoffhand_aux_string = '-70713344') or (#nativeoffhand_aux_string = '-71303168') or (#nativeoffhand_aux_string = '-70844416') or (#nativeoffhand_aux_string = '-71434240') or (#nativeoffhand_aux_string = '-70778880') or (#nativeoffhand_aux_string = '-71368704') or (#nativeoffhand_aux_string = '-70516736') or (#nativeoffhand_aux_string = '-71106560') or (#nativeoffhand_aux_string = '-27066368') or (#nativeoffhand_aux_string = '-27328512')))",
+              "source_property_name": "(not ((#nativeoffhand_aux_string - 'B') = #nativeoffhand_aux_string))",
               "target_property_name": "#visible"
             }
           ],
@@ -65,6 +65,18 @@
             "100%"
           ],
           "layer": 0,
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#native_aux_route"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(#native_aux_route = (#native_aux_route - 'B'))",
+              "target_property_name": "#visible"
+            }
+          ],
           "controls": [
             {
               "bamboo": {

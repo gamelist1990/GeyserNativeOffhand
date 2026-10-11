@@ -3,9 +3,33 @@ package org.pexserver.nativeoffhand;
 import org.cloudburstmc.protocol.bedrock.packet.SetTitlePacket;
 import org.geysermc.geyser.session.GeyserSession;
 import java.util.concurrent.*;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /** Sends native item AUX/count to the DoubleHands-derived slot layout. */
 final class NativeOffhandHud {
+    private static final Set<Integer> LITERAL_AUX = literalAux();
+
+    private static Set<Integer> literalAux() {
+        try (var stream = NativeOffhandHud.class.getResourceAsStream("/native-hud-literal-aux.txt")) {
+            if (stream == null) throw new IOException("Missing generated native HUD AUX list");
+            try (var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+                return reader.lines().map(Integer::valueOf).collect(Collectors.toUnmodifiableSet());
+            }
+        } catch (IOException ex) {
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    private static String iconTitle(int aux) {
+        if (aux == 0 || LITERAL_AUX.contains(aux)) return Integer.toString(aux);
+        return "B" + aux;
+    }
+
     private record Snapshot(int itemAux, int count) {}
     private static final class State {
         Snapshot last;
@@ -55,7 +79,7 @@ final class NativeOffhandHud {
         session.getWorldCache().markTitleTimesAsIncorrect();
         session.sendUpstreamPacket(packet(SetTitlePacket.Type.SUBTITLE,
             snapshot.count() > 1 ? Integer.toString(snapshot.count()) : ""));
-        session.sendUpstreamPacket(packet(SetTitlePacket.Type.TITLE, Integer.toString(snapshot.itemAux())));
+        session.sendUpstreamPacket(packet(SetTitlePacket.Type.TITLE, iconTitle(snapshot.itemAux())));
     }
 
     // The copied UI hides normal titles. Reserve their data channels for the

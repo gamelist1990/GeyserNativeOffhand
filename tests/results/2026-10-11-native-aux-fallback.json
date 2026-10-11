@@ -349,11 +349,12 @@
       "Remove experimental 852..883 custom-count shift, including apple2451; apple now keeps native ID882/AUX57802752.",
       "Select exactly one route using A matches and the inverse condition for B."
     ],
-    "currentStatus": "awaiting retail apple, soul torch, lantern and bread switching feedback"
+    "currentStatus": "failed dynamic fallback: A items render correctly, B-only items do not",
+    "userFeedback": "ランタン系とかA系は完璧だがAが無くBの時表示されない 多分Aに掻き消されてる？"
   },
   "limitations": [
     "Headless tests establish AUX delivery and real inventory movement, not retail rendering.",
-    "Restored original B behavior needs retail confirmation for apple in this registry.",
+    "Retail feedback establishes that the original B restoration in0.2.22 remains blank; 0.2.23 changes branch selection and hides the A parent panel.",
     "65 generated literal controls are not all individually retail-tested."
   ]
 }

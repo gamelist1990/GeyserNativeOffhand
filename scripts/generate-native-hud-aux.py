@@ -64,24 +64,34 @@ for identifier, aux in literals.items():
              "target_property_name": "#visible"}
         ]
     }})
-content.insert(2, {"native_aux_icons": {"type": "panel", "size": ["100%", "100%"],
-                                      "layer": 0, "controls": controls}})
-conditions = " or ".join("(#nativeoffhand_aux_string = '" + str(aux) + "')" for aux in literals.values())
-# Restore diagnostic B's proven numeric conversion without altering its AUX.
-# A owns only exact generated native values; B remains the fallback elsewhere.
-content[1]["item_renderer"]["bindings"][1]["source_property_name"] = "(0 + #nativeoffhand_aux_string)"
-content[1]["item_renderer"]["bindings"][-1]["source_property_name"] = (
-    "(not ((#nativeoffhand_aux_string = '') or (#nativeoffhand_aux_string = '0')) and not (" + conditions + "))"
+# Only one branch is active. Keep A's proven raw literal title unchanged,
+# while B receives a prefixed numeric title selected by the Java sender.
+content.insert(2, {"native_aux_icons": {
+    "type": "panel", "size": ["100%", "100%"], "layer": 0,
+    "bindings": [
+        {"binding_type": "global", "binding_name": "#hud_title_text_string",
+         "binding_name_override": "#native_aux_route"},
+        {"binding_type": "view", "source_property_name": "(#native_aux_route = (#native_aux_route - 'B'))",
+         "target_property_name": "#visible"}
+    ], "controls": controls
+}})
+bindings = content[1]["item_renderer"]["bindings"]
+bindings[1]["source_property_name"] = "(0 + (#nativeoffhand_aux_string - 'B'))"
+bindings[-1]["source_property_name"] = "(not ((#nativeoffhand_aux_string - 'B') = #nativeoffhand_aux_string))"
+# This shared, generated list keeps the sender's A selection identical to UI.
+(ROOT / "src/main/resources/native-hud-literal-aux.txt").write_text(
+    "".join(str(aux) + "\n" for aux in sorted(literals.values()))
 )
+
 ui_path.write_text(json.dumps(ui, ensure_ascii=False, indent=2) + "\n")
 audit = {
     "sourceCommit": source["commit"], "geyserItemStates": "bedrock/runtime_item_states.26_50.json",
     "count": len(literals), "nativeAuxLiterals": literals,
     "mechanism": "Native inventory_item_renderer with integer property_bag AUX; title equality selects the matching control.",
     "bundledItemPngs": 0,
-    "dynamicFallback": "Diagnostic B: (0 + #nativeoffhand_aux_string), using unshifted native runtime AUX. Mutually exclusive with A by exact title matches.",
+    "dynamicFallback": "Server selects literal A values from the generated list; otherwise sends B-prefixed native AUX. B strips the prefix for numeric rendering, and A parent is hidden for B.",
     "limitations": ["Static carried-item controls match metadata zero. Other metadata keeps the original dynamic AUX renderer.",
-                    "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and restored apple fallback still require individual checks."]
+                    "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and B-prefixed fallback still requires retail confirmation."]
 }
 (ROOT / "docs/research/native-hud-aux-literals.json").write_text(json.dumps(audit, indent=2) + "\n")
 print("Generated", len(literals), "native AUX literal controls; no item PNGs")

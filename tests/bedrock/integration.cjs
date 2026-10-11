@@ -231,6 +231,13 @@ function nativeHudAux(item) {
   return (item.network_id << 16) | ((item.metadata || 0) & 0xffff)
 }
 
+const literalHudAux = new Set(fs.readFileSync(path.resolve(__dirname,'../../src/main/resources/native-hud-literal-aux.txt'),'utf8')
+  .trim().split(/\s+/).map(Number))
+function nativeHudTitle(item) {
+  const aux=nativeHudAux(item)
+  return aux===0 || literalHudAux.has(aux) ? String(aux) : 'B'+aux
+}
+
 async function checkHud(item,count,label) {
   const definition=state.registry.find(d=>d.runtime_id===item.network_id)
   if(item.network_id) {
@@ -238,9 +245,10 @@ async function checkHud(item,count,label) {
     assert(!definition.name.startsWith('nativeoffhand_ui:'),'HUD uses the native item, not the inventory move alias')
   }
   const itemAux=String(nativeHudAux(item))
+  const titlePayload=nativeHudTitle(item)
   const countText=count>1 ? String(count) : ''
-  await until('offhand HUD '+label,()=>latestHud('set_title')===itemAux && latestHud('set_subtitle')===countText)
-  check(label,{identifier:definition?.name || 'minecraft:air',itemAux,countText})
+  await until('offhand HUD '+label,()=>latestHud('set_title')===titlePayload && latestHud('set_subtitle')===countText)
+  check(label,{identifier:definition?.name || 'minecraft:air',itemAux,titlePayload,countText})
 }
 async function hudOperations() {
   await cmd('title NativeOH reset')
@@ -253,11 +261,13 @@ async function hudOperations() {
   for(const [id,aux] of [['lantern',-13631488],['soul_lantern',-17629184],['soul_torch',-17563648]]) {
     await setOffhand(id,16)
     assert.equal(nativeHudAux(state.offhand),aux,'Known 26.50 native AUX for '+id)
+    assert.equal(nativeHudTitle(state.offhand),String(aux),'A keeps the proven raw literal title')
     await checkHud(state.offhand,16,'Native HUD sends signed AUX for '+id)
   }
   await setOffhand('apple',2)
   await checkHud(state.offhand,2,'Diagnostic B fallback keeps apple native AUX without a guessed local-ID shift')
   assert.equal(nativeHudAux(state.offhand),57802752,'Apple uses original native ID 882 as diagnostic B did')
+  assert.equal(nativeHudTitle(state.offhand),'B57802752','Apple selects B and hides the A parent panel')
   await setOffhand('bread',1)
   await checkHud(state.offhand,1,'One item sends empty subtitle to hide the count')
   await setOffhand('air')
@@ -266,7 +276,7 @@ async function hudOperations() {
   await checkHud(state.offhand,1,'Native HUD tool AUX leaves native equipment unchanged')
   const still=state.titles.length
   await pause(1500)
-  assert(state.titles.slice(still).some(p=>p.type==='set_title' && p.text===String(nativeHudAux(state.offhand))))
+  assert(state.titles.slice(still).some(p=>p.type==='set_title' && p.text===nativeHudTitle(state.offhand)))
   check('Unchanged HUD data refreshes before the live title binding expires')
 
   const noticeStart=state.titles.length
