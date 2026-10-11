@@ -400,9 +400,11 @@
     }
   },
   "retailClient": {
-    "status": "awaiting-feedback",
+    "status": "failed",
     "requestedVersion": "0.2.14",
     "scope": "Native HUD icon/count, empty slot, ordinary hotbar/health/hunger visibility",
-    "poseStatus": "0.2.12 orientation was accepted; 0.2.13 position remains awaiting comparison"
+    "poseStatus": "0.2.12 orientation was accepted; 0.2.13 position remains awaiting comparison",
+    "feedback": "Frame appears, but no icon is displayed.",
+    "conclusion": "Packet and package checks did not establish successful native HUD rendering."
   }
 }
