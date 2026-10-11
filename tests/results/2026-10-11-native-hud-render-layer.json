@@ -200,9 +200,12 @@
     "screenshotEvidence": "D15 AUX 65536 and A/B/C labels visible, count 64 shown, all item icons absent."
   },
   "retailClient": {
-    "status": "awaiting-feedback",
+    "status": "passed-for-stone-and-diagnostic-visibility",
     "requestedVersion": "0.2.16",
-    "scope": "OFFHAND slot and A/B/C icon visibility after layer/update changes"
+    "scope": "OFFHAND slot and A/B/C icon visibility after layer/update changes",
+    "feedback": "All icons are visible; B shows the offhand item.",
+    "verified": "OFFHAND stone icon and fixed/converted/native collection diagnostic icons visible.",
+    "remaining": "Other item icons and the final pack after diagnostic removal require confirmation."
   },
   "servedPackMatchesBuild": true
 }
