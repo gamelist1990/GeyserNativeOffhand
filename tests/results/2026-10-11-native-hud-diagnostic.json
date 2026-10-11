@@ -197,9 +197,12 @@
     "feedback": "Frame visible; no icon displayed."
   },
   "retailClient": {
-    "status": "awaiting-feedback",
+    "status": "failed",
     "requestedVersion": "0.2.15",
-    "scope": "Which diagnostic renderer controls A/B/C show icons"
+    "scope": "Which diagnostic renderer controls A/B/C show icons",
+    "feedback": "None of A/B/C draws an item icon.",
+    "screenshotEvidence": "D15 AUX 65536 and A/B/C labels are visible; stone is in OFFHAND with count 64.",
+    "conclusion": "Pack and payload loaded correctly. Fixed, numeric and collection item renderers are all invisible while text and frame render."
   },
   "servedPackMatchesBuild": true,
   "remainingPngs": [

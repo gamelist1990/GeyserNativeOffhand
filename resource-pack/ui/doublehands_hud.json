@@ -21,7 +21,7 @@
       {
         "item_renderer": {
           "type": "custom",
-          "layer": 2,
+          "layer": 3,
           "size": [
             16,
             16
@@ -52,7 +52,8 @@
           "renderer": "inventory_item_renderer",
           "property_bag": {
             "#item_id_aux": 0,
-            "#nativeoffhand_aux_string": "0"
+            "#nativeoffhand_aux_string": "0",
+            "force_update": true
           }
         }
       },
@@ -92,7 +93,7 @@
   },
   "offhand_slot_panel": {
     "type": "panel",
-    "layer": 100,
+    "layer": 1,
     "size": [
       "100%",
       "100%"
@@ -195,7 +196,7 @@
             -128,
             -29
           ],
-          "layer": 110,
+          "layer": 1,
           "controls": [
             {
               "fixed_baseline": {
@@ -205,7 +206,7 @@
                   16,
                   16
                 ],
-                "layer": 5,
+                "layer": 3,
                 "anchor_from": "top_left",
                 "anchor_to": "top_left",
                 "offset": [
@@ -213,7 +214,8 @@
                   0
                 ],
                 "property_bag": {
-                  "#item_id_aux": 3801088
+                  "#item_id_aux": 3801088,
+                  "force_update": true
                 }
               }
             },
@@ -323,7 +325,7 @@
             1,
             1
           ],
-          "layer": 110,
+          "layer": 5,
           "anchor_from": "top_left",
           "anchor_to": "top_left",
           "offset": [
@@ -338,7 +340,7 @@
             },
             {
               "binding_type": "view",
-              "source_property_name": "('D15 AUX ' + #debug_aux)",
+              "source_property_name": "('D16 AUX ' + #debug_aux)",
               "target_property_name": "#debug_text"
             }
           ]
@@ -348,7 +350,7 @@
   },
   "diagnostic_dynamic": {
     "type": "custom",
-    "layer": 2,
+    "layer": 3,
     "size": [
       16,
       16
@@ -379,7 +381,8 @@
     "renderer": "inventory_item_renderer",
     "property_bag": {
       "#item_id_aux": 0,
-      "#nativeoffhand_aux_string": "0"
+      "#nativeoffhand_aux_string": "0",
+      "force_update": true
     }
   },
   "diagnostic_hotbar_item": {
@@ -390,13 +393,13 @@
     ],
     "controls": [
       {
-        "item@common.item_renderer": {
-          "$item_collection_name": "hotbar_items",
+        "item@hud.hotbar_hud_item_icon": {
+          "$hotbar_collection_name": "hotbar_items",
           "size": [
             16,
             16
           ],
-          "layer": 5
+          "layer": 3
         }
       }
     ]

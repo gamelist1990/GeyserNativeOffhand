@@ -53,3 +53,9 @@ RP 0.2.14 を取得して入り直し、通常のホットバー・体力・空�
 0.2.15 は文字列の数値変換を `(0 + #nativeoffhand_aux_string)` に替え、比較用に A/B/C を並べます。A は公式 UI と同じ固定値 3801088 の作業台、B は変換したオフハンド AUX、C は `hotbar_items` の 1 番目から `common.item_renderer` へ実際の `#item_renderer_data` を渡すコントロールです。左上の受信値表示も含め、RP 更新・固定 renderer・数値経路・ネイティブ collection を一度の実機確認で分けます。診断用で、本番への導入や成功の判定には使いません。
 
 変換の参考: [Bedrock Wiki の現行バージョンに関する注記](https://wiki.bedrock.dev/json-ui/type-conversion#string-to-number)。これは実機結果の代わりにはなりません。
+
+## 0.2.16: 標準 HUD の描画構成への変更
+
+実機画像の D15 AUX 65536 と A/B/C の文字から、診断 UI は読み込まれ、左手の石の AUX が届いていることを確認しました。固定値 A、数値変換 B、collection C の全てのアイコンが非表示でした。
+
+0.2.16 は画像式 UI の親 layer 100 と診断行 layer 110 を両方 1 へ下げ、アイコンを layer 3 へ揃えます。標準 hud.hotbar_hud_item_icon と同じ force_update: true を設定し、C もその標準コントロールを直接参照します。A/B/C と D16 の受信値表示で、変更後の実機描画を確認します。レイヤーと更新設定を同時に変えた候補なので、結果が改善しても片方だけが原因だったとは断定しません。保持位置やアイテム移動のコードは変更しません。
