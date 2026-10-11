@@ -92,7 +92,7 @@ async function transferRoundTrip(id,count) {
     return equipped.includes('minecraft:'+id) && equipped.includes('count: '+count)
   })
   if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
-  if(id==='stone' || id==='iron_axe') await checkHud(original,count,'HUD keeps native '+id+' texture while the inventory uses a move alias')
+  if(id==='stone' || id==='iron_axe') await checkHud(original,count,'HUD keeps native '+id+' AUX while the inventory uses a move alias')
   if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
   state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
   const backward=stackId++
@@ -226,32 +226,40 @@ function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0}
 }
 const plainTitle = packet => packet?.text?.replace(/§./g,'')
 const latestHud = type => state.titles.findLast(p=>p.type===type)?.text
-const hudTextures = Object.fromEntries(fs.readFileSync(path.resolve(__dirname,
-  '../../src/main/resources/offhand-hud-textures.properties'),'utf8').trim().split('\n').map(line=>line.split('=')))
+function nativeHudAux(item) {
+  return item.network_id ? ((item.network_id << 16) | ((item.metadata || 0) & 0xffff)) : 0
+}
 async function checkHud(item,count,label) {
-  const name=state.registry.find(d=>d.runtime_id===item.network_id)?.name?.replace(/^minecraft:/,'')
-  const texture=item.network_id ? (hudTextures[name] || 'textures/items/'+name) : 'textures/ui/empty'
+  const definition=state.registry.find(d=>d.runtime_id===item.network_id)
+  if(item.network_id) {
+    assert(definition,'HUD item exists in the client registry')
+    assert(!definition.name.startsWith('nativeoffhand_ui:'),'HUD uses the native item, not the inventory move alias')
+  }
+  const itemAux=String(nativeHudAux(item))
   const countText=count>1 ? String(count) : ''
-  await until('offhand HUD '+label,()=>latestHud('set_title')===texture && latestHud('set_subtitle')===countText)
-  assert(fs.existsSync(path.resolve(__dirname,'../../resource-pack',texture+'.png')),'HUD texture must be bundled: '+texture)
-  check(label,{texture,countText})
+  await until('offhand HUD '+label,()=>latestHud('set_title')===itemAux && latestHud('set_subtitle')===countText)
+  check(label,{identifier:definition?.name || 'minecraft:air',itemAux,countText})
 }
 async function hudOperations() {
   await cmd('title NativeOH reset')
   await setOffhand('stone',64)
-  await checkHud(state.offhand,64,'Original DoubleHands HUD receives block texture and stack count')
+  await checkHud(state.offhand,64,'Native HUD receives block AUX and stack count')
   await setOffhand('bread',7)
-  await checkHud(state.offhand,7,'Original DoubleHands HUD replaces the block icon with food')
+  await checkHud(state.offhand,7,'Native HUD replaces the block AUX with food')
+  await setOffhand('red_wool',9)
+  await checkHud(state.offhand,9,'Native HUD preserves a colored block data value')
+  await setOffhand('apple',2)
+  await checkHud(state.offhand,2,'Native HUD uses the registered data-driven food definition')
   await setOffhand('bread',1)
   await checkHud(state.offhand,1,'One item sends empty subtitle to hide the count')
   await setOffhand('air')
-  await checkHud(state.offhand,0,'Empty OFFHAND sends the original empty texture to hide the slot')
+  await checkHud(state.offhand,0,'Empty OFFHAND sends zero AUX to hide the slot')
   await setOffhand('iron_axe',1)
-  await checkHud(state.offhand,1,'Original DoubleHands tool icon leaves native equipment unchanged')
+  await checkHud(state.offhand,1,'Native HUD tool AUX leaves native equipment unchanged')
   const still=state.titles.length
   await pause(1500)
-  assert(state.titles.slice(still).some(p=>p.type==='set_title' && p.text==='textures/items/iso_renders/iron_axe'))
-  check('Unchanged HUD data refreshes before the original live title binding expires')
+  assert(state.titles.slice(still).some(p=>p.type==='set_title' && p.text===String(nativeHudAux(state.offhand))))
+  check('Unchanged HUD data refreshes before the live title binding expires')
 
   const noticeStart=state.titles.length
   await cmd('title NativeOH times 4 12 4')
@@ -262,10 +270,10 @@ async function hudOperations() {
   await until('ordinary actionbar',()=>state.titles.slice(noticeStart).some(p=>plainTitle(p)==='HUD actionbar preserved'))
   await pause(300)
   assert(!state.titles.slice(noticeStart).some(p=>plainTitle(p)==='Reserved title test' || plainTitle(p)==='Reserved subtitle test'),
-    'The original DoubleHands title channels are reserved for HUD data')
-  check('Server title/subtitle cannot replace the copied HUD data; actionbar is preserved')
+    'The HUD title channels are reserved for HUD data')
+  check('Server title/subtitle cannot replace the native HUD data; actionbar is preserved')
   await cmd('title NativeOH reset')
-  await checkHud(state.offhand,3,'Server title reset refreshes rather than clearing the copied HUD slot')
+  await checkHud(state.offhand,3,'Server title reset refreshes rather than clearing the native HUD slot')
 }
 
 async function main() {

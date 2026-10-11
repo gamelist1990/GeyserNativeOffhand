@@ -1,33 +1,59 @@
 {
   "namespace": "doublehands_hud",
-
   "offhand_slot_content": {
     "type": "panel",
-    "size": [ "100%", "100%" ],
+    "size": [
+      "100%",
+      "100%"
+    ],
     "controls": [
       {
         "background": {
           "type": "image",
           "texture": "textures/ui/offhand_slot",
-          "size": [ "100%", "100%" ],
+          "size": [
+            "100%",
+            "100%"
+          ],
           "layer": 1
         }
       },
       {
-        "item_image": {
-          "type": "image",
+        "item_renderer": {
+          "type": "custom",
           "layer": 2,
-          "size": [ 16, 16 ],
+          "size": [
+            16,
+            16
+          ],
           "anchor_from": "center",
           "anchor_to": "center",
-          "offset": [ 0, 0 ],
+          "offset": [
+            0,
+            0
+          ],
           "bindings": [
             {
               "binding_type": "global",
               "binding_name": "#hud_title_text_string",
-              "binding_name_override": "#texture"
+              "binding_name_override": "#nativeoffhand_aux_string"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(#nativeoffhand_aux_string / 1)",
+              "target_property_name": "#item_id_aux"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(not ((#nativeoffhand_aux_string = '') or (#nativeoffhand_aux_string = '0')))",
+              "target_property_name": "#visible"
             }
-          ]
+          ],
+          "renderer": "inventory_item_renderer",
+          "property_bag": {
+            "#item_id_aux": 0,
+            "#nativeoffhand_aux_string": "0"
+          }
         }
       },
       {
@@ -36,8 +62,15 @@
           "layer": 4,
           "anchor_from": "bottom_right",
           "anchor_to": "bottom_right",
-          "offset": [ -1, 0 ],
-          "color": [ 1, 1, 1 ],
+          "offset": [
+            -1,
+            0
+          ],
+          "color": [
+            1,
+            1,
+            1
+          ],
           "shadow": true,
           "localize": false,
           "text": "#count_text",
@@ -57,24 +90,32 @@
       }
     ]
   },
-
   "offhand_slot_panel": {
     "type": "panel",
     "layer": 100,
-    "size": [ "100%", "100%" ],
+    "size": [
+      "100%",
+      "100%"
+    ],
     "controls": [
       {
         "slot_classic": {
           "type": "panel",
-          "size": [ 22, 22 ],
+          "size": [
+            22,
+            22
+          ],
           "anchor_from": "bottom_middle",
           "anchor_to": "bottom_middle",
-          "offset": [ -110, -1.5 ],
+          "offset": [
+            -110,
+            -1.5
+          ],
           "bindings": [
             {
               "binding_type": "global",
               "binding_name": "#hud_title_text_string",
-              "binding_name_override": "#slot_tex"
+              "binding_name_override": "#slot_aux"
             },
             {
               "binding_type": "global",
@@ -88,7 +129,7 @@
             },
             {
               "binding_type": "view",
-              "source_property_name": "((not (#elipses_left or #elipses_right)) and not (#slot_tex = '') and not (#slot_tex = 'empty') and not (#slot_tex = 'textures/ui/empty'))",
+              "source_property_name": "((not (#elipses_left or #elipses_right)) and not (#slot_aux = '') and not (#slot_aux = '0'))",
               "target_property_name": "#visible"
             }
           ],
@@ -102,15 +143,21 @@
       {
         "slot_touch": {
           "type": "panel",
-          "size": [ 22, 22 ],
+          "size": [
+            22,
+            22
+          ],
           "anchor_from": "bottom_middle",
           "anchor_to": "bottom_middle",
-          "offset": [ -128, -1.5 ],
+          "offset": [
+            -128,
+            -1.5
+          ],
           "bindings": [
             {
               "binding_type": "global",
               "binding_name": "#hud_title_text_string",
-              "binding_name_override": "#slot_tex"
+              "binding_name_override": "#slot_aux"
             },
             {
               "binding_type": "global",
@@ -124,7 +171,7 @@
             },
             {
               "binding_type": "view",
-              "source_property_name": "((#elipses_left or #elipses_right) and not (#slot_tex = '') and not (#slot_tex = 'empty') and not (#slot_tex = 'textures/ui/empty'))",
+              "source_property_name": "((#elipses_left or #elipses_right) and not (#slot_aux = '') and not (#slot_aux = '0'))",
               "target_property_name": "#visible"
             }
           ],

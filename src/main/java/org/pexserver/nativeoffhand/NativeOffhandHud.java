@@ -2,23 +2,11 @@ package org.pexserver.nativeoffhand;
 
 import org.cloudburstmc.protocol.bedrock.packet.SetTitlePacket;
 import org.geysermc.geyser.session.GeyserSession;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
 import java.util.concurrent.*;
 
-/** Uses the unmodified DoubleHands image-path/count HUD protocol. */
+/** Sends native item AUX/count to the DoubleHands-derived slot layout. */
 final class NativeOffhandHud {
-    private static final String EMPTY = "textures/ui/empty";
-    private static final Properties TEXTURES = new Properties();
-    static {
-        try (var stream = NativeOffhandHud.class.getResourceAsStream("/offhand-hud-textures.properties")) {
-            if (stream == null) throw new IllegalStateException("Missing DoubleHands HUD texture map");
-            TEXTURES.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        } catch (Exception error) { throw new ExceptionInInitializerError(error); }
-    }
-
-    private record Snapshot(String texture, int count) {}
+    private record Snapshot(int itemAux, int count) {}
     private static final class State {
         Snapshot last;
         long lastSent;
@@ -44,19 +32,17 @@ final class NativeOffhandHud {
         if (state == null || !session.isSpawned() || session.isClosed()) return;
         var stack = session.getPlayerInventory().getOffhand();
         Snapshot snapshot;
-        if (stack.isEmpty()) snapshot = new Snapshot(EMPTY, 0);
+        if (stack.isEmpty()) snapshot = new Snapshot(0, 0);
         else {
-            // Resolve outside the inventory-move translation scope. The map is
-            // keyed by vanilla Bedrock item names, just as DoubleHands is.
-            String identifier = stack.getItemData(session).getDefinition().getIdentifier();
-            String name = identifier.startsWith("minecraft:") ? identifier.substring(10) : identifier;
-            String javaName = stack.asItem().javaKey().value();
-            String texture = TEXTURES.getProperty(name,
-                TEXTURES.getProperty(javaName, "textures/items/" + name));
-            snapshot = new Snapshot(texture, stack.getAmount());
+            // Resolve outside NativeInventoryView's scoped inventory aliases.
+            // The HUD must use the client's native definition, even while the
+            // inventory is showing an offhand-permitted move alias.
+            var item = stack.getItemData(session);
+            int aux = (item.getDefinition().getRuntimeId() << 16) | (item.getDamage() & 0xffff);
+            snapshot = new Snapshot(aux, stack.getAmount());
         }
         long now = System.nanoTime();
-        // Original UI binds live title values rather than keeping local memory.
+        // The slot binds live title values rather than keeping local memory.
         // Refresh before the two-second title expires, even if nothing changed.
         if (snapshot.equals(state.last) && now - state.lastSent < TimeUnit.SECONDS.toNanos(1)) return;
         state.last = snapshot;
@@ -69,11 +55,11 @@ final class NativeOffhandHud {
         session.getWorldCache().markTitleTimesAsIncorrect();
         session.sendUpstreamPacket(packet(SetTitlePacket.Type.SUBTITLE,
             snapshot.count() > 1 ? Integer.toString(snapshot.count()) : ""));
-        session.sendUpstreamPacket(packet(SetTitlePacket.Type.TITLE, snapshot.texture()));
+        session.sendUpstreamPacket(packet(SetTitlePacket.Type.TITLE, Integer.toString(snapshot.itemAux())));
     }
 
     // The copied UI hides normal titles. Reserve their data channels for the
-    // offhand icon/count so server titles cannot become invalid image paths.
+    // offhand icon/count so server titles cannot overwrite the numeric item data.
     // Actionbar packets continue through Geyser's original translator.
     void refresh(GeyserSession session) {
         var state = states.get(session);
