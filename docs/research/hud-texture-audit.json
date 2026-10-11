@@ -1,0 +1,68 @@
+{
+  "currentPackVersion": [
+    0,
+    2,
+    13
+  ],
+  "packBytes": 9560402,
+  "packSha256": "e759d19c42b705a7c52061554f2d96c9fe290700cb0c117e562a6487e8c01493",
+  "isoCount": 1674,
+  "isoCompressedBytes": 9227278,
+  "isoUncompressedBytes": 12406033,
+  "isoDimensions": [
+    256,
+    256
+  ],
+  "hudIconSize": [
+    16,
+    16
+  ],
+  "vanillaSource": {
+    "repository": "Mojang/bedrock-samples",
+    "commit": "46ba6ea985fb5a92d79a9419198f10dda14c199d",
+    "commitDate": "2026-09-16T04:27:23Z"
+  },
+  "vanillaIsoRenderEntries": 0,
+  "verifiedNativeFlatIcons": 831,
+  "propertiesEntries": 1696,
+  "replaceableIsoImages": 551,
+  "replaceableProperties": 579,
+  "unusedIsoImages": 9,
+  "noIsoImagesPackBytes": 50832,
+  "hybridImageRemovalPackBytes": 8557620,
+  "onlyUnusedRemovedPackBytes": 9546179,
+  "examples": {
+    "apple": {
+      "current": "textures/items/iso_renders/apple",
+      "nativePng": "textures/items/apple"
+    },
+    "bread": {
+      "current": "textures/items/iso_renders/bread",
+      "nativePng": "textures/items/bread"
+    },
+    "iron_axe": {
+      "current": "textures/items/iso_renders/iron_axe",
+      "nativePng": "textures/items/iron_axe"
+    },
+    "stone": {
+      "current": "textures/items/iso_renders/stone",
+      "nativePng": null
+    }
+  },
+  "limitations": [
+    "Removal sizes are packaging measurements, not working HUD variants. The current UI would need changes before deleting images.",
+    "A verified native PNG path proves the asset exists, not that every item state or tint is reproduced by a plain image.",
+    "The native renderer/title binding proof of concept is not yet retail-tested."
+  ],
+  "flatCandidateMethod": "Single-path official item_texture entries and existing icon map; native PNG existence checked against the pinned vanilla tree. Per-item tint/state and UI rendering remain unverified.",
+  "nativeRendererArithmeticSource": {
+    "repository": "Herobrine643928/Chest-UI",
+    "commit": "115d95c8239a0ee2f578a9a7710699a8f6627f26",
+    "path": "RP/ui/chest_server_form.json"
+  },
+  "timestamp": "2026-10-11T10:53:22.823087+00:00",
+  "sourceCommit": "d7b9e17fb315a4aff09843dca77dc27c361706db",
+  "activePackAndJavaImplementationUnchanged": true,
+  "prototype": "docs/research/native-hud-icon.json",
+  "retailNativeRendererStatus": "not_tested"
+}
