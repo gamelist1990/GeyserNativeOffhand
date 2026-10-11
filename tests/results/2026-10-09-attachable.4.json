@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-09T23:45:48.038639+00:00",
+  "extensionVersion": "0.1.3-attachable.4",
+  "resourcePackVersion": "0.1.7",
+  "checks": [
+    "40 generated attachables are bundled",
+    "All resource-pack JSON parses",
+    "Geometry, bone, and animation references are consistent",
+    "Installed test-server JAR matches build",
+    "Test server starts with extension",
+    "All 9 server class files exactly match the protocol-tested attachable.1 build"
+  ],
+  "previousProtocolTests": "2026-10-09-attachable.1.json",
+  "changeSinceProtocolTests": "Resource-pack conditions, pose and separate offhand model; server class files unchanged",
+  "retailRendering": {
+    "firstPersonOffhandIdle": "still below view according to human player",
+    "firstPersonOffhandConsumption": "food becomes visible at lower center of screen during eating",
+    "interpretation": "consumption state reaches the attachable; resting position needs adjustment",
+    "thirdPerson": "not confirmed for this preview"
+  },
+  "artifactSha256": {
+    "GeyserNativeOffhand-0.1.3-attachable.4.jar": "7a2003a76ba159966a0137d8fb6b66980f3c33935bda2bcfae9619325677a5ab",
+    "GeyserNativeOffhand.mcpack": "9825ea2a7797699880986fa19a35ef95a7b5683c246e03a057d065ce2a872847"
+  }
+}

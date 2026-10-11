@@ -1,0 +1,78 @@
+{
+  "tool": "Blockbench Web 5.2.2",
+  "application": "https://web.blockbench.net/",
+  "control": "Remote Desktop Commander MCP -> isolated Chrome DevTools connection on Ubuntu",
+  "referenceSource": "https://github.com/InventivetalentDev/minecraft-assets/blob/1.21.11/assets/minecraft/models/item/handheld.json",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        55
+      ],
+      "translation": [
+        0,
+        4.0,
+        0.5
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -55
+      ],
+      "translation": [
+        0,
+        4.0,
+        0.5
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        25
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -25
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    }
+  },
+  "previewLimit": "These are Java vanilla reference-model renders in Blockbench, not captures of the Bedrock runtime or confirmation of its packet-driven item renderer.",
+  "bedrockChange": "Apply a conditional 180-degree local Y rotation to leftitem for owned hand_equipped fallback items only, retaining the version 8 arm pose and all other item classes. The actual Bedrock facing remains a retail-client verification step."
+}

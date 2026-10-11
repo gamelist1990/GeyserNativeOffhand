@@ -1,0 +1,2357 @@
+{
+  "namespace": "doublehands_hud",
+  "offhand_slot_content": {
+    "type": "panel",
+    "size": [
+      "100%",
+      "100%"
+    ],
+    "controls": [
+      {
+        "background": {
+          "type": "image",
+          "texture": "textures/ui/offhand_slot",
+          "size": [
+            "100%",
+            "100%"
+          ],
+          "layer": 1
+        }
+      },
+      {
+        "item_renderer": {
+          "type": "custom",
+          "layer": 3,
+          "size": [
+            16,
+            16
+          ],
+          "anchor_from": "center",
+          "anchor_to": "center",
+          "offset": [
+            0,
+            0
+          ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#nativeoffhand_aux_string"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(0 + (#nativeoffhand_aux_string - 'B'))",
+              "target_property_name": "#item_id_aux"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(not ((#nativeoffhand_aux_string - 'B') = #nativeoffhand_aux_string))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "renderer": "inventory_item_renderer",
+          "property_bag": {
+            "#item_id_aux": 0,
+            "#nativeoffhand_aux_string": "0",
+            "force_update": true
+          }
+        }
+      },
+      {
+        "native_aux_icons": {
+          "type": "panel",
+          "size": [
+            "100%",
+            "100%"
+          ],
+          "layer": 0,
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#native_aux_route"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(#native_aux_route = (#native_aux_route - 'B'))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "bamboo": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -10682368,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-10682368')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "bamboo_sapling": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -10747904,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-10747904')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "bell": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -13500416,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-13500416')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "black_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -28049408,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-28049408')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "blue_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27787264,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27787264')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "brown_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27852800,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27852800')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "bush": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -67043328,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-67043328')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27000832,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27000832')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70385664,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70385664')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70975488,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70975488')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "copper_torch": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70909952,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70909952')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "cyan_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27656192,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27656192')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "exposed_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70451200,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70451200')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "exposed_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71041024,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71041024')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "firefly_bush": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -67174400,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-67174400')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "gray_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27525120,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27525120')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "green_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27918336,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27918336')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -13631488,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-13631488')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_0": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -14090240,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-14090240')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_1": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -60882944,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-60882944')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_10": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61472768,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61472768')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_11": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61538304,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61538304')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_12": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61603840,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61603840')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_13": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61669376,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61669376')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_14": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61734912,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61734912')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_15": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61800448,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61800448')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_2": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -60948480,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-60948480')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_3": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61014016,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61014016')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_4": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61079552,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61079552')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_5": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61145088,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61145088')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_6": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61210624,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61210624')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_7": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61276160,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61276160')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_8": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61341696,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61341696')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_block_9": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -61407232,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-61407232')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_blue_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27262976,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27262976')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "light_gray_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27590656,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27590656')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "lime_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27394048,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27394048')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "magenta_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27197440,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27197440')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "mangrove_propagule": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -31064064,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-31064064')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "orange_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27131904,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27131904')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "oxidized_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70582272,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70582272')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "oxidized_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71172096,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71172096')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "pink_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27459584,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27459584')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "pink_petals": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -35979264,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-35979264')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "purple_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27721728,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27721728')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "red_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27983872,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27983872')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "resin_clump": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -66977792,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-66977792')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "sea_pickle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -10223616,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-10223616')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "sniffer_egg": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -39059456,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-39059456')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "soul_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -17629184,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-17629184')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "soul_torch": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -17563648,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-17563648')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "sweet_berry_bush": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -13565952,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-13565952')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "turtle_egg": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -10420224,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-10420224')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70647808,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70647808')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71237632,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71237632')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_exposed_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70713344,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70713344')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_exposed_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71303168,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71303168')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_oxidized_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70844416,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70844416')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_oxidized_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71434240,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71434240')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_weathered_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70778880,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70778880')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "waxed_weathered_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71368704,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71368704')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "weathered_copper_chain": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -70516736,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-70516736')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "weathered_copper_lantern": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -71106560,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-71106560')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "white_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27066368,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27066368')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            },
+            {
+              "yellow_candle": {
+                "type": "custom",
+                "renderer": "inventory_item_renderer",
+                "layer": 3,
+                "size": [
+                  16,
+                  16
+                ],
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "offset": [
+                  0,
+                  0
+                ],
+                "property_bag": {
+                  "#item_id_aux": -27328512,
+                  "force_update": true
+                },
+                "bindings": [
+                  {
+                    "binding_type": "global",
+                    "binding_name": "#hud_title_text_string",
+                    "binding_name_override": "#native_aux"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#native_aux = '-27328512')",
+                    "target_property_name": "#visible"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "item_count": {
+          "type": "label",
+          "layer": 4,
+          "anchor_from": "bottom_right",
+          "anchor_to": "bottom_right",
+          "offset": [
+            -1,
+            0
+          ],
+          "color": [
+            1,
+            1,
+            1
+          ],
+          "shadow": true,
+          "localize": false,
+          "text": "#count_text",
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_subtitle_text_string",
+              "binding_name_override": "#count_text"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "(not (#count_text = ''))",
+              "target_property_name": "#visible"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "offhand_slot_panel": {
+    "type": "panel",
+    "layer": 1,
+    "size": [
+      "100%",
+      "100%"
+    ],
+    "controls": [
+      {
+        "slot_classic": {
+          "type": "panel",
+          "size": [
+            22,
+            22
+          ],
+          "anchor_from": "bottom_middle",
+          "anchor_to": "bottom_middle",
+          "offset": [
+            -110,
+            -1.5
+          ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#slot_aux"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_left_visible",
+              "binding_name_override": "#elipses_left"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_right_visible",
+              "binding_name_override": "#elipses_right"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((not (#elipses_left or #elipses_right)) and not (#slot_aux = '') and not (#slot_aux = '0'))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "content@doublehands_hud.offhand_slot_content": {}
+            }
+          ]
+        }
+      },
+      {
+        "slot_touch": {
+          "type": "panel",
+          "size": [
+            22,
+            22
+          ],
+          "anchor_from": "bottom_middle",
+          "anchor_to": "bottom_middle",
+          "offset": [
+            -128,
+            -1.5
+          ],
+          "bindings": [
+            {
+              "binding_type": "global",
+              "binding_name": "#hud_title_text_string",
+              "binding_name_override": "#slot_aux"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_left_visible",
+              "binding_name_override": "#elipses_left"
+            },
+            {
+              "binding_type": "global",
+              "binding_name": "#hotbar_elipses_right_visible",
+              "binding_name_override": "#elipses_right"
+            },
+            {
+              "binding_type": "view",
+              "source_property_name": "((#elipses_left or #elipses_right) and not (#slot_aux = '') and not (#slot_aux = '0'))",
+              "target_property_name": "#visible"
+            }
+          ],
+          "controls": [
+            {
+              "content@doublehands_hud.offhand_slot_content": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

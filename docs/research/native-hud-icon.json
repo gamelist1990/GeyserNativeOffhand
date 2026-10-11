@@ -1,0 +1,50 @@
+{
+  "namespace": "nativeoffhand_research",
+  "static_baseline": {
+    "type": "custom",
+    "renderer": "inventory_item_renderer",
+    "size": [
+      16,
+      16
+    ],
+    "layer": 2,
+    "property_bag": {
+      "#item_id_aux": 3801088
+    }
+  },
+  "dynamic_aux_icon": {
+    "type": "custom",
+    "renderer": "inventory_item_renderer",
+    "size": [
+      16,
+      16
+    ],
+    "layer": 2,
+    "anchor_from": "center",
+    "anchor_to": "center",
+    "offset": [
+      0,
+      0
+    ],
+    "property_bag": {
+      "#item_id_aux": 0
+    },
+    "bindings": [
+      {
+        "binding_type": "global",
+        "binding_name": "#hud_title_text_string",
+        "binding_name_override": "#nativeoffhand_aux_string"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(#nativeoffhand_aux_string / 1)",
+        "target_property_name": "#item_id_aux"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(not ((#nativeoffhand_aux_string = '') or (#nativeoffhand_aux_string = '0')))",
+        "target_property_name": "#visible"
+      }
+    ]
+  }
+}

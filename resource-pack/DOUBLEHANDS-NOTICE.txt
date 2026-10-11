@@ -1,0 +1,8 @@
+DoubleHands 5.6.0 HUD UI and slot frame, by Areed Elahi.
+Copied from the user-provided DoubleHands-5.6.0-26.50+.mcaddon at the user request.
+These third-party files are not relicensed under the extension MIT license.
+No separate redistribution license was included in the provided add-on.
+Reference archive SHA-256: 0b6d3ddf9584617764c22c4ae8d8ab4442734091e1c5a978f835cc4b221c7dab
+
+Version 0.2.14 removes the copied item icons, empty image and TextureMap.
+The retained HUD icon control is modified to use native client item rendering.

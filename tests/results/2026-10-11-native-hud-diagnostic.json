@@ -1,0 +1,211 @@
+{
+  "timestamp": "2026-10-11T11:13:36.069Z",
+  "extensionVersion": "0.2.15-rewrite.15",
+  "resourcePackVersion": [
+    0,
+    2,
+    15
+  ],
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "Native HUD receives block AUX and stack count",
+      "evidence": {
+        "identifier": "minecraft:stone",
+        "itemAux": "65536",
+        "countText": "64"
+      }
+    },
+    {
+      "label": "Native HUD replaces the block AUX with food",
+      "evidence": {
+        "identifier": "minecraft:bread",
+        "itemAux": "17104896",
+        "countText": "7"
+      }
+    },
+    {
+      "label": "Native HUD preserves a colored block data value",
+      "evidence": {
+        "identifier": "minecraft:red_wool",
+        "itemAux": "-36438016",
+        "countText": "9"
+      }
+    },
+    {
+      "label": "Native HUD uses the registered data-driven food definition",
+      "evidence": {
+        "identifier": "minecraft:apple",
+        "itemAux": "57802752",
+        "countText": "2"
+      }
+    },
+    {
+      "label": "One item sends empty subtitle to hide the count",
+      "evidence": {
+        "identifier": "minecraft:bread",
+        "itemAux": "17104896",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Empty OFFHAND sends zero AUX to hide the slot",
+      "evidence": {
+        "identifier": "minecraft:air",
+        "itemAux": "0",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Native HUD tool AUX leaves native equipment unchanged",
+      "evidence": {
+        "identifier": "minecraft:iron_axe",
+        "itemAux": "19660800",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Unchanged HUD data refreshes before the live title binding expires"
+    },
+    {
+      "label": "Server title/subtitle cannot replace the native HUD data; actionbar is preserved"
+    },
+    {
+      "label": "Server title reset refreshes rather than clearing the native HUD slot",
+      "evidence": {
+        "identifier": "minecraft:stone",
+        "itemAux": "65536",
+        "countText": "3"
+      }
+    },
+    {
+      "label": "HUD keeps native stone AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:stone",
+        "itemAux": "65536",
+        "countText": "4"
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: stone",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:stone\", count: 4, components: {\"minecraft:custom_name\": \"Movable named stone\"}}"
+    },
+    {
+      "label": "HUD keeps native iron_axe AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:iron_axe",
+        "itemAux": "19660800",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: iron_axe",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:iron_axe\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:diamond_sword\", count: 1}"
+    }
+  ],
+  "totalChecks": 16,
+  "limitations": [
+    "Headless checks do not execute retail JSON UI, item renderer or numeric-string conversion."
+  ],
+  "implementationCommit": "ac0686e510e03d866c4819895a48ca81ddf29f7d",
+  "candidate": {
+    "timestamp": "2026-10-11T11:12:26.547482+00:00",
+    "extensionVersion": "0.2.15-rewrite.15",
+    "resourcePackVersion": [
+      0,
+      2,
+      15
+    ],
+    "packUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "jar": {
+      "file": "GeyserNativeOffhand-0.2.15-rewrite.15.jar",
+      "bytes": 67651,
+      "sha256": "deb23741b64a38f1ffaa2c38f86376a1e73729bf6e0a1b382f484fc0375b29de"
+    },
+    "pack": {
+      "file": "GeyserNativeOffhand.mcpack",
+      "bytes": 51361,
+      "sha256": "d245ec05b471c60e9bea82da968c2ed9f51acc09fccff41525dfada6fd2a1df1"
+    },
+    "previousPackBytes": 9560402,
+    "removedItemPngs": 1674,
+    "remainingPngs": [
+      "textures/ui/offhand_slot.png"
+    ],
+    "unchanged": [
+      "ui/hud_screen.json",
+      "ui/_ui_defs.json",
+      "textures/ui/offhand_slot.png",
+      "all tool geometry and pose definitions"
+    ],
+    "renderer": "inventory_item_renderer",
+    "titlePayload": "signed (native runtime ID << 16) | (native data value & 0xffff)",
+    "conversion": "(0 + #nativeoffhand_aux_string)",
+    "limitations": [
+      "Retail JSON UI evaluation, icon drawing and special stack appearance remain unverified."
+    ]
+  },
+  "packNegotiation": {
+    "timestamp": "2026-10-11T11:13:37.796Z",
+    "expectedPackUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packets": [
+      {
+        "event": "resource_packs_info",
+        "packs": [
+          {
+            "field": "texture_packs",
+            "uuid": "1f45f555-3b90-4195-c3be-8d26be61d7b0",
+            "normalizedUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+            "version": "0.2.15"
+          },
+          {
+            "field": "texture_packs",
+            "uuid": "b0453084-3d39-5422-65c7-287839bd8a83",
+            "normalizedUuid": "2254393d-8430-45b0-838a-bd397828c765",
+            "version": "1.1.3"
+          }
+        ]
+      }
+    ],
+    "confirmed": true
+  },
+  "diagnosticControls": {
+    "A": {
+      "source": "fixed property_bag",
+      "itemAux": 3801088,
+      "expectedIcon": "crafting table"
+    },
+    "B": {
+      "source": "live native offhand title",
+      "conversion": "(0 + #nativeoffhand_aux_string)"
+    },
+    "C": {
+      "source": "hotbar_items collection index 0",
+      "rendererDataBinding": "#item_renderer_data"
+    },
+    "versionLabel": "D15 AUX followed by the live title value"
+  },
+  "previousRetailResult": {
+    "version": "0.2.14",
+    "status": "failed",
+    "feedback": "Frame visible; no icon displayed."
+  },
+  "retailClient": {
+    "status": "failed",
+    "requestedVersion": "0.2.15",
+    "scope": "Which diagnostic renderer controls A/B/C show icons",
+    "feedback": "None of A/B/C draws an item icon.",
+    "screenshotEvidence": "D15 AUX 65536 and A/B/C labels are visible; stone is in OFFHAND with count 64.",
+    "conclusion": "Pack and payload loaded correctly. Fixed, numeric and collection item renderers are all invisible while text and frame render."
+  },
+  "servedPackMatchesBuild": true,
+  "remainingPngs": [
+    "textures/ui/offhand_slot.png"
+  ]
+}

@@ -1,141 +1,191 @@
 package org.pexserver.nativeoffhand;
 
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
-import org.cloudburstmc.protocol.bedrock.packet.InventoryTransactionPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.geysermc.event.subscribe.Subscribe;
-import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomItemsEvent;
-import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
-import org.geysermc.geyser.api.event.lifecycle.GeyserShutdownEvent;
+import org.geysermc.geyser.api.event.lifecycle.*;
 import org.geysermc.geyser.api.extension.Extension;
-import org.geysermc.geyser.registry.Registries;
+import org.geysermc.geyser.registry.*;
 import org.geysermc.geyser.translator.protocol.PacketTranslator;
+import org.geysermc.geyser.session.GeyserSession;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.inventory.*;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.title.*;
+import org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket;
 import java.lang.reflect.Field;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
 
 public final class NativeOffhandExtension implements Extension {
-    private record Original(boolean componentBased, NbtMap data) {}
-    private final Map<ItemDefinition, Original> originals = new IdentityHashMap<>();
-    private Field componentBased;
-    private Field componentData;
-    private Field translationString;
-    private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> originalTranslations = new IdentityHashMap<>();
-    private PacketTranslator<InventoryTransactionPacket> previous;
-    private OffhandInventoryTransactionTranslator installed;
-    private PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket> previousMetadata;
-    private PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket> metadataHook;
+    private final NativeUseRouter use = new NativeUseRouter();
+    private final NativeOffhandHud hud = new NativeOffhandHud();
+    private final List<Runnable> restore = new ArrayList<>();
+    private final Map<SimpleItemDefinition, NbtMap> nativeData = new IdentityHashMap<>();
+    private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> names = new IdentityHashMap<>();
+    private Field componentData, translation;
 
-    @Subscribe
-    public void defineItems(GeyserDefineCustomItemsEvent event) {
-        try { logger().info("Registered " + ItemCatalog.register(event) + " automatic data-driven item fallbacks."); }
-        catch (Exception failure) { throw new IllegalStateException("Cannot register native offhand item catalog", failure); }
+    @Subscribe public void items(GeyserDefineCustomItemsEvent event) {
+        try { logger().info("Registered " + NativeItemCatalog.register(event) + " inventory-only aliases; native held mappings retained."); }
+        catch (Exception error) { throw new IllegalStateException("Cannot define inventory aliases", error); }
     }
 
-    @Subscribe
-    public void packs(org.geysermc.geyser.api.event.lifecycle.GeyserDefineResourcePacksEvent event) {
+    @Subscribe public void packs(GeyserDefineResourcePacksEvent event) {
         try {
-            java.nio.file.Files.createDirectories(dataFolder());
+            Files.createDirectories(dataFolder());
             var target = dataFolder().resolve("GeyserNativeOffhand.mcpack");
             try (var stream = getClass().getResourceAsStream("/GeyserNativeOffhand.mcpack")) {
-                if (stream == null) throw new java.io.IOException("Bundled pack is missing");
-                java.nio.file.Files.copy(stream, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                if (stream == null) throw new java.io.IOException("Missing bundled pack");
+                Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
             }
             event.register(org.geysermc.geyser.api.pack.ResourcePack.create(org.geysermc.geyser.api.pack.PackCodec.path(target)));
-        } catch (Exception failure) { throw new IllegalStateException("Cannot register offhand icon aliases", failure); }
+        } catch (Exception error) { throw new IllegalStateException("Cannot register inventory icons", error); }
     }
 
-    @Subscribe
-    public void initialize(GeyserPostInitializeEvent event) {
+    @Subscribe public void initialize(GeyserPostInitializeEvent event) {
         try {
-            // The allow_off_hand property is also used by Geyser's vanilla cake,
-            // armor stand and firework overrides. Preserve identifier, runtime ID,
-            // item version, native components, textures and Java mapping.
-            translationString = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
-            translationString.setAccessible(true);
-            componentBased = SimpleItemDefinition.class.getDeclaredField("componentBased");
             componentData = SimpleItemDefinition.class.getDeclaredField("componentData");
-            componentBased.setAccessible(true);
             componentData.setAccessible(true);
+            translation = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
+            translation.setAccessible(true);
             for (var mappings : Registries.ITEMS.get().values()) {
                 for (var mapping : mappings.getItems()) {
-                    if (mapping == null || !ItemCatalog.isFallback(mapping.getJavaItem().javaKey().asString())
-                            || originalTranslations.containsKey(mapping)) continue;
-                    originalTranslations.put(mapping, mapping.getTranslationString());
-                    // Use Geyser's per-session Java locale, preserving custom names,
-                    // rarity and potion-specific names in its normal item translator.
-                    translationString.set(mapping, mapping.getJavaItem().translationKey());
+                    if (mapping == null || !NativeItemCatalog.hasAlias(mapping.getJavaItem().javaKey().asString())
+                            || names.containsKey(mapping)) continue;
+                    names.put(mapping, mapping.getTranslationString());
+                    translation.set(mapping, mapping.getJavaItem().translationKey());
                 }
-                for (ItemDefinition definition : mappings.getItemDefinitions().values()) {
-                    if (definition.getRuntimeId() == 0 || originals.containsKey(definition)) continue;
-                    if (!(definition instanceof SimpleItemDefinition))
-                        throw new IllegalStateException("Unsupported item definition: " + definition.getClass());
-                    NbtMap old = definition.getComponentData();
-                    originals.put(definition, new Original(definition.isComponentBased(), old));
-                    NbtMap root = old == null ? NbtMap.EMPTY : old;
-                    NbtMap components = root.getCompound("components");
-                    NbtMap properties = components.getCompound("item_properties").toBuilder()
-                        .putBoolean("allow_off_hand", true).build();
-                    NbtMap patched = root.toBuilder()
-                        .putString("name", definition.getIdentifier()).putInt("id", definition.getRuntimeId())
-                        .putCompound("components", components.toBuilder()
-                            .putCompound("item_properties", properties).build()).build();
-                    componentData.set(definition, patched);
-                    componentBased.setBoolean(definition, true);
+                for (var definition : mappings.getItemDefinitions().values()) {
+                    // NONE and LEGACY retain their complete native definitions.
+                    // Only the already data-driven vanilla items need this flag.
+                    if (!(definition instanceof SimpleItemDefinition simple)
+                            || definition.getVersion() != ItemVersion.DATA_DRIVEN
+                            || definition.getIdentifier().startsWith("nativeoffhand_ui:") || nativeData.containsKey(simple)) continue;
+                    var root = definition.getComponentData();
+                    if (root == null) throw new IllegalStateException("Missing native components: " + definition.getIdentifier());
+                    nativeData.put(simple, root);
+                    var components = root.getCompound("components");
+                    var properties = components.getCompound("item_properties").toBuilder().putBoolean("allow_off_hand", true).build();
+                    componentData.set(simple, root.toBuilder().putCompound("components",
+                        components.toBuilder().putCompound("item_properties", properties).build()).build());
                 }
             }
-            previous = (PacketTranslator<InventoryTransactionPacket>) Registries.BEDROCK_PACKET_TRANSLATORS.get(InventoryTransactionPacket.class);
-            if (previous == null) throw new IllegalStateException("Inventory translator is missing");
-            installed = new OffhandInventoryTransactionTranslator(previous);
-            Registries.BEDROCK_PACKET_TRANSLATORS.register(InventoryTransactionPacket.class, installed);
-            previousMetadata = (PacketTranslator<org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket>)
-                Registries.JAVA_PACKET_TRANSLATORS.get(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class);
-            var useState = new OffhandUseState();
-            metadataHook = new PacketTranslator<>() {
-                @Override public void translate(org.geysermc.geyser.session.GeyserSession session,
-                        org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket packet) {
-                    previousMetadata.translate(session, packet);
-                    useState.accept(session, packet);
-                }
-            };
-            Registries.JAVA_PACKET_TRANSLATORS.register(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class, metadataHook);
-            logger().info("Enabled native offhand permission on " + originals.size()
-                + " item definitions; installed validated native Java hand routing.");
-        } catch (Throwable failure) {
-            restore();
-            logger().error("Native offhand initialization failed; restored original definitions: " + failure);
+            hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerSetSlotPacket.class, false);
+            hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerSetContentPacket.class, false);
+            hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerClosePacket.class, false);
+            hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundOpenScreenPacket.class, false);
+            hook(Registries.BEDROCK_PACKET_TRANSLATORS, InteractPacket.class, false);
+            hook(Registries.BEDROCK_PACKET_TRANSLATORS, ContainerClosePacket.class, false);
+            hook(Registries.BEDROCK_PACKET_TRANSLATORS, ItemStackRequestPacket.class, false);
+            hook(Registries.BEDROCK_PACKET_TRANSLATORS, InventoryTransactionPacket.class, true);
+            hookInventoryLatency();
+            hookMetadata();
+            hookHud(ClientboundSetTitleTextPacket.class);
+            hookHud(ClientboundSetSubtitleTextPacket.class);
+            hookHud(ClientboundSetTitlesAnimationPacket.class);
+            hookHud(ClientboundClearTitlesPacket.class);
+            logger().info("Native renderer rewrite enabled; no player pose, attachable or animation overrides.");
+        } catch (Throwable error) {
+            restoreAll();
+            logger().error("Native offhand initialization failed: " + error);
         }
     }
 
-    private void restore() {
-        if (metadataHook != null && Registries.JAVA_PACKET_TRANSLATORS.get(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class) == metadataHook)
-            Registries.JAVA_PACKET_TRANSLATORS.register(org.geysermc.mcprotocollib.protocol.packet.ingame.clientbound.entity.ClientboundSetEntityDataPacket.class, previousMetadata);
-        OffhandUseState.clear();
-        if (installed != null && Registries.BEDROCK_PACKET_TRANSLATORS.get(InventoryTransactionPacket.class) == installed)
-            Registries.BEDROCK_PACKET_TRANSLATORS.register(InventoryTransactionPacket.class, previous);
-        originals.forEach((definition, old) -> {
-            try {
-                componentBased.setBoolean(definition, old.componentBased());
-                componentData.set(definition, old.data());
-            } catch (IllegalAccessException e) {
-                logger().error("Cannot restore item definition " + definition.getIdentifier() + ": " + e);
+    @SuppressWarnings("unchecked")
+    private <T, P extends T> void hook(PacketTranslatorRegistry<T> registry, Class<P> type, boolean route) {
+        var delegate = (PacketTranslator<P>) registry.get(type);
+        if (delegate == null) throw new IllegalStateException("Missing translator: " + type);
+        PacketTranslator<P> wrapper = new PacketTranslator<>() {
+            @Override public void translate(GeyserSession session, P packet) {
+                NativeInventoryView.translate(session, () -> {
+                    if (route) use.translate(session, (InventoryTransactionPacket) packet,
+                        (PacketTranslator<InventoryTransactionPacket>) delegate);
+                    else delegate.translate(session, packet);
+                });
+                hud.update(session);
             }
-        });
-        originals.clear();
-        originalTranslations.forEach((mapping, old) -> {
-            try { translationString.set(mapping, old); }
-            catch (IllegalAccessException e) { logger().error("Cannot restore item translation: " + e); }
-        });
-        originalTranslations.clear();
-        installed = null;
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        registry.register(type, wrapper);
+        restore.add(() -> { if (registry.get(type) == wrapper) registry.register(type, delegate); });
     }
 
-    @Subscribe
-    public void disconnect(org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent event) {
-        if (event.connection() instanceof org.geysermc.geyser.session.GeyserSession session) OffhandUseState.disconnect(session);
+    private void hookInventoryLatency() {
+        var type = NetworkStackLatencyPacket.class;
+        @SuppressWarnings("unchecked")
+        var delegate = (PacketTranslator<NetworkStackLatencyPacket>) Registries.BEDROCK_PACKET_TRANSLATORS.get(type);
+        if (delegate == null) throw new IllegalStateException("Missing inventory latency translator");
+        PacketTranslator<NetworkStackLatencyPacket> wrapper = new PacketTranslator<>() {
+            @Override public void translate(GeyserSession session, NetworkStackLatencyPacket packet) {
+                var holder = session.getInventoryHolder();
+                if (holder != null && holder.inventory() instanceof org.geysermc.geyser.inventory.PlayerInventory) {
+                    // Delayed opens run through a latency callback. Enter the
+                    // session event loop first so ensureInEventLoop in that
+                    // callback runs inline, inside our item-translation scope.
+                    // Dequeue on arrival, as Geyser does, so callbacks retain
+                    // reply order even if the inventory closes before dispatch.
+                    var callback = session.getLatencyPingCache().poll();
+                    if (callback != null) session.ensureInEventLoop(() -> {
+                        NativeInventoryView.translate(session, callback);
+                        hud.update(session);
+                    });
+                } else delegate.translate(session, packet);
+            }
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        Registries.BEDROCK_PACKET_TRANSLATORS.register(type, wrapper);
+        restore.add(() -> { if (Registries.BEDROCK_PACKET_TRANSLATORS.get(type) == wrapper)
+            Registries.BEDROCK_PACKET_TRANSLATORS.register(type, delegate); });
     }
 
-    @Subscribe
-    public void shutdown(GeyserShutdownEvent event) { restore(); }
+    private <P extends org.geysermc.mcprotocollib.network.packet.Packet> void hookHud(Class<P> type) {
+        @SuppressWarnings("unchecked")
+        var delegate = (PacketTranslator<P>) Registries.JAVA_PACKET_TRANSLATORS.get(type);
+        if (delegate == null) throw new IllegalStateException("Missing title translator: " + type);
+        PacketTranslator<P> wrapper = new PacketTranslator<>() {
+            @Override public void translate(GeyserSession session, P packet) {
+                hud.refresh(session);
+            }
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        Registries.JAVA_PACKET_TRANSLATORS.register(type, wrapper);
+        restore.add(() -> { if (Registries.JAVA_PACKET_TRANSLATORS.get(type) == wrapper)
+            Registries.JAVA_PACKET_TRANSLATORS.register(type, delegate); });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void hookMetadata() {
+        var type = ClientboundSetEntityDataPacket.class;
+        var delegate = (PacketTranslator<ClientboundSetEntityDataPacket>) Registries.JAVA_PACKET_TRANSLATORS.get(type);
+        if (delegate == null) throw new IllegalStateException("Missing metadata translator");
+        PacketTranslator<ClientboundSetEntityDataPacket> wrapper = new PacketTranslator<>() {
+            @Override public void translate(GeyserSession session, ClientboundSetEntityDataPacket packet) {
+                delegate.translate(session, packet);
+                use.metadata(session, packet);
+            }
+            @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
+        };
+        Registries.JAVA_PACKET_TRANSLATORS.register(type, wrapper);
+        restore.add(() -> { if (Registries.JAVA_PACKET_TRANSLATORS.get(type) == wrapper) Registries.JAVA_PACKET_TRANSLATORS.register(type, delegate); });
+    }
+
+    private void restoreAll() {
+        for (int i = restore.size() - 1; i >= 0; i--) restore.get(i).run();
+        restore.clear();
+        use.clear();
+        hud.clear();
+        nativeData.forEach((item, data) -> { try { componentData.set(item, data); } catch (Exception error) { logger().error(error.toString()); } });
+        nativeData.clear();
+        names.forEach((mapping, name) -> { try { translation.set(mapping, name); } catch (Exception error) { logger().error(error.toString()); } });
+        names.clear();
+    }
+
+    @Subscribe public void join(org.geysermc.geyser.api.event.bedrock.SessionJoinEvent event) {
+        if (event.connection() instanceof GeyserSession session) hud.start(session);
+    }
+
+    @Subscribe public void disconnect(org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent event) {
+        if (event.connection() instanceof GeyserSession session) { use.forget(session); hud.forget(session); }
+    }
+    @Subscribe public void shutdown(GeyserShutdownEvent event) { restoreAll(); }
 }

@@ -1,0 +1,180 @@
+{
+  "application": "Web Blockbench",
+  "version": "5.2.2",
+  "format": "bedrock",
+  "pack_version": [
+    0,
+    1,
+    13
+  ],
+  "scope": "The actual main/offhand food texture meshes and wield/eat animations on official Bedrock player bone pivots. Binding is resolved to the matching player item bone for this inspection; the Bedrock engine attachment pipeline and built-in block/tool renderer are not executed. Camera framing is for comparison, not a claim about the retail screen position.",
+  "molang_preview": "The native expressions are evaluated first, then numeric Bedrock transforms are imported. Blockbench invertMolang did not correctly invert the ternary channel expressions during direct import.",
+  "samples": {
+    "apple": [
+      {
+        "name": "idle",
+        "time": 0,
+        "eating": false,
+        "mirrorError": 0,
+        "leftitem": [
+          11.435659273434652,
+          16.85194523284629,
+          16.223805403632763
+        ],
+        "right": [
+          -6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ],
+        "left": [
+          6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ]
+      },
+      {
+        "name": "eat",
+        "time": 0.3,
+        "eating": true,
+        "mirrorError": 5.205724837925915,
+        "leftitem": [
+          11.435659273434652,
+          16.85194523284629,
+          16.223805403632763
+        ],
+        "right": [
+          -6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ],
+        "left": [
+          2.714477448946278,
+          18.148276143632536,
+          9.96006690988245
+        ]
+      },
+      {
+        "name": "eat-bob",
+        "time": 0.375,
+        "eating": true,
+        "mirrorError": 5.247487373105349,
+        "leftitem": [
+          11.435659273434652,
+          16.85194523284629,
+          16.223805403632763
+        ],
+        "right": [
+          -6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ],
+        "left": [
+          2.7144774485917758,
+          18.190038678811966,
+          9.96006691001628
+        ]
+      }
+    ],
+    "bread": [
+      {
+        "name": "idle",
+        "time": 0,
+        "eating": false,
+        "mirrorError": 0,
+        "leftitem": [
+          11.435659273434652,
+          16.85194523284629,
+          16.223805403632763
+        ],
+        "right": [
+          -6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ],
+        "left": [
+          6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ]
+      },
+      {
+        "name": "eat",
+        "time": 0.3,
+        "eating": true,
+        "mirrorError": 5.205724837925915,
+        "leftitem": [
+          11.435659273434652,
+          16.85194523284629,
+          16.223805403632763
+        ],
+        "right": [
+          -6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ],
+        "left": [
+          2.714477448946278,
+          18.148276143632536,
+          9.96006690988245
+        ]
+      },
+      {
+        "name": "eat-bob",
+        "time": 0.375,
+        "eating": true,
+        "mirrorError": 5.247487373105349,
+        "leftitem": [
+          11.435659273434652,
+          16.85194523284629,
+          16.223805403632763
+        ],
+        "right": [
+          -6.714477449001556,
+          12.942551305706619,
+          11.960066909815623
+        ],
+        "left": [
+          2.7144774485917758,
+          18.190038678811966,
+          9.96006691001628
+        ]
+      }
+    ]
+  },
+  "source_sha256": {
+    "resource-pack/animations/player_firstperson.animation.json": "0688365fe4d05036ccad4915165f5f19df8ca9426575390a9c21ab1e61992ee3",
+    "resource-pack/animations/nativeoffhand_food.animation.json": "e4c1d67166db8064861fa96668f6d8ac9306182ce67358100519bcd06584fe25",
+    "resource-pack/models/entity/nativeoffhand_food.geo.json": "01e016de3a194216d1f3756f4eadb1132d483807449321abf5cc635bfd61a9b0"
+  },
+  "tool_grip": {
+    "ordinary": [
+      11.435659273434652,
+      16.85194523284629,
+      16.223805403632763
+    ],
+    "tool": [
+      11.435659273698615,
+      16.851945233014096,
+      16.223805403552095
+    ],
+    "max_delta": 2.639630736211984e-10
+  },
+  "swap_height": {
+    "0": [
+      -10,
+      0
+    ],
+    "1": [
+      0,
+      0
+    ],
+    "2": [
+      0,
+      0
+    ],
+    "3": [
+      0,
+      0
+    ]
+  }
+}

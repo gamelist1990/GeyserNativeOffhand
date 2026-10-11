@@ -1,0 +1,365 @@
+{
+  "timestamp": "2026-10-11T10:21:49.422Z",
+  "extensionVersion": "0.2.13-rewrite.13",
+  "resourcePackVersion": [
+    0,
+    2,
+    13
+  ],
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "Original DoubleHands HUD receives block texture and stack count",
+      "evidence": {
+        "texture": "textures/items/iso_renders/stone",
+        "countText": "64"
+      }
+    },
+    {
+      "label": "Original DoubleHands HUD replaces the block icon with food",
+      "evidence": {
+        "texture": "textures/items/iso_renders/bread",
+        "countText": "7"
+      }
+    },
+    {
+      "label": "One item sends empty subtitle to hide the count",
+      "evidence": {
+        "texture": "textures/items/iso_renders/bread",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Empty OFFHAND sends the original empty texture to hide the slot",
+      "evidence": {
+        "texture": "textures/ui/empty",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Original DoubleHands tool icon leaves native equipment unchanged",
+      "evidence": {
+        "texture": "textures/items/iso_renders/iron_axe",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Unchanged HUD data refreshes before the original live title binding expires"
+    },
+    {
+      "label": "Server title/subtitle cannot replace the copied HUD data; actionbar is preserved"
+    },
+    {
+      "label": "Server title reset refreshes rather than clearing the copied HUD slot",
+      "evidence": {
+        "texture": "textures/items/iso_renders/stone",
+        "countText": "3"
+      }
+    },
+    {
+      "label": "HUD keeps native iron_axe texture while the inventory uses a move alias",
+      "evidence": {
+        "texture": "textures/items/iso_renders/iron_axe",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: iron_axe",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:iron_axe\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:diamond_sword\", count: 1}"
+    }
+  ],
+  "totalChecks": 12,
+  "limitations": [
+    "Headless checks do not execute retail geometry, controller or HUD label rendering.",
+    "Focused tests cover HUD packets and iron axe/diamond sword inventory transfers; they do not validate retail pixels.",
+    "All 35 tool attachables change only their first-person offhand X/Y/Z translation variables; geometry, rotation, textures and model scale are identical to RP 0.2.12.",
+    "The source screenshot landmarks are approximate. The synthetic preview predicts placement and must be checked on the retail client."
+  ],
+  "bedrockVersion": "1.26.51",
+  "implementationCommit": "981837d72180986229ac0db62f9423b120ebeaa9",
+  "candidate": "Translation-only inventory offhand tool adjustment from paired retail screenshots. RP 0.2.12 orientation was confirmed by PEXkurann; RP 0.2.13 retail placement remains pending.",
+  "assetValidation": {
+    "packUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packVersion": [
+      0,
+      2,
+      13
+    ],
+    "packSha256": "e759d19c42b705a7c52061554f2d96c9fe290700cb0c117e562a6487e8c01493",
+    "servedPackMatches": true,
+    "extensionSha256": "22fda60b50522e0456ebfb0b8f9580dab9bacd45bbae35085cccbbdf169aad5e",
+    "toolAttachables": 35,
+    "offhandPosition": [
+      -14.4,
+      -3.99,
+      3.43
+    ],
+    "nativePositionDelta": [
+      -0.9,
+      1.81,
+      -1.67
+    ],
+    "rotationAndGeometryUnchanged": true,
+    "geometrySha256": "bff0ed2d6575f399e8240be24081d4f36afe146f8d44a51cfbc4ad5ac8426851",
+    "modelScale": 0.68,
+    "changedAttachableVariables": [
+      "off_hand_first_person_pos_x",
+      "off_hand_first_person_pos_y",
+      "off_hand_first_person_pos_z"
+    ]
+  },
+  "packNegotiation": {
+    "timestamp": "2026-10-11T10:21:51.258Z",
+    "expectedPackUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packets": [
+      {
+        "event": "resource_packs_info",
+        "packs": [
+          {
+            "field": "texture_packs",
+            "uuid": "1f45f555-3b90-4195-c3be-8d26be61d7b0",
+            "normalizedUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+            "version": "0.2.13"
+          },
+          {
+            "field": "texture_packs",
+            "uuid": "b0453084-3d39-5422-65c7-287839bd8a83",
+            "normalizedUuid": "2254393d-8430-45b0-838a-bd397828c765",
+            "version": "1.1.3"
+          }
+        ]
+      }
+    ],
+    "confirmed": true
+  },
+  "blockbenchPreview": {
+    "directory": "docs/previews/ui-tool-position",
+    "application": "Blockbench",
+    "version": "5.2.2",
+    "calibration": {
+      "method": "Approximate screenshot texture landmarks and a calibrated Blockbench pinhole preview. This is a placement estimate, not retail pixel validation.",
+      "resolution": [
+        1280,
+        588
+      ],
+      "normalTop": [
+        270,
+        270
+      ],
+      "normalLeftX": 40,
+      "inventoryTop": [
+        355,
+        338
+      ],
+      "previewFov": 70,
+      "previewCameraYOffset": 3.518365640657612,
+      "oldPosition": [
+        -13.5,
+        -5.8,
+        5.1
+      ],
+      "newPosition": [
+        -14.4,
+        -3.99,
+        3.43
+      ],
+      "nativePositionDelta": [
+        -0.9,
+        1.81,
+        -1.67
+      ],
+      "worldPositionDelta": [
+        0.9,
+        1.81,
+        -1.67
+      ],
+      "rotationAndGeometryUnchanged": true
+    },
+    "scope": "Synthetic camera calibrated approximately to the inventory screenshot; this predicts translation, not retail Bedrock rendering.",
+    "samples": {
+      "iron_axe": {
+        "before": {
+          "vertexCount": 6144,
+          "maxTranslationError": 0,
+          "spriteMatrix": [
+            2.202737992007542e-12,
+            -0.42261826180019585,
+            0.9063077870089064,
+            0,
+            -6.691589990448499e-11,
+            0.9063077870089062,
+            0.42261826180019596,
+            0,
+            -0.9999999999999999,
+            -6.157748204567437e-11,
+            -2.628353090727842e-11,
+            0,
+            7.634363958901326,
+            17.593921052592812,
+            11.573815675495696,
+            1
+          ],
+          "top": {
+            "world": [
+              7.974363932352269,
+              22.77008583551941,
+              11.736610041397576
+            ],
+            "screen": [
+              354.7182923376163,
+              338.00000001224885
+            ]
+          },
+          "bounds": [
+            214.88494706639926,
+            338.00000001224885,
+            420.54291268446934,
+            708.3706550740376
+          ]
+        },
+        "after": {
+          "vertexCount": 6144,
+          "maxTranslationError": 2.9976021664879227e-15,
+          "spriteMatrix": [
+            2.202737992007542e-12,
+            -0.42261826180019585,
+            0.9063077870089064,
+            0,
+            -6.691589990448499e-11,
+            0.9063077870089062,
+            0.42261826180019596,
+            0,
+            -0.9999999999999999,
+            -6.157748204567437e-11,
+            -2.628353090727842e-11,
+            0,
+            8.534363958901327,
+            19.40392105259281,
+            9.903815675495697,
+            1
+          ],
+          "top": {
+            "world": [
+              8.87436393235227,
+              24.58008583551941,
+              10.066610041397576
+            ],
+            "screen": [
+              269.8527406904463,
+              269.80478062218845
+            ]
+          },
+          "bounds": [
+            39.600370393022715,
+            269.80478062218845,
+            359.9547348413121,
+            701.8075915579221
+          ]
+        }
+      },
+      "diamond_sword": {
+        "before": {
+          "vertexCount": 6144,
+          "maxTranslationError": 0,
+          "spriteMatrix": [
+            2.202737992007542e-12,
+            -0.42261826180019585,
+            0.9063077870089064,
+            0,
+            -6.691589990448499e-11,
+            0.9063077870089062,
+            0.42261826180019596,
+            0,
+            -0.9999999999999999,
+            -6.157748204567437e-11,
+            -2.628353090727842e-11,
+            0,
+            7.634363958901326,
+            17.593921052592812,
+            11.573815675495696,
+            1
+          ],
+          "top": {
+            "world": [
+              7.974363932299276,
+              24.82327733617324,
+              8.942544458293272
+            ],
+            "screen": [
+              265.58305744289703,
+              255.3450068615488
+            ]
+          },
+          "bounds": [
+            225.63458252114344,
+            255.3450068615488,
+            446.72318510009825,
+            758.3191899650649
+          ]
+        },
+        "after": {
+          "vertexCount": 6144,
+          "maxTranslationError": 2.9976021664879227e-15,
+          "spriteMatrix": [
+            2.202737992007542e-12,
+            -0.42261826180019585,
+            0.9063077870089064,
+            0,
+            -6.691589990448499e-11,
+            0.9063077870089062,
+            0.42261826180019596,
+            0,
+            -0.9999999999999999,
+            -6.157748204567437e-11,
+            -2.628353090727842e-11,
+            0,
+            8.534363958901327,
+            19.40392105259281,
+            9.903815675495697,
+            1
+          ],
+          "top": {
+            "world": [
+              8.874363932299278,
+              26.63327733617324,
+              7.272544458293272
+            ],
+            "screen": [
+              127.64450479364321,
+              141.9694856010761
+            ]
+          },
+          "bounds": [
+            58.73743561784366,
+            141.9694856010761,
+            397.29846729116565,
+            760.5415116732313
+          ]
+        }
+      }
+    },
+    "sourceSha256": {
+      "scripts/generate-ui-tools.py": "a62da058784b87ec0af27774c913c51e298c5e96ed67a91def6641a4c62e6fb2",
+      "resource-pack/models/entity/nativeoffhand_ui_tool.geo.json": "bff0ed2d6575f399e8240be24081d4f36afe146f8d44a51cfbc4ad5ac8426851",
+      "resource-pack/attachables/nativeoffhand_ui/iron_axe.json": "002364aff8f24a26b048118ab25b4fef4f56981bfb813ed236e63eea1986c40e",
+      "resource-pack/attachables/nativeoffhand_ui/diamond_sword.json": "2769b4e382664cc130ab9403f92d537350e23a47d9a82f739da496fc5946287f"
+    }
+  },
+  "server": {
+    "minecraft": "Paper 26.3-159-main@a4b87cf",
+    "geyser": "2.12.0-SNAPSHOT build 3080",
+    "geyserCommit": "e215fa5cf1ffc3874c4d46c579d25800b20f17e4",
+    "geyserSHA256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
+  },
+  "retailClient": {
+    "status": "pending",
+    "source": "PEXkurann RP 0.2.13 reconnect and comparison with normal-screen axe requested",
+    "limitations": "Approximate screen landmarks calibrate a synthetic preview. Bedrock native inventory rendering and other client FOVs are not executed by this preview."
+  }
+}

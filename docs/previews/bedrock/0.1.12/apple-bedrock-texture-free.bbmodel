@@ -1,0 +1,749 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "bedrock",
+    "box_uv": false
+  },
+  "name": "Bedrock actual offhand apple geometry - source plus resolved preview",
+  "model_identifier": "nativeoffhand.food.offhand",
+  "visible_box": [
+    4,
+    4,
+    1
+  ],
+  "variable_placeholders": "temp.is_first_person = toggle('is_first_person')",
+  "multi_file_ruleset": "",
+  "variable_placeholder_buttons": [
+    {
+      "type": "toggle",
+      "id": "is_first_person",
+      "value": 0,
+      "variable": "temp.is_first_person"
+    }
+  ],
+  "bedrock_animation_mode": "entity",
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 16,
+    "height": 16
+  },
+  "editor_state": {
+    "save_path": "",
+    "export_path": "",
+    "saved": true,
+    "added_models": 0,
+    "mode": "animate",
+    "tool": "",
+    "exploded_view": false,
+    "uv_viewport": {
+      "zoom": 1,
+      "offset": [
+        0,
+        0
+      ]
+    },
+    "previews": {
+      "media": {
+        "position": [
+          -40,
+          32,
+          -40
+        ],
+        "target": [
+          0,
+          12,
+          0
+        ],
+        "orthographic": false,
+        "zoom": 0.5,
+        "angle": null
+      },
+      "no_aa_media": {
+        "position": [
+          -40,
+          32,
+          -40
+        ],
+        "target": [
+          0,
+          12,
+          0
+        ],
+        "orthographic": false,
+        "zoom": 0.5,
+        "angle": null
+      },
+      "main": {
+        "position": [
+          18.000000000000004,
+          28.000000000000004,
+          -35
+        ],
+        "target": [
+          18,
+          28,
+          8
+        ],
+        "orthographic": false,
+        "zoom": 0.5,
+        "angle": null
+      },
+      "display": {
+        "position": [
+          -40.00000000000001,
+          31.999999999999996,
+          -40
+        ],
+        "target": [
+          0,
+          12,
+          0
+        ],
+        "orthographic": false,
+        "zoom": 0.5,
+        "angle": null
+      }
+    },
+    "selected_elements": [],
+    "selected_groups": [],
+    "mesh_selection": {},
+    "selected_texture": null
+  },
+  "elements": [
+    {
+      "name": "nativeoffhand_left_food",
+      "box_uv": false,
+      "render_order": "default",
+      "locked": false,
+      "export": true,
+      "scope": 0,
+      "allow_mirror_modeling": true,
+      "from": [
+        -7,
+        22,
+        -1
+      ],
+      "to": [
+        5,
+        34,
+        -0.75
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": null
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": null
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": null
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": null
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": null
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "texture": null
+        }
+      },
+      "type": "cube",
+      "uuid": "fffe6192-35ae-4a1a-d913-1f159ba44b22"
+    }
+  ],
+  "groups": [
+    {
+      "name": "nativeoffhand_left_food",
+      "uuid": "6b282628-326c-44f4-379c-d7e35008f5d8",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        -1,
+        15.5,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "bedrock_binding": "query.item_slot_to_bone_name(context.item_slot)",
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": false,
+      "primary_selected": false
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "6b282628-326c-44f4-379c-d7e35008f5d8",
+      "isOpen": false,
+      "children": [
+        "fffe6192-35ae-4a1a-d913-1f159ba44b22"
+      ]
+    }
+  ],
+  "textures": [],
+  "animations": [
+    {
+      "uuid": "68c0ed66-2e50-13ce-de9a-e69c9a9d03e0",
+      "name": "animation.nativeoffhand.food.wield",
+      "loop": "loop",
+      "override": false,
+      "length": 0,
+      "snapping": 24,
+      "selected": false,
+      "saved": true,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "0d07337a-48e3-6137-c35d-ddcdc074a376": {
+          "name": "nativeoffhand_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? -38.0 : -0.0",
+                  "y": "-context.is_first_person ? 120.0 : -0.0",
+                  "z": "context.is_first_person ? -63.0 : 0.0"
+                }
+              ],
+              "uuid": "ff2b8932-9f8d-85ec-8012-3bd91ea0b8a1",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? 5.5 : -0.5",
+                  "y": "context.is_first_person ? 21.0 : 21.5",
+                  "z": "context.is_first_person ? -3.0 : 1.0"
+                }
+              ],
+              "uuid": "195bf025-866b-13cf-d9d2-3ee512b9124f",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "context.is_first_person ? 0.75 : 0.5",
+                  "y": "context.is_first_person ? 0.75 : 0.5",
+                  "z": "context.is_first_person ? 0.75 : 0.5"
+                }
+              ],
+              "uuid": "330f2d59-e620-1538-a517-c35e744cb4d3",
+              "time": 0,
+              "color": -1,
+              "uniform": true,
+              "interpolation": "linear"
+            }
+          ]
+        },
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? -1.0 : 90.0",
+                  "y": "-context.is_first_person ? -176.0 : -0.0",
+                  "z": "context.is_first_person ? -2.5 : 90.0"
+                }
+              ],
+              "uuid": "0a041d68-d1c1-cbc1-379f-6eca2fc7ecfe",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? 17.0 : 1.6",
+                  "y": "context.is_first_person ? 2.2 : 9.0",
+                  "z": "context.is_first_person ? 5.1 : 9.3"
+                }
+              ],
+              "uuid": "8661b615-f396-d200-76ef-203cde8b711a",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "context.is_first_person ? 1.0 : -1.0",
+                  "y": "context.is_first_person ? 1.0 : -1.0",
+                  "z": "1"
+                }
+              ],
+              "uuid": "8b233ee1-7df4-43ee-b739-f60bdc4d5155",
+              "time": 0,
+              "color": -1,
+              "uniform": false,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "f33c0b24-fe66-b2db-4fe1-d0994359dbe8",
+      "name": "animation.nativeoffhand.food.eat",
+      "loop": "loop",
+      "override": false,
+      "length": 10,
+      "snapping": 24,
+      "selected": false,
+      "saved": true,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "15.0 * math.min(query.anim_time * 5.0, 1.0) - 4.0 * math.abs(math.sin(query.anim_time * 1080.0))",
+                  "y": "10.0 * math.min(query.anim_time * 5.0, 1.0)",
+                  "z": "10.0 * math.min(query.anim_time * 5.0, 1.0)"
+                }
+              ],
+              "uuid": "b62489a3-3319-6a67-834b-bea7e613bf89",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": "-3.0 * math.min(query.anim_time * 5.0, 1.0)",
+                  "y": "3.2 * math.min(query.anim_time * 5.0, 1.0) + 0.6 * math.abs(math.sin(query.anim_time * 1080.0))",
+                  "z": "1.5 * math.min(query.anim_time * 5.0, 1.0)"
+                }
+              ],
+              "uuid": "bdb09642-8d5e-e6fe-0623-9c0f8039a492",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "60b5255f-a984-482b-87ce-6075b100e425",
+      "name": "animation.nativeoffhand.food.drink",
+      "loop": "loop",
+      "override": false,
+      "length": 10,
+      "snapping": 24,
+      "selected": false,
+      "saved": true,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "15.0 * math.min(query.anim_time * 5.0, 1.0) - 4.0 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
+                  "y": "10.0 * math.min(query.anim_time * 5.0, 1.0)",
+                  "z": "10.0 * math.min(query.anim_time * 5.0, 1.0)"
+                }
+              ],
+              "uuid": "c3cd2642-dc2d-42a9-7308-3d336eae72dc",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": "-3.0 * math.min(query.anim_time * 5.0, 1.0)",
+                  "y": "3.2 * math.min(query.anim_time * 5.0, 1.0) + 0.6 * (0.5 + 0.5 * math.sin(query.anim_time * 360.0))",
+                  "z": "1.5 * math.min(query.anim_time * 5.0, 1.0)"
+                }
+              ],
+              "uuid": "04aca356-d0a9-d272-b3d7-76c6a7d2dea1",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "47806fe1-f43d-f9c1-3588-328cea524f7d",
+      "name": "animation.nativeoffhand.food.wield_before",
+      "loop": "loop",
+      "override": false,
+      "length": 0,
+      "snapping": 24,
+      "selected": false,
+      "saved": true,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "d93b7bce-922f-be8b-4f1a-745ae2ce6e4b": {
+          "name": "nativeoffhand_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? -38.0 : -0.0",
+                  "y": "-context.is_first_person ? 120.0 : -0.0",
+                  "z": "context.is_first_person ? -63.0 : 0.0"
+                }
+              ],
+              "uuid": "686077de-6134-90df-e4e4-bf811d1ff5cb",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? 5.5 : -0.5",
+                  "y": "context.is_first_person ? 21.0 : 21.5",
+                  "z": "context.is_first_person ? -3.0 : 1.0"
+                }
+              ],
+              "uuid": "42ffd30c-d853-4b21-f986-a406e552c15d",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "context.is_first_person ? 0.75 : 0.5",
+                  "y": "context.is_first_person ? 0.75 : 0.5",
+                  "z": "context.is_first_person ? 0.75 : 0.5"
+                }
+              ],
+              "uuid": "7e09519f-3c7b-cd6f-763e-903e90856617",
+              "time": 0,
+              "color": -1,
+              "uniform": true,
+              "interpolation": "linear"
+            }
+          ]
+        },
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? -1.0 : 90.0",
+                  "y": "-context.is_first_person ? -176.0 : -0.0",
+                  "z": "context.is_first_person ? -2.5 : 90.0"
+                }
+              ],
+              "uuid": "66869d68-9e5f-4c7a-cec8-0b8058e96bb1",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": "-context.is_first_person ? 13.5 : 1.6",
+                  "y": "context.is_first_person ? 0.2 : 9.0",
+                  "z": "context.is_first_person ? 5.1 : 9.3"
+                }
+              ],
+              "uuid": "de090726-6324-01b0-d95e-e0b76893d8ad",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "scale",
+              "data_points": [
+                {
+                  "x": "context.is_first_person ? 1.0 : -1.0",
+                  "y": "context.is_first_person ? 1.0 : -1.0",
+                  "z": "1"
+                }
+              ],
+              "uuid": "24ab6eeb-dabc-247e-5990-a7c4790e0af2",
+              "time": 0,
+              "color": -1,
+              "uniform": false,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "82cd3cfc-e840-4f8a-a44d-d3720e23176f",
+      "name": "preview.before.resolved",
+      "loop": "loop",
+      "override": false,
+      "length": 0,
+      "snapping": 24,
+      "selected": false,
+      "saved": false,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": 13.5,
+                  "y": 0.1999999999999993,
+                  "z": 5.1
+                }
+              ],
+              "uuid": "8196c26d-bb7e-4b49-9208-bee12ac3fe47",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": -1.0,
+                  "y": -175.99999999999997,
+                  "z": -2.5
+                }
+              ],
+              "uuid": "801bd73d-defa-45f1-aaed-5016515f89e4",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "0b139b3e-684a-4c6c-b5c7-42d10eb7352d",
+      "name": "preview.idle.resolved",
+      "loop": "loop",
+      "override": false,
+      "length": 0,
+      "snapping": 24,
+      "selected": true,
+      "saved": false,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": 17,
+                  "y": 2.1999999999999993,
+                  "z": 5.1
+                }
+              ],
+              "uuid": "2f9b821a-173d-4cdb-902d-7adf4f340b54",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": -1.0,
+                  "y": -175.99999999999997,
+                  "z": -2.5
+                }
+              ],
+              "uuid": "41d5767f-7e9c-4e95-af34-b2e57bab37f6",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "69a1feea-77ec-4785-a704-b0e2740ca7f6",
+      "name": "preview.eat.resolved",
+      "loop": "loop",
+      "override": false,
+      "length": 0,
+      "snapping": 24,
+      "selected": false,
+      "saved": false,
+      "scope": 0,
+      "anim_time_update": "",
+      "blend_weight": "",
+      "start_delay": "",
+      "loop_delay": "",
+      "animators": {
+        "6b282628-326c-44f4-379c-d7e35008f5d8": {
+          "name": "nativeoffhand_left_food",
+          "type": "bone",
+          "rotation_global": false,
+          "quaternion_interpolation": false,
+          "keyframes": [
+            {
+              "channel": "position",
+              "data_points": [
+                {
+                  "x": 14,
+                  "y": 5.752671151375484,
+                  "z": 6.6
+                }
+              ],
+              "uuid": "a6d1a783-9af8-4a95-a07f-bcc5a3d6891e",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            },
+            {
+              "channel": "rotation",
+              "data_points": [
+                {
+                  "x": 11.648858990830107,
+                  "y": -166.00000000000003,
+                  "z": 7.499999999999999
+                }
+              ],
+              "uuid": "e06ab43a-d01a-48b9-9803-1b12fb0335a1",
+              "time": 0,
+              "color": -1,
+              "interpolation": "linear"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "animation_variable_placeholders": "temp.is_first_person = toggle('is_first_person')"
+}

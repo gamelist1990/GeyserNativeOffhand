@@ -1,78 +1,55 @@
 # GeyserNativeOffhand
 
-Bedrock の通常のインベントリで、松明・ランタン・ブロック・剣などをオフハンドへ移動できるようにする Geyser-Spigot 拡張です。Java サーバーへオフハンドの設置・使用を送ります。食事・飲用も Java 側で処理します。
+Geyser経由でJavaサーバーに参加するBedrockプレイヤーが、通常のインベントリからアイテムをオフハンドへ出し入れできるGeyser-Spigot拡張です。ホットバーの左には、オフハンドのアイコンと個数を表示します。
 
-**v0.1.2 は実験版です。対応する Geyser の内部実装に依存します。**
+現在のソース版は **0.2.23** です。
+
+## 機能
+
+- 持ち物欄・ホットバーとオフハンドの間で、アイテムを移動・分割・結合・交換できます。
+- ブロック、道具、食品などをオフハンドに持ち、対応する設置・使用をJavaサーバーへ送ります。右手で使用できるアイテムを持っている場合は、右手を優先します。
+- ゲーム画面ではバニラの保持アイテムを使い、インベントリを閉じると元の種類・個数・名前・ブロック状態を維持します。
+- オフハンドのHUDはクライアントの既存アイコンを使います。同梱パックは約53KBです。
 
 ## 対応環境
 
-| 項目 | 検証したバージョン |
+| 項目 | 検証済み環境 |
 | --- | --- |
-| Geyser-Spigot | 2.12.0-SNAPSHOT、build 3080、commit `e215fa5cf1ffc3874c4d46c579d25800b20f17e4` |
-| Paper | 26.3-159-main@a4b87cf |
-| Bedrock 自動クライアント | 1.26.51、protocol 2193 |
-| サーバー Java | 26 |
-| ビルド | JDK 25 以上、Python 3 |
+| Geyser | Geyser-Spigot 2.12.0-SNAPSHOT、build 3080 |
+| Javaサーバー | Paper 26.3、Java 26 |
+| Bedrockクライアント | 1.26.51 |
 
-この Geyser は Java 26.3 対応プレビューです。別の Geyser ビルド、Standalone、Velocity、他の Bedrock バージョンでの互換性は未確認です。検証した Geyser JAR の SHA-256 は `424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c`。
+Geyser-Spigot向けです。ほかのGeyserビルドやStandalone・Velocityの対応状況は[互換性](docs/compatibility.md)を参照してください。
 
 ## 導入
 
-1. [Releases](https://github.com/gamelist1990/GeyserNativeOffhand/releases) から拡張 JAR を取得します。
-2. 停止した検証サーバーの `plugins/Geyser-Spigot/extensions/` に配置します。
-3. Geyser の `gameplay.enable-custom-content` と `gameplay.force-resource-packs` を `true` にします。
-4. サーバーを完全に再起動し、Bedrock で接続してリソースパックを受け入れます。
+1. [ビルド手順](docs/building.md)に従って拡張JARを用意し、サーバーを停止します。
+2. JARを `plugins/Geyser-Spigot/extensions/` に配置します。更新時は古い本拡張のJARを取り除きます。
+3. Geyserの設定で、次の既存の項目を `true` にします。
 
-専用パックは JAR に同梱され、拡張が自動登録します。配布する mcpack を手動で重複登録する必要はありません。更新後は Bedrock も再接続してください。ホットリロードには対応しません。
-
-## 実装
-
-- 起動時に Geyser の Java アイテムマッピングと Bedrock ブロックパレットから対象を列挙します。松明だけの許可リストを使いません。
-- 既存のネイティブな data-driven アイテムを保ち、それ以外に低優先度の v2 カスタムアイテムを登録します。バニラでオフハンドに対応する盾は元の ID を保ち、盾の attachable・模様・防御描画を使います。検証環境では 1,625 件のフォールバックを登録しました。
-- ブロックは Geyser の実際の Bedrock ブロック情報を使い、その他のアイコンはバニラのテクスチャパスを参照します。Minecraft の画像ファイルは同梱しません。
-- 全プロトコルの非空気アイテム定義へ `allow_off_hand` を設定します。検証クライアントへ送信された 3,702 件の定義で有効でした。
-- 通常の ItemStackRequest を使ってオフハンド枠へ移動します。設置・使用は Java の OFF_HAND パケットで処理します。
-- Java の使用中メタデータから食事・飲用の状態を管理します。繰り返し届く使用入力によるタイマーの再開始を防ぎ、Java 側で消費を完了させます。
-- フォールバックの表示名は Geyser の Java アイテム翻訳とプレイヤーの言語設定で処理します。プレイヤーが付けた名前を優先します。
-
-メインハンドが空、または剣などの使用しないアイテムの場合にオフハンドへ振り分けます。設置できるメインハンドのブロックなどはメインハンドを優先します。Bedrock の ITEM_USE には手の指定がないため、Java のすべての PASS → オフハンド判定を完全に再現したものではありません。食べられない満腹状態や、対象によって使用できない道具などの組み合わせには追加検証が必要です。
-
-到達距離・カーソル・アイテム定義・ワールド境界・予測処理の検証は Geyser の既存処理に従います。オフハンド切り替えキーは実装しません。
-
-## 検証状況
-
-実際の独立した Paper + Geyser サーバーと [PrismarineJS/bedrock-protocol](https://github.com/PrismarineJS/bedrock-protocol) を使った **26 項目が通過**しました。
-
-- 通常のインベントリから松明をオフハンドへ移動。
-- 空の右手／右手の剣で、左手の松明を 1 個ずつ設置。
-- メインハンドのブロックを優先し、重複設置を防止。
-- オフハンドの水バケツ・エンダーパール・ポーション・りんごを使用。
-- 食事・飲用の完了と、独自の PlayAnimation・アニメーション制御プロパティが送られないこと。
-- 日本語クライアントへ送る石の表示名、カスタム名の維持、盾のバニラ ID とオフハンド往復移動。
-- ランタン・魂のランタン・魂の松明・石・剣・りんご・水バケツ・記入済みの本のオフハンド往復移動。
-- 範囲外の操作と不正な保持アイテム定義を拒否。
-
-実機では、プレイヤーが松明のインベントリからの移動・設置、りんごの消費、全アイテム対応版でのオフハンドへの移動を確認しています。表示名と盾の ID は v0.1.1 で修正しました。v0.1.2 はユーザーの指定に従って、食事・飲用のカスタムモーションとその制御プロパティを削除した版です。パケットテストは実機の描画を検証しません。
-
-特殊なアイテムの表示・翻訳名・attachable、他のカスタムアイテム拡張やリソースパックとの同時使用も網羅していません。フォールバックの優先度は低くしていますが、個別の互換性確認が必要です。
-
-[保存した検証結果](tests/results/2026-10-09-v0.1.2.json) / [再実行手順](tests/bedrock/README.md)
-
-## ビルド
-
-検証した Geyser-Spigot JAR と、起動済み Paper のライブラリを用意します。Java のコンパイルに Gson・Guava・Netty・Checker Qual なども必要なため、Paper の `libraries` を追加クラスパスに指定します。
-
-```bash
-export GEYSER_JAR=/path/to/Geyser-Spigot.jar
-export PAPER_LIBRARIES=/path/to/test-server/libraries
-export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pathsep.join(str(p) for p in Path(os.environ["PAPER_LIBRARIES"]).rglob("*.jar")))')"
-./build.sh
+```yaml
+gameplay:
+  enable-custom-content: true
+  force-resource-packs: true
+  enable-integrated-pack: true
 ```
 
-出力は `build/GeyserNativeOffhand-0.1.2.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。Geyser の内部クラスを使用するため、API JAR だけではビルドできません。
+4. サーバーを完全に再起動します。リソースパックは拡張から自動登録されます。
+5. Bedrockから再接続し、配信されたリソースパックを受け取ります。
 
-## ライセンスと出典
+インベントリを開き、通常のオフハンド枠へアイテムを移してください。専用コマンドやフォームは必要ありません。
 
-MIT。インベントリ操作トランスレーターは [GeyserMC/Geyser の該当コミット](https://github.com/GeyserMC/Geyser/blob/e215fa5cf1ffc3874c4d46c579d25800b20f17e4/core/src/main/java/org/geysermc/geyser/translator/protocol/bedrock/BedrockInventoryTransactionTranslator.java) を基にしています。元の著作権表示とライセンスを保持しています。
+## 利用上の制約
 
-開発には AI による実装補助を使用しました。このリポジトリは独立した実験拡張で、Geyser の公式機能・公式配布物ではありません。
+- オフハンドのブロックは、Bedrock側の表示制約で小さく見える場合があります。
+- 食品の消費はJavaサーバー側で処理します。左手の専用の食事モーションはありません。
+- 通常のタイトルと副題はHUDに使用するため表示されません。アクションバーは利用できます。
+- アイコンの色・模様・エンチャント表現や、クリエイティブ・ほかのカスタムパックとの組み合わせは、[確認状況](docs/validation.md)を参照してください。
+
+0.2.23ではパン・石・りんご・ランタンのHUD表示と切り替えを実機で確認し、移動・同期の自動試験27項目が通過しています。詳しい実装・検証・過去の記録は[docs](docs/README.md)にまとめています。
+
+## ライセンス・出典
+
+独自コードは[MIT](LICENSE)です。HUDの配置と枠画像はAreed Elahi氏のDoubleHands 5.6.0を参考にしています。これらの第三者ファイルをMITとして再許諾していません。[第三者の出典](THIRD_PARTY_NOTICES.md)を参照してください。
+
+本拡張はGeyserの公式機能ではありません。AIによる実装補助を使用しています。

@@ -1,0 +1,295 @@
+{
+  "timestamp": "2026-10-11T12:21:12.410797+00:00",
+  "candidate": "0.2.20-rewrite.20",
+  "resourcePackVersion": [
+    0,
+    2,
+    20
+  ],
+  "functionalBaseline": {
+    "timestamp": "2026-10-11T12:13:46.982Z",
+    "bedrockVersion": "1.26.51",
+    "resourcePackVersion": [
+      0,
+      2,
+      19
+    ],
+    "checks": [
+      {
+        "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+      },
+      {
+        "label": "Native HUD receives block AUX and stack count",
+        "evidence": {
+          "identifier": "minecraft:stone",
+          "itemAux": "65536",
+          "countText": "64"
+        }
+      },
+      {
+        "label": "Native HUD replaces the block AUX with food",
+        "evidence": {
+          "identifier": "minecraft:bread",
+          "itemAux": "17104896",
+          "countText": "7"
+        }
+      },
+      {
+        "label": "Native HUD preserves a colored block data value",
+        "evidence": {
+          "identifier": "minecraft:red_wool",
+          "itemAux": "-36438016",
+          "countText": "9"
+        }
+      },
+      {
+        "label": "Native HUD sends signed AUX for lantern",
+        "evidence": {
+          "identifier": "minecraft:lantern",
+          "itemAux": "-13631488",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native HUD sends signed AUX for soul_lantern",
+        "evidence": {
+          "identifier": "minecraft:soul_lantern",
+          "itemAux": "-17629184",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native HUD sends signed AUX for soul_torch",
+        "evidence": {
+          "identifier": "minecraft:soul_torch",
+          "itemAux": "-17563648",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native HUD corrects the local UI ID for data-driven apple",
+        "evidence": {
+          "identifier": "minecraft:apple",
+          "itemAux": "160628736",
+          "countText": "2"
+        }
+      },
+      {
+        "label": "One item sends empty subtitle to hide the count",
+        "evidence": {
+          "identifier": "minecraft:bread",
+          "itemAux": "17104896",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Empty OFFHAND sends zero AUX to hide the slot",
+        "evidence": {
+          "identifier": "minecraft:air",
+          "itemAux": "0",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Native HUD tool AUX leaves native equipment unchanged",
+        "evidence": {
+          "identifier": "minecraft:iron_axe",
+          "itemAux": "19660800",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Unchanged HUD data refreshes before the live title binding expires"
+      },
+      {
+        "label": "Server title/subtitle cannot replace the native HUD data; actionbar is preserved"
+      },
+      {
+        "label": "Server title reset refreshes rather than clearing the native HUD slot",
+        "evidence": {
+          "identifier": "minecraft:stone",
+          "itemAux": "65536",
+          "countText": "3"
+        }
+      },
+      {
+        "label": "HUD keeps native stone AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:stone",
+          "itemAux": "65536",
+          "countText": "4"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: stone",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:stone\", count: 4, components: {\"minecraft:custom_name\": \"Movable named stone\"}}"
+      },
+      {
+        "label": "HUD keeps native iron_axe AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:iron_axe",
+          "itemAux": "19660800",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: iron_axe",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:iron_axe\", count: 1}"
+      },
+      {
+        "label": "Native inventory offhand round trip: diamond_sword",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:diamond_sword\", count: 1}"
+      },
+      {
+        "label": "HUD keeps native lantern AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:lantern",
+          "itemAux": "-13631488",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: lantern",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:lantern\", count: 16}"
+      },
+      {
+        "label": "HUD keeps native soul_lantern AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:soul_lantern",
+          "itemAux": "-17629184",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: soul_lantern",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:soul_lantern\", count: 16}"
+      },
+      {
+        "label": "HUD keeps native soul_torch AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:soul_torch",
+          "itemAux": "-17563648",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: soul_torch",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:soul_torch\", count: 16}"
+      }
+    ],
+    "totalChecks": 25,
+    "customDataDrivenItems": 1626,
+    "limitations": [
+      "Headless checks do not execute retail JSON UI, signed-string conversion or icon rendering."
+    ]
+  },
+  "assets": {
+    "extensionVersion": "0.2.20-rewrite.20",
+    "resourcePackVersion": [
+      0,
+      2,
+      20
+    ],
+    "packUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "jar": {
+      "file": "GeyserNativeOffhand-0.2.20-rewrite.20.jar",
+      "bytes": 69193,
+      "sha256": "0d7e1c6bef8265032363ab2571c57ecb9cbb23fda5e0c0e441c77c31696bba45"
+    },
+    "pack": {
+      "bytes": 51554,
+      "sha256": "ae0283ea59c0ae7a5949036362ef487ae979b70bbe133edbf4f7c729dc0cdf4f"
+    },
+    "remainingPngs": [
+      "textures/ui/offhand_slot.png"
+    ],
+    "renderer": "inventory_item_renderer",
+    "conversion": "((0 + (#nativeoffhand_aux_string - '-')) * (1 - (2 * (not ((#nativeoffhand_aux_string - '-') = #nativeoffhand_aux_string)))))",
+    "modernNativeUiShift": {
+      "verifiedRawRange": [
+        852,
+        883
+      ],
+      "maximumShift": 1569,
+      "expectedAppleUiId": 2451
+    },
+    "mojangSource": {
+      "repository": "https://github.com/Mojang/bedrock-samples",
+      "ref": "main",
+      "commit": "46ba6ea985fb5a92d79a9419198f10dda14c199d",
+      "commitDate": "2026-09-16T04:27:23Z",
+      "sha256": {
+        "ui/ui_common.json": "8c17795cca5b8c56d72976c7176f7c3586b144b55474eb87b146e161d19f817f",
+        "ui/hud_screen.json": "2daad9e78e49ee68042d6d0db9153aad0c33c266ba513a2a737b0818e4cfefe8",
+        "blocks.json": "59267aa7553d7fea1ba2bccf46b540ba72d54ba8a0c2e18733cfb8bbbf1682cf",
+        "textures/terrain_texture.json": "623b5a67fa1c1f50972db86607492b629c0b3ce9d7f886e1f569a4d820d91e95"
+      },
+      "renderer": "inventory_item_renderer",
+      "forceUpdate": true,
+      "bundledItemPngs": 0,
+      "note": "Native client assets are rendered through AUX; source texture paths do not become HUD image controls. Mojang's resource_pack is not a numerical ID registry."
+    },
+    "unchanged": [
+      "HUD renderer/layout/layers/registration",
+      "slot PNG",
+      "all tool models and poses"
+    ],
+    "limitations": [
+      "Package and packet checks do not execute the retail renderer or signed-string conversion."
+    ],
+    "diagnostic": "A native literal AUX; B alias by runtime ordering; C alias by wire ordering; D actual offhand_items collection"
+  },
+  "packNegotiation": {
+    "timestamp": "2026-10-11T12:18:59.242Z",
+    "expectedPackUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packets": [
+      {
+        "event": "resource_packs_info",
+        "packs": [
+          {
+            "field": "texture_packs",
+            "uuid": "1f45f555-3b90-4195-c3be-8d26be61d7b0",
+            "normalizedUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+            "version": "0.2.20"
+          },
+          {
+            "field": "texture_packs",
+            "uuid": "b0453084-3d39-5422-65c7-287839bd8a83",
+            "normalizedUuid": "2254393d-8430-45b0-838a-bd397828c765",
+            "version": "1.1.3"
+          }
+        ]
+      }
+    ],
+    "confirmed": true
+  },
+  "diagnosticValues": {
+    "lantern": {
+      "A": -13631488,
+      "B": 103350272,
+      "C": 157483008
+    },
+    "soul_lantern": {
+      "A": -17629184,
+      "B": 141688832,
+      "C": 145948672
+    },
+    "soul_torch": {
+      "A": -17563648,
+      "B": 141885440,
+      "C": 100204544
+    }
+  },
+  "retail": {
+    "status": "User confirmed A draws the soul torch",
+    "previousResult": "0.2.19 lantern and soul torch HUD icons remain blank; held models and counts are visible",
+    "withdrawn": "0.2.18 image-path candidate was rolled back at user request after a missing-texture report",
+    "answer": "Aだわ Aに出てる",
+    "implication": "Native literal signed AUX works; other route results were not specified."
+  },
+  "limitations": [
+    "Functional baseline is 0.2.19 with identical Java runtime code; 0.2.20 adds UI diagnostics and version changes.",
+    "Packet and package checks do not execute retail JSON UI, item renderer or signed-number conversion.",
+    "Alias local-ID order and offhand_items availability in HUD are diagnostic hypotheses."
+  ]
+}

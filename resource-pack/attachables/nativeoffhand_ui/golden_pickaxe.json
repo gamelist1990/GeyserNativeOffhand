@@ -1,0 +1,73 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "nativeoffhand_ui:golden_pickaxe",
+      "item": {
+        "nativeoffhand_ui:golden_pickaxe": "query.owner_identifier == 'minecraft:player'"
+      },
+      "materials": {
+        "default": "entity_alphatest",
+        "enchanted": "entity_alphatest_glint"
+      },
+      "textures": {
+        "default": "textures/items/gold_pickaxe",
+        "enchanted": "textures/misc/enchanted_item_glint"
+      },
+      "geometry": {
+        "default": "geometry.nativeoffhand.ui_tool.first_left",
+        "first_right": "geometry.nativeoffhand.ui_tool.first_right",
+        "third_right": "geometry.nativeoffhand.ui_tool.third_right",
+        "third_left": "geometry.nativeoffhand.ui_tool.third_left"
+      },
+      "animations": {
+        "wield": "controller.animation.shield.wield",
+        "wield_main_hand_first_person": "animation.shield.wield_main_hand_first_person",
+        "wield_off_hand_first_person": "animation.shield.wield_off_hand_first_person",
+        "wield_first_person_block": "animation.shield.wield_first_person_blocking",
+        "wield_main_hand_first_person_block": "animation.shield.wield_main_hand_first_person_blocking",
+        "wield_off_hand_first_person_block": "animation.shield.wield_off_hand_first_person_blocking",
+        "wield_third_person": "animation.nativeoffhand.ui_tool.third_person"
+      },
+      "scripts": {
+        "initialize": [
+          "variable.main_hand_first_person_pos_x = -5.5;",
+          "variable.main_hand_first_person_pos_y = 21.0;",
+          "variable.main_hand_first_person_pos_z = -3.0;",
+          "variable.main_hand_first_person_rot_x = 38.0;",
+          "variable.main_hand_first_person_rot_y = -120.0;",
+          "variable.main_hand_first_person_rot_z = -63.0;",
+          "variable.off_hand_first_person_pos_x = -14.4;",
+          "variable.off_hand_first_person_pos_y = -3.99;",
+          "variable.off_hand_first_person_pos_z = 3.43;",
+          "variable.off_hand_first_person_with_bow_pos_z = -25.0;",
+          "variable.off_hand_first_person_rot_x = 1.0;",
+          "variable.off_hand_first_person_rot_y = 176.0;",
+          "variable.off_hand_first_person_rot_z = -2.5;"
+        ],
+        "pre_animation": [
+          "variable.is_blocking_main_hand = query.blocking && !query.is_item_name_any('slot.weapon.offhand', 'minecraft:shield') && query.is_item_name_any('slot.weapon.mainhand', 'minecraft:shield');",
+          "variable.is_blocking_off_hand = query.blocking && query.is_item_name_any('slot.weapon.offhand', 'minecraft:shield');",
+          "variable.is_using_bow = (query.get_equipped_item_name == 'bow') && (query.main_hand_item_use_duration > 0.0f);"
+        ],
+        "animate": [
+          "wield"
+        ]
+      },
+      "render_controllers": [
+        {
+          "controller.render.item_default": "c.is_first_person && c.item_slot != 'main_hand'"
+        },
+        {
+          "controller.render.nativeoffhand.ui_tool.first_right": "c.is_first_person && c.item_slot == 'main_hand'"
+        },
+        {
+          "controller.render.nativeoffhand.ui_tool.third_right": "!c.is_first_person && c.item_slot == 'main_hand'"
+        },
+        {
+          "controller.render.nativeoffhand.ui_tool.third_left": "!c.is_first_person && c.item_slot != 'main_hand'"
+        }
+      ]
+    }
+  }
+}

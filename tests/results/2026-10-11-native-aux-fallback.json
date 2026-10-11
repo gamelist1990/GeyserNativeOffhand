@@ -1,0 +1,360 @@
+{
+  "timestamp": "2026-10-11T12:38:03.420058+00:00",
+  "candidate": {
+    "extensionVersion": "0.2.22-rewrite.22",
+    "resourcePackVersion": [
+      0,
+      2,
+      22
+    ]
+  },
+  "functionalTests": {
+    "timestamp": "2026-10-11T12:36:51.622Z",
+    "bedrockVersion": "1.26.51",
+    "resourcePackVersion": [
+      0,
+      2,
+      22
+    ],
+    "checks": [
+      {
+        "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+      },
+      {
+        "label": "Native HUD receives block AUX and stack count",
+        "evidence": {
+          "identifier": "minecraft:stone",
+          "itemAux": "65536",
+          "countText": "64"
+        }
+      },
+      {
+        "label": "Native HUD replaces the block AUX with food",
+        "evidence": {
+          "identifier": "minecraft:bread",
+          "itemAux": "17104896",
+          "countText": "7"
+        }
+      },
+      {
+        "label": "Native HUD preserves a colored block data value",
+        "evidence": {
+          "identifier": "minecraft:red_wool",
+          "itemAux": "-36438016",
+          "countText": "9"
+        }
+      },
+      {
+        "label": "Native HUD sends signed AUX for lantern",
+        "evidence": {
+          "identifier": "minecraft:lantern",
+          "itemAux": "-13631488",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native HUD sends signed AUX for soul_lantern",
+        "evidence": {
+          "identifier": "minecraft:soul_lantern",
+          "itemAux": "-17629184",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native HUD sends signed AUX for soul_torch",
+        "evidence": {
+          "identifier": "minecraft:soul_torch",
+          "itemAux": "-17563648",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Diagnostic B fallback keeps apple native AUX without a guessed local-ID shift",
+        "evidence": {
+          "identifier": "minecraft:apple",
+          "itemAux": "57802752",
+          "countText": "2"
+        }
+      },
+      {
+        "label": "One item sends empty subtitle to hide the count",
+        "evidence": {
+          "identifier": "minecraft:bread",
+          "itemAux": "17104896",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Empty OFFHAND sends zero AUX to hide the slot",
+        "evidence": {
+          "identifier": "minecraft:air",
+          "itemAux": "0",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Native HUD tool AUX leaves native equipment unchanged",
+        "evidence": {
+          "identifier": "minecraft:iron_axe",
+          "itemAux": "19660800",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Unchanged HUD data refreshes before the live title binding expires"
+      },
+      {
+        "label": "Server title/subtitle cannot replace the native HUD data; actionbar is preserved"
+      },
+      {
+        "label": "Server title reset refreshes rather than clearing the native HUD slot",
+        "evidence": {
+          "identifier": "minecraft:stone",
+          "itemAux": "65536",
+          "countText": "3"
+        }
+      },
+      {
+        "label": "HUD keeps native stone AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:stone",
+          "itemAux": "65536",
+          "countText": "4"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: stone",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:stone\", count: 4, components: {\"minecraft:custom_name\": \"Movable named stone\"}}"
+      },
+      {
+        "label": "HUD keeps native iron_axe AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:iron_axe",
+          "itemAux": "19660800",
+          "countText": ""
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: iron_axe",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:iron_axe\", count: 1}"
+      },
+      {
+        "label": "Native inventory offhand round trip: diamond_sword",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:diamond_sword\", count: 1}"
+      },
+      {
+        "label": "HUD keeps native lantern AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:lantern",
+          "itemAux": "-13631488",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: lantern",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:lantern\", count: 16}"
+      },
+      {
+        "label": "HUD keeps native soul_lantern AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:soul_lantern",
+          "itemAux": "-17629184",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: soul_lantern",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:soul_lantern\", count: 16}"
+      },
+      {
+        "label": "HUD keeps native soul_torch AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:soul_torch",
+          "itemAux": "-17563648",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: soul_torch",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:soul_torch\", count: 16}"
+      },
+      {
+        "label": "HUD keeps native apple AUX while the inventory uses a move alias",
+        "evidence": {
+          "identifier": "minecraft:apple",
+          "itemAux": "57802752",
+          "countText": "16"
+        }
+      },
+      {
+        "label": "Native inventory offhand round trip: apple",
+        "evidence": "NativeOH has the following entity data: {id: \"minecraft:apple\", count: 16}"
+      }
+    ],
+    "totalChecks": 27,
+    "customDataDrivenItems": 1626,
+    "limitations": [
+      "Headless checks do not execute retail JSON UI, signed-string conversion or icon rendering."
+    ]
+  },
+  "assets": {
+    "timestamp": "2026-10-11T12:35:30.468798+00:00",
+    "extensionVersion": "0.2.22-rewrite.22",
+    "resourcePackVersion": [
+      0,
+      2,
+      22
+    ],
+    "packUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "jar": {
+      "file": "GeyserNativeOffhand-0.2.22-rewrite.22.jar",
+      "bytes": 70209,
+      "sha256": "9b7b85552fd6a2250863afeb16e7d16f1259c12f964f4f9730083c72cfe99e49"
+    },
+    "pack": {
+      "file": "GeyserNativeOffhand.mcpack",
+      "bytes": 53031,
+      "sha256": "a6b3799c6d8eb8c1b48837b80033a8d4eb9b7b3b08886e7b014fdca6ce454baf"
+    },
+    "remainingPngs": [
+      "textures/ui/offhand_slot.png"
+    ],
+    "unchanged": [
+      "all 65 generated native AUX literal controls",
+      "frame, count, layout and HUD registration",
+      "tool geometry, attachables and pose definitions"
+    ],
+    "titlePayload": "unshifted signed (native runtime ID << 16) | (native data value & 0xffff)",
+    "dynamicConversion": "(0 + #nativeoffhand_aux_string)",
+    "selection": "A exact native AUX match; B only when no A match and nonempty",
+    "limitations": [
+      "Retail apple rendering after restoring B is pending.",
+      "Headless tests do not render retail JSON UI."
+    ]
+  },
+  "packNegotiation": {
+    "timestamp": "2026-10-11T12:36:42.830Z",
+    "expectedPackUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packets": [
+      {
+        "event": "resource_packs_info",
+        "packs": [
+          {
+            "field": "texture_packs",
+            "uuid": "1f45f555-3b90-4195-c3be-8d26be61d7b0",
+            "normalizedUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+            "version": "0.2.22"
+          },
+          {
+            "field": "texture_packs",
+            "uuid": "b0453084-3d39-5422-65c7-287839bd8a83",
+            "normalizedUuid": "2254393d-8430-45b0-838a-bd397828c765",
+            "version": "1.1.3"
+          }
+        ]
+      }
+    ],
+    "confirmed": true
+  },
+  "nativeLiteralGeneration": {
+    "sourceCommit": "46ba6ea985fb5a92d79a9419198f10dda14c199d",
+    "geyserItemStates": "bedrock/runtime_item_states.26_50.json",
+    "count": 65,
+    "nativeAuxLiterals": {
+      "minecraft:bamboo": -10682368,
+      "minecraft:bamboo_sapling": -10747904,
+      "minecraft:bell": -13500416,
+      "minecraft:black_candle": -28049408,
+      "minecraft:blue_candle": -27787264,
+      "minecraft:brown_candle": -27852800,
+      "minecraft:bush": -67043328,
+      "minecraft:candle": -27000832,
+      "minecraft:copper_chain": -70385664,
+      "minecraft:copper_lantern": -70975488,
+      "minecraft:copper_torch": -70909952,
+      "minecraft:cyan_candle": -27656192,
+      "minecraft:exposed_copper_chain": -70451200,
+      "minecraft:exposed_copper_lantern": -71041024,
+      "minecraft:firefly_bush": -67174400,
+      "minecraft:gray_candle": -27525120,
+      "minecraft:green_candle": -27918336,
+      "minecraft:lantern": -13631488,
+      "minecraft:light_block_0": -14090240,
+      "minecraft:light_block_1": -60882944,
+      "minecraft:light_block_10": -61472768,
+      "minecraft:light_block_11": -61538304,
+      "minecraft:light_block_12": -61603840,
+      "minecraft:light_block_13": -61669376,
+      "minecraft:light_block_14": -61734912,
+      "minecraft:light_block_15": -61800448,
+      "minecraft:light_block_2": -60948480,
+      "minecraft:light_block_3": -61014016,
+      "minecraft:light_block_4": -61079552,
+      "minecraft:light_block_5": -61145088,
+      "minecraft:light_block_6": -61210624,
+      "minecraft:light_block_7": -61276160,
+      "minecraft:light_block_8": -61341696,
+      "minecraft:light_block_9": -61407232,
+      "minecraft:light_blue_candle": -27262976,
+      "minecraft:light_gray_candle": -27590656,
+      "minecraft:lime_candle": -27394048,
+      "minecraft:magenta_candle": -27197440,
+      "minecraft:mangrove_propagule": -31064064,
+      "minecraft:orange_candle": -27131904,
+      "minecraft:oxidized_copper_chain": -70582272,
+      "minecraft:oxidized_copper_lantern": -71172096,
+      "minecraft:pink_candle": -27459584,
+      "minecraft:pink_petals": -35979264,
+      "minecraft:purple_candle": -27721728,
+      "minecraft:red_candle": -27983872,
+      "minecraft:resin_clump": -66977792,
+      "minecraft:sea_pickle": -10223616,
+      "minecraft:sniffer_egg": -39059456,
+      "minecraft:soul_lantern": -17629184,
+      "minecraft:soul_torch": -17563648,
+      "minecraft:sweet_berry_bush": -13565952,
+      "minecraft:turtle_egg": -10420224,
+      "minecraft:waxed_copper_chain": -70647808,
+      "minecraft:waxed_copper_lantern": -71237632,
+      "minecraft:waxed_exposed_copper_chain": -70713344,
+      "minecraft:waxed_exposed_copper_lantern": -71303168,
+      "minecraft:waxed_oxidized_copper_chain": -70844416,
+      "minecraft:waxed_oxidized_copper_lantern": -71434240,
+      "minecraft:waxed_weathered_copper_chain": -70778880,
+      "minecraft:waxed_weathered_copper_lantern": -71368704,
+      "minecraft:weathered_copper_chain": -70516736,
+      "minecraft:weathered_copper_lantern": -71106560,
+      "minecraft:white_candle": -27066368,
+      "minecraft:yellow_candle": -27328512
+    },
+    "mechanism": "Native inventory_item_renderer with integer property_bag AUX; title equality selects the matching control.",
+    "bundledItemPngs": 0,
+    "dynamicFallback": "Diagnostic B: (0 + #nativeoffhand_aux_string), using unshifted native runtime AUX. Mutually exclusive with A by exact title matches.",
+    "limitations": [
+      "Static carried-item controls match metadata zero. Other metadata keeps the original dynamic AUX renderer.",
+      "Retail 0.2.21 confirmed lantern-type icons and soul torch in the normal slot; other generated items and restored apple fallback still require individual checks."
+    ]
+  },
+  "retail": {
+    "previousCandidate": "0.2.21",
+    "previousFeedback": "ランタン等が正常に出たけど りんご等が 消えた",
+    "confirmedPreviousItems": [
+      "minecraft:soul_torch",
+      "minecraft:soul_lantern",
+      "lantern-type items"
+    ],
+    "changes": [
+      "Keep generated A integer AUX controls and working slot layout identical.",
+      "Restore original B (0 + #nativeoffhand_aux_string) conversion.",
+      "Remove experimental 852..883 custom-count shift, including apple2451; apple now keeps native ID882/AUX57802752.",
+      "Select exactly one route using A matches and the inverse condition for B."
+    ],
+    "currentStatus": "failed dynamic fallback: A items render correctly, B-only items do not",
+    "userFeedback": "ランタン系とかA系は完璧だがAが無くBの時表示されない 多分Aに掻き消されてる？"
+  },
+  "limitations": [
+    "Headless tests establish AUX delivery and real inventory movement, not retail rendering.",
+    "Retail feedback establishes that the original B restoration in0.2.22 remains blank; 0.2.23 changes branch selection and hides the A parent panel.",
+    "65 generated literal controls are not all individually retail-tested."
+  ]
+}
