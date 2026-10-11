@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/Mojang/bedrock-samples",
+  "ref": "main",
+  "commit": "46ba6ea985fb5a92d79a9419198f10dda14c199d",
+  "commitDate": "2026-09-16T04:27:23Z",
+  "sha256": {
+    "ui/ui_common.json": "8c17795cca5b8c56d72976c7176f7c3586b144b55474eb87b146e161d19f817f",
+    "ui/hud_screen.json": "2daad9e78e49ee68042d6d0db9153aad0c33c266ba513a2a737b0818e4cfefe8",
+    "blocks.json": "59267aa7553d7fea1ba2bccf46b540ba72d54ba8a0c2e18733cfb8bbbf1682cf",
+    "textures/terrain_texture.json": "623b5a67fa1c1f50972db86607492b629c0b3ce9d7f886e1f569a4d820d91e95"
+  },
+  "renderer": "inventory_item_renderer",
+  "forceUpdate": true,
+  "bundledItemPngs": 0,
+  "note": "Native client assets are rendered through AUX; source texture paths do not become HUD image controls. Mojang's resource_pack is not a numerical ID registry."
+}
