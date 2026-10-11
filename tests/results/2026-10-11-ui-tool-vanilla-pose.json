@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-10-11T10:07:30.452Z",
+  "extensionVersion": "0.2.12-rewrite.12",
+  "resourcePackVersion": [
+    0,
+    2,
+    12
+  ],
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "Original DoubleHands HUD receives block texture and stack count",
+      "evidence": {
+        "texture": "textures/items/iso_renders/stone",
+        "countText": "64"
+      }
+    },
+    {
+      "label": "Original DoubleHands HUD replaces the block icon with food",
+      "evidence": {
+        "texture": "textures/items/iso_renders/bread",
+        "countText": "7"
+      }
+    },
+    {
+      "label": "One item sends empty subtitle to hide the count",
+      "evidence": {
+        "texture": "textures/items/iso_renders/bread",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Empty OFFHAND sends the original empty texture to hide the slot",
+      "evidence": {
+        "texture": "textures/ui/empty",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Original DoubleHands tool icon leaves native equipment unchanged",
+      "evidence": {
+        "texture": "textures/items/iso_renders/iron_axe",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Unchanged HUD data refreshes before the original live title binding expires"
+    },
+    {
+      "label": "Server title/subtitle cannot replace the copied HUD data; actionbar is preserved"
+    },
+    {
+      "label": "Server title reset refreshes rather than clearing the copied HUD slot",
+      "evidence": {
+        "texture": "textures/items/iso_renders/stone",
+        "countText": "3"
+      }
+    },
+    {
+      "label": "HUD keeps native iron_axe texture while the inventory uses a move alias",
+      "evidence": {
+        "texture": "textures/items/iso_renders/iron_axe",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: iron_axe",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:iron_axe\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:diamond_sword\", count: 1}"
+    }
+  ],
+  "totalChecks": 12,
+  "limitations": [
+    "Headless checks do not execute retail geometry, controller or HUD label rendering.",
+    "This focused run covers HUD packets and iron axe/diamond sword inventory transfers. The full 68 functional checks belong to RP 0.2.11, which used the same Java inventory/use implementation.",
+    "Blockbench validates imported shape/pose against the vanilla Java reference at an aligned center. It does not validate retail Bedrock screen pixels."
+  ],
+  "bedrockVersion": "1.26.51",
+  "implementationCommit": "395cb601667aca8f4eeed731a2b958eac9a280d7",
+  "candidate": "Inventory offhand tools match the vanilla Java left-hand Blockbench shape/pose at a fixed center; retail camera validation pending.",
+  "assetValidation": {
+    "packUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packVersion": [
+      0,
+      2,
+      12
+    ],
+    "packSha256": "360b6b73dd1e0e8484c3e91381272b99b2b4fc9658f8711a3e9eb9c00518b9ed",
+    "servedPackMatches": true,
+    "extensionSha256": "282d8d7efacf11544e60a6ebd96a58dd88419a2afab6f4b3ab17bdc5dc1f93eb",
+    "toolAttachables": 35,
+    "cubeCount": 256,
+    "pixelSize": 0.68,
+    "spriteCenter": [
+      1,
+      36,
+      -0.125
+    ],
+    "childRotation": [
+      80.29473519,
+      -65.86951258,
+      -83.70419694
+    ],
+    "mainAndThirdPersonGeometryUnchanged": true,
+    "shieldRootUnchanged": true,
+    "blockbenchSourceMatches": true
+  },
+  "packNegotiation": {
+    "timestamp": "2026-10-11T10:08:10.107Z",
+    "expectedPackUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+    "packets": [
+      {
+        "event": "resource_packs_info",
+        "packs": [
+          {
+            "field": "texture_packs",
+            "uuid": "1f45f555-3b90-4195-c3be-8d26be61d7b0",
+            "normalizedUuid": "9541903b-55f5-451f-b0d7-61be268dbec3",
+            "version": "0.2.12"
+          },
+          {
+            "field": "texture_packs",
+            "uuid": "b0453084-3d39-5422-65c7-287839bd8a83",
+            "normalizedUuid": "2254393d-8430-45b0-838a-bd397828c765",
+            "version": "1.1.3"
+          }
+        ]
+      }
+    ],
+    "confirmed": true
+  },
+  "blockbenchPreview": {
+    "directory": "docs/previews/ui-tools-vanilla",
+    "application": "Blockbench",
+    "version": "5.2.2",
+    "format": "bedrock",
+    "reference": {
+      "type": "Vanilla Java item/handheld firstperson_lefthand in Blockbench",
+      "rotation": [
+        0,
+        90,
+        -25
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    },
+    "camera": {
+      "position": [
+        0,
+        24,
+        0
+      ],
+      "target": [
+        0,
+        24,
+        1
+      ],
+      "fov": 70,
+      "resolution": [
+        1280,
+        588
+      ]
+    },
+    "scope": "The vanilla Java reference and candidate are viewed from one camera at a common model center. Orientation, scale and pixel thickness can be compared; the camera is synthetic and does not certify native Bedrock inventory screen position.",
+    "samples": {
+      "iron_axe": {
+        "maxActualVoxelVertexError": 1.8725188738308112e-06,
+        "actualVerticesCompared": 6144,
+        "maxGridCornerError": 4.266708715033477e-08
+      },
+      "diamond_sword": {
+        "maxActualVoxelVertexError": 1.8725188738308112e-06,
+        "actualVerticesCompared": 6144,
+        "maxGridCornerError": 4.266708715033477e-08
+      }
+    },
+    "sourceSha256": {
+      "scripts/generate-ui-tools.py": "baa3346f226bd28ae814cc07331550de0e6f51c4cf8c3e0eec9d19cd8c6dd650",
+      "resource-pack/models/entity/nativeoffhand_ui_tool.geo.json": "bff0ed2d6575f399e8240be24081d4f36afe146f8d44a51cfbc4ad5ac8426851"
+    }
+  },
+  "server": {
+    "minecraft": "Paper 26.3-159-main@a4b87cf",
+    "geyser": "2.12.0-SNAPSHOT build 3080",
+    "geyserCommit": "e215fa5cf1ffc3874c4d46c579d25800b20f17e4",
+    "geyserSHA256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
+  },
+  "retailClient": {
+    "status": "pending",
+    "source": "PEXkurann RP 0.2.12 reconnect and inventory open/close check requested",
+    "limitations": "Reference images align model centers on a synthetic camera. Blockbench does not execute the retail Bedrock inventory background renderer; actual screen position, size and pose still require the real-client check."
+  }
+}
