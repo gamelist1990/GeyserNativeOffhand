@@ -2,9 +2,9 @@
 
 Bedrock の通常のインベントリで、アイテムをオフハンドへ移動し、Java サーバーへ設置・使用を送る Geyser-Spigot 拡張です。
 
-**0.2.11-rewrite.11 / RP 0.2.11 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、独自の食事モーションはありません。
+**0.2.12-rewrite.12 / RP 0.2.12 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、独自の食事モーションはありません。
 
-DoubleHands の元の HUD はユーザーの実機で良好との報告を受けました。インベントリを開いた時の左手の斧は、0.2.9 の座標補正でも表示されないとの報告がありました。検証鯖専用の 0.2.10 で斧をバニラの盾へ置き換えると、実機で盾が表示されました。UI 別名の attachable は描画できます。0.2.11 はこの結果を基準に、左手・一人称を通常の立方体モデルとバニラの盾の保持構成へ変更します。道具の画像は元のテクスチャを参照します。新しい道具モデルの実機での向き・位置は確認待ちです。
+DoubleHands の元の HUD はユーザーの実機で良好との報告を受けました。インベントリ背景の左手の斧は 0.2.11 で表示でき、「めっちゃ惜しい」との報告を受けました。0.2.12 はユーザーの指示に従い、Blockbench のバニラ Java 左手モデルを基準に、道具の向き・倍率・ピクセルの厚みを合わせます。表示できた保持座標とモデルの中心を使い、子ボーンで形を回転させます。Blockbench の比較では同じカメラ・同じ中心位置で一致を確認しました。Bedrock 実機でインベントリを開閉した時の見た目は確認待ちです。
 
 開発ブランチは `native-renderer-rewrite`。従来の公開版は `main` / [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2)、失敗した表示補正の記録は `attachable-consumption` に残します。本拡張は Geyser の公式機能ではありません。
 
@@ -36,7 +36,7 @@ Geyser は元の TextureMap から画像パスを選び、title へ画像パス�
 
 - Geyser のアイテムマッピングとブロックパレットから自動列挙し、通常のプレイヤーインベントリ用に 1,625 件の低優先度の data-driven 定義を登録します。
 - 通常のインベントリが開いている間だけ、移動を許可する `nativeoffhand_ui:` 定義を選びます。通常の ItemStackRequest を Geyser の処理へ渡します。
-- 移動用の道具には `hand_equipped=true` を設定します。0.2.11 は UI 用の剣・斧・採掘道具 35 種類に、左右の手を判定する attachable を付けます。左手・一人称では 16×16 の元の画像を参照する 256 個の立方体と、バニラの盾の保持座標・animation controller・item render controller を使います。右手と三人称の既存のメッシュ・数値の配置は維持します。元のバニラの道具 ID は変更しません。[技術記録と Blockbench プレビュー](docs/ui-tool-attachables.md)。
+- 移動用の道具には `hand_equipped=true` を設定します。UI 用の剣・斧・採掘道具 35 種類に左右の手を判定する attachable を付けます。左手・一人称はバニラの盾の保持構成を参照し、256 個の立方体で元の画像を描きます。0.2.12 は子ボーンの向きとピクセル倍率 0.68 を、Blockbench のバニラ Java 左手モデルへ合わせます。右手・三人称は既存の配置です。[技術記録と元モデルとの比較](docs/ui-tool-attachables.md)。
 - 閉じると元のバニラ ID とブロック状態へ戻します。両手の表示を更新し、移動用の定義から保持用の定義へ変わるアイテムには新しい Bedrock のスタック ID を割り当てます。Java 側の種類・個数・名前・コンポーネントは維持します。
 - 元の NONE・LEGACY のアイテム定義、保持モデル、プレイヤーの定義・ボーン・アニメーションを変更しません。元から data-driven のアイテムにはオフハンド許可だけを設定します。
 - 食品や道具も、ゲーム画面ではバニラの ID を使います。リソースパックにはバニラの画像パスを参照する移動用アイコン一覧と DoubleHands の元の HUD・枠・アイコン画像を含めます。元のバニラ ID のモデルは変更しません。UI 用の道具の attachable・モデル・保持アニメーションは同梱します。
@@ -92,7 +92,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.2.11-rewrite.11.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
+出力は `build/GeyserNativeOffhand-0.2.12-rewrite.12.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
 
 ## ライセンスと出典
 

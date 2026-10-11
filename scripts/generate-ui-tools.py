@@ -1,6 +1,7 @@
 """Inventory-only tool models. The first-person left hand uses the proven shield path."""
 from pathlib import Path
 import json
+import math
 
 root = Path(__file__).resolve().parent.parent
 pack = root / 'resource-pack'
@@ -20,17 +21,39 @@ def description(identifier):
 # Each voxel samples one native texture pixel on every face. Transparent pixels
 # are discarded by the same alpha-test material as the vanilla shield.
 # This keeps native textures and pixel depth without texture_mesh orientation.
-pixel = 0.75
+# Vanilla Java item/handheld firstperson_lefthand uses scale 0.68.
+# Its displayed texture basis, converted to the Bedrock preview camera facing
+# +Z, is Rx(25) Ry(90). Bedrock import reverses voxel X, so also rotate
+# the cube basis by 180 degrees around Y (symmetric depth). Solve a child rotation.
+def multiply(a, b):
+    return [[sum(a[i][k] * b[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
+x, y, z = map(math.radians, [-1.0, -176.0, -2.5])
+rx = [[1, 0, 0], [0, math.cos(x), -math.sin(x)], [0, math.sin(x), math.cos(x)]]
+ry = [[math.cos(y), 0, math.sin(y)], [0, 1, 0], [-math.sin(y), 0, math.cos(y)]]
+rz = [[math.cos(z), -math.sin(z), 0], [math.sin(z), math.cos(z), 0], [0, 0, 1]]
+shield = multiply(multiply(rz, ry), rx)
+angle = math.radians(25)
+target = [[0, 0, -1], [-math.sin(angle), math.cos(angle), 0], [math.cos(angle), math.sin(angle), 0]]
+local = multiply([list(row) for row in zip(*shield)], target)
+child_rotation = [round(-math.degrees(math.atan2(local[2][1], local[2][2])), 8),
+                  round(-math.degrees(math.asin(-local[2][0])), 8),
+                  round(math.degrees(math.atan2(local[1][0], local[0][0])), 8)]
+pixel = 0.68
+center = [1, 36, -0.125]
 cubes = []
 for y in range(16):
     for x in range(16):
-        cubes.append({'origin': [-5 + x * pixel, 30 + (15 - y) * pixel, -0.5],
+        cubes.append({'origin': [round(center[0] + (x - 8) * pixel, 8),
+                                  round(center[1] + (7 - y) * pixel, 8),
+                                  round(center[2] - pixel / 2, 8)],
                       'size': [pixel, pixel, pixel],
                       'uv': {face: {'uv': [x, y], 'uv_size': [1, 1]}
                              for face in ['north', 'south', 'east', 'west', 'up', 'down']}})
 models = [{'description': description('geometry.nativeoffhand.ui_tool.first_left'),
            'bones': [{'name': 'shield', 'binding': 'q.item_slot_to_bone_name(c.item_slot)',
-                      'pivot': [1, 15.5, 3], 'cubes': cubes}]}]
+                      'pivot': [1, 15.5, 3]},
+                     {'name': 'nativeoffhand_sprite', 'parent': 'shield',
+                      'pivot': center, 'rotation': child_rotation, 'cubes': cubes}]}]
 # Keep the previous main-hand and third-person geometry. Only first-person
 # offhand changes to cubes. All bones use the name targeted by shield animations.
 for perspective, hand in [('first', 'right'), ('third', 'right'), ('third', 'left')]:
@@ -64,7 +87,7 @@ write('render_controllers/nativeoffhand_ui_tool.render_controllers.json',
       {'format_version': '1.10.0', 'render_controllers': controllers})
 
 # Offhand values are exactly the shield values that rendered in the user's
-# diagnostic. Sprite geometry has width/height 12 and top Y=42 (shield top=39).
+# diagnostic. A child bone matches the vanilla display basis about a fixed center.
 poses = {
     'main_hand_first_person_pos_x': -5.5, 'main_hand_first_person_pos_y': 21.0,
     'main_hand_first_person_pos_z': -3.0, 'main_hand_first_person_rot_x': 38.0,

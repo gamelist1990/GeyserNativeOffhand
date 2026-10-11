@@ -83,3 +83,18 @@ Blockbench 5.2.2 の Bedrock 形式へ実パックを読み込み、斧・剣の
 - [斧・一人称](previews/ui-tools-cubes/iron_axe-first-paired.png) / [剣・一人称](previews/ui-tools-cubes/diamond_sword-first-paired.png)
 - [斧・三人称](previews/ui-tools-cubes/iron_axe-third-paired.png) / [剣・三人称](previews/ui-tools-cubes/diamond_sword-third-paired.png)
 - [モデルと変形の確認記録](previews/ui-tools-cubes/verification.json)
+
+## 0.2.11 の実機報告と 0.2.12 のバニラ比較
+
+2026-10-11 に、インベントリ背景で斧が表示された画像と「めっちゃ惜しい」との報告を受けました。続けて、Blockbench で元のバニラの形を見て合わせるよう依頼されました。0.2.12 は、以前示された Java の剣の参考画像に合わせ、バニラ Java `item/handheld` の `firstperson_lefthand` を比較基準にします。基準の表示設定は rotation `[0,90,-25]`、translation `[1.13,3.2,1.13]`、scale `[0.68,0.68,0.68]` です。
+
+Blockbench が実際に描画する元モデルの変換を取得し、Bedrock プレビューのカメラ座標へ変換します。Bedrock geometry の読み込みでは X 軸が反転するため、その反転も計算に含めます。表示できた `shield` のボーンと保持アニメーションは使い続け、固定のモデル中心 `[1,36,-0.125]` に子ボーンを追加します。元モデルの向きとの差をその子ボーンに適用し、各ピクセルの幅・高さ・厚みを 0.75 から 0.68 へ合わせます。補正は generator 内で行列から計算し、値を手で加算しません。
+
+比較画像では元モデルと候補を同じ中心へ置き、同じテクスチャ、カメラ、FOV で描きます。さらに、読み込まれた斧・剣それぞれの 6,144 頂点を、元モデルの各ピクセルの対応する頂点へ照合しました。最大差は約 0.00000188 モデル単位です。これは浮動小数点による差です。モデル中心の変化は約 0.000000043 単位です。
+
+| アイテム | 0.2.11 | バニラ基準 | 0.2.12 |
+| --- | --- | --- | --- |
+| 斧 | [前のモデル](previews/ui-tools-vanilla/iron_axe-before.png) | [元モデル](previews/ui-tools-vanilla/iron_axe-vanilla.png) | [候補](previews/ui-tools-vanilla/iron_axe-after.png) |
+| 剣 | [前のモデル](previews/ui-tools-vanilla/diamond_sword-before.png) | [元モデル](previews/ui-tools-vanilla/diamond_sword-vanilla.png) | [候補](previews/ui-tools-vanilla/diamond_sword-after.png) |
+
+[比較カメラ・変形・頂点の照合記録](previews/ui-tools-vanilla/verification.json)。比較画像は形・向き・厚みを確認するために中心を揃えたものです。Java の表示設定を基準にしており、Blockbench が Bedrock 本体の内部のアイテム描画やインベントリ背景を実行したという意味ではありません。実機での開閉時の位置・大きさ・向きは別に確認します。HUD と Java の移動・使用処理はこの候補で変更しません。

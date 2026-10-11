@@ -340,8 +340,10 @@
     "geyserSHA256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
   },
   "retailClient": {
-    "status": "pending",
-    "source": "PEXkurann RP 0.2.11 reconnect and inventory open/close check requested",
-    "limitations": "Headless checks validate inventory, use, HUD packets and pack advertisement. Blockbench previews validate geometry and resolved numeric transforms on simulated item pivots. Neither executes retail inventory background rendering or arm-height transitions."
+    "status": "visible_needs_pose_adjustment",
+    "source": "PEXkurann: めっちゃ惜しい, with inventory screenshot on 2026-10-11",
+    "observed": "The iron axe is visible in the inventory background. The slot icon and main-hand sword are present. The user says it is very close; the remaining pose difference needs clarification.",
+    "limitations": "The screenshot does not define the desired rotation or scale numerically. Headless checks do not validate retail pixels.",
+    "followupRequest": "Blockbenchで 元の Vanillaの形を見て同じに"
   }
 }
