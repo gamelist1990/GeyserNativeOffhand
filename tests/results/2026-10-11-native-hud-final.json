@@ -203,11 +203,21 @@
   "retailClient": {
     "status": "awaiting-feedback",
     "requestedVersion": "0.2.17",
-    "scope": "Bread/axe icon switching, count and removal of diagnostic controls"
+    "scope": "Bread/axe/apple icon switching, count and removal of diagnostic controls"
   },
   "serverAfterTests": {
     "difficulty": "The difficulty is Peaceful",
     "keepInventory": "Game rule keep_inventory is currently set to true",
     "naturalMobSpawning": "Game rule spawn_mobs is currently set to false"
+  },
+  "idResearch": {
+    "source": "https://wiki.bedrock.dev/items/numerical-item-ids",
+    "targetVersion": "26.50",
+    "confirmedRegistryMatches": {
+      "bread": 261,
+      "iron_axe": 300,
+      "crafting_table": 58
+    },
+    "remainingObservation": "The documented custom-item shift for vanilla data-driven IDs 852..883 makes apple rendering a required separate retail check; no speculative correction has been applied."
   }
 }
