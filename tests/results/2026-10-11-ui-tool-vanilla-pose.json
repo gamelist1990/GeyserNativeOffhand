@@ -199,8 +199,9 @@
     "geyserSHA256": "424cba7e10e81c0655839fd3fdc2aeaac3962ffd7d6b0222a8fe2552ac5c859c"
   },
   "retailClient": {
-    "status": "pending",
-    "source": "PEXkurann RP 0.2.12 reconnect and inventory open/close check requested",
-    "limitations": "Reference images align model centers on a synthetic camera. Blockbench does not execute the retail Bedrock inventory background renderer; actual screen position, size and pose still require the real-client check."
+    "status": "orientation_confirmed_position_adjustment",
+    "source": "PEXkurann: 向きは完璧 あとは位置だけ, with paired normal/inventory screenshots on 2026-10-11",
+    "observed": "The user confirmed the orientation. The paired screenshots show the inventory-background axe displaced right/down relative to the normal native axe; placement still needs adjustment.",
+    "limitations": "The screenshots supply approximate screen landmarks, not the exact camera or item transform."
   }
 }

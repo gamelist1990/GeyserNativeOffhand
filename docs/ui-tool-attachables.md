@@ -98,3 +98,19 @@ Blockbench が実際に描画する元モデルの変換を取得し、Bedrock �
 | 剣 | [前のモデル](previews/ui-tools-vanilla/diamond_sword-before.png) | [元モデル](previews/ui-tools-vanilla/diamond_sword-vanilla.png) | [候補](previews/ui-tools-vanilla/diamond_sword-after.png) |
 
 [比較カメラ・変形・頂点の照合記録](previews/ui-tools-vanilla/verification.json)。比較画像は形・向き・厚みを確認するために中心を揃えたものです。Java の表示設定を基準にしており、Blockbench が Bedrock 本体の内部のアイテム描画やインベントリ背景を実行したという意味ではありません。実機での開閉時の位置・大きさ・向きは別に確認します。HUD と Java の移動・使用処理はこの候補で変更しません。
+
+
+## 0.2.13 の位置補正
+
+0.2.12 の実機報告は「向きは完璧 あとは位置だけ」です。提供された通常画面とインベントリ画面はいずれも 1280×588 で、斧の上端は通常画面でおよそ `(270,270)`、開いた画面でおよそ `(355,338)` です。通常画面の左端は約 X=40 です。画面から読み取った概算値として扱い、正確なピクセル一致とは扱いません。
+
+同じモデルを読み込んだ Blockbench の FOV 70 のカメラで、開いた画面の位置を近似します。上端の Y のずれからカメラとの高さの差を合わせ、上端と左端の X を投影式へ入れて横と奥行きの移動を求めます。高さは通常画面の上端へ合わせます。保持座標を `[-13.5,-5.8,5.1]` から `[-14.4,-3.99,3.43]` へ変更します。回転、子ボーン、立方体、テクスチャ、倍率 0.68 は同じです。対象はインベントリ用の 35 種の道具の一人称オフハンドです。
+
+近似カメラでの斧の上端は補正前 `(354.72,338.00)`、補正後は約 `(270,270)`、左端は約 X=40 になります。読み込んだ斧・剣の全頂点が同じ移動量だけ変化し、回転・倍率の行列が変わらないことを確認しました。奥行きの移動によって画面上の見かけの大きさも近づきます。これはスクリーンショットからの配置予測であり、Bedrock 本体の描画を実行した結果ではありません。
+
+| アイテム | 0.2.12 の配置の再現 | 0.2.13 の予測 |
+| --- | --- | --- |
+| 斧 | [補正前](previews/ui-tool-position/iron_axe-before.png) | [補正後](previews/ui-tool-position/iron_axe-after.png) |
+| 剣 | [補正前](previews/ui-tool-position/diamond_sword-before.png) | [補正後](previews/ui-tool-position/diamond_sword-after.png) |
+
+[カメラの近似と頂点の確認記録](previews/ui-tool-position/verification.json)。実機では同じアイテムを持って通常画面とインベントリ画面の位置を比べます。

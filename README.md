@@ -2,9 +2,9 @@
 
 Bedrock の通常のインベントリで、アイテムをオフハンドへ移動し、Java サーバーへ設置・使用を送る Geyser-Spigot 拡張です。
 
-**0.2.12-rewrite.12 / RP 0.2.12 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、独自の食事モーションはありません。
+**0.2.13-rewrite.13 / RP 0.2.13 は、ユーザー提供の DoubleHands を参考に実装を組み直した検証版です。** ゲーム画面では元のバニラのアイテム ID、種類、ブロック状態を使います。以前の腕補正・食品モデル・アニメーションは取り除きました。食品の消費は機能テストを通っていますが、独自の食事モーションはありません。
 
-DoubleHands の元の HUD はユーザーの実機で良好との報告を受けました。インベントリ背景の左手の斧は 0.2.11 で表示でき、「めっちゃ惜しい」との報告を受けました。0.2.12 はユーザーの指示に従い、Blockbench のバニラ Java 左手モデルを基準に、道具の向き・倍率・ピクセルの厚みを合わせます。表示できた保持座標とモデルの中心を使い、子ボーンで形を回転させます。Blockbench の比較では同じカメラ・同じ中心位置で一致を確認しました。Bedrock 実機でインベントリを開閉した時の見た目は確認待ちです。
+DoubleHands の元の HUD はユーザーの実機で良好との報告を受けました。インベントリ背景の左手の斧は 0.2.11 で表示でき、「めっちゃ惜しい」との報告を受けました。0.2.12 はユーザーの指示に従い、Blockbench のバニラ Java 左手モデルを基準に、道具の向き・倍率・ピクセルの厚みを合わせます。表示できた保持座標とモデルの中心を使い、子ボーンで形を回転させます。Blockbench の比較で元モデルと一致し、0.2.12 の向きは実機でも「完璧」と確認されました。開いた時の位置には差が残るため、0.2.13 は同じモデルの左手の保持座標を調整します。提供された通常画面とインベントリ画面の画像を基準に、Blockbench で位置を比較しました。新しい座標の実機確認は待機中です。
 
 開発ブランチは `native-renderer-rewrite`。従来の公開版は `main` / [v0.1.2](https://github.com/gamelist1990/GeyserNativeOffhand/releases/tag/v0.1.2)、失敗した表示補正の記録は `attachable-consumption` に残します。本拡張は Geyser の公式機能ではありません。
 
@@ -92,7 +92,7 @@ export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pat
 ./build.sh
 ```
 
-出力は `build/GeyserNativeOffhand-0.2.12-rewrite.12.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
+出力は `build/GeyserNativeOffhand-0.2.13-rewrite.13.jar` と `build/classes/GeyserNativeOffhand.mcpack` です。
 
 ## ライセンスと出典
 

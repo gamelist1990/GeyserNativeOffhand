@@ -86,14 +86,15 @@ for view in ['first_right', 'third_right', 'third_left']:
 write('render_controllers/nativeoffhand_ui_tool.render_controllers.json',
       {'format_version': '1.10.0', 'render_controllers': controllers})
 
-# Offhand values are exactly the shield values that rendered in the user's
-# diagnostic. A child bone matches the vanilla display basis about a fixed center.
+# Keep the proven shield rotation and vanilla-oriented child geometry.
+# Only first-person offhand translation is adjusted from the user's paired
+# normal/inventory screenshots; see docs/ui-tool-attachables.md for calibration.
 poses = {
     'main_hand_first_person_pos_x': -5.5, 'main_hand_first_person_pos_y': 21.0,
     'main_hand_first_person_pos_z': -3.0, 'main_hand_first_person_rot_x': 38.0,
     'main_hand_first_person_rot_y': -120.0, 'main_hand_first_person_rot_z': -63.0,
-    'off_hand_first_person_pos_x': -13.5, 'off_hand_first_person_pos_y': -5.8,
-    'off_hand_first_person_pos_z': 5.1, 'off_hand_first_person_with_bow_pos_z': -25.0,
+    'off_hand_first_person_pos_x': -14.4, 'off_hand_first_person_pos_y': -3.99,
+    'off_hand_first_person_pos_z': 3.43, 'off_hand_first_person_with_bow_pos_z': -25.0,
     'off_hand_first_person_rot_x': 1.0, 'off_hand_first_person_rot_y': 176.0,
     'off_hand_first_person_rot_z': -2.5}
 for name in tools:
