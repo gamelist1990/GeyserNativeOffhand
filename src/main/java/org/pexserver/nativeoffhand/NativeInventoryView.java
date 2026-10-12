@@ -4,11 +4,12 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.geysermc.geyser.inventory.GeyserItemStack;
 import org.geysermc.geyser.session.GeyserSession;
 
-/** Ordinary inventory stays vanilla; only the picked cursor uses move definitions. */
+/** Picked cursor and matching merge targets share temporary move definitions. */
 final class NativeInventoryView {
     private static final ThreadLocal<Boolean> MOVING = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> NATIVE = new ThreadLocal<>();
 
+    private static final java.util.Map<GeyserSession, java.util.Set<Integer>> MATCHING = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Set<GeyserSession> PICKED = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     static void beforeRequest(GeyserSession session, org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket packet) {
@@ -55,12 +56,62 @@ final class NativeInventoryView {
             for (int slot : slots) holder.updateSlot(slot);
         }
         if (session.getPlayerInventory().getCursor().isEmpty()) PICKED.remove(session);
+        syncMatching(session);
         org.geysermc.geyser.util.InventoryUtils.updateCursor(session);
     }
 
     static ItemData cursorData(GeyserSession session) {
         var stack = session.getPlayerInventory().getCursor();
         return PICKED.contains(session) ? movingData(session, stack) : nativeData(session, stack);
+    }
+
+    static void refresh(GeyserSession session) {
+        if (session.getPlayerInventory().getCursor().isEmpty() && MATCHING.containsKey(session)) {
+            PICKED.remove(session);
+            syncMatching(session);
+        }
+    }
+
+    static void rememberSlot(GeyserSession session, int javaSlot, GeyserItemStack stack) {
+        if (matchesCursor(session, stack))
+            MATCHING.computeIfAbsent(session, ignored -> new java.util.HashSet<>()).add(javaSlot);
+    }
+
+    static boolean matchesCursor(GeyserSession session, GeyserItemStack stack) {
+        var cursor = session.getPlayerInventory().getCursor();
+        return PICKED.contains(session) && !cursor.isEmpty() && !stack.isEmpty()
+            && cursor.asItem().javaId() == stack.asItem().javaId()
+            && NativeItemCatalog.hasAlias(cursor.asItem().javaKey().asString());
+    }
+
+    static ItemData slotData(GeyserSession session, GeyserItemStack stack, ItemData sent) {
+        if (!matchesCursor(session, stack)) return sent;
+        return movingData(session, stack).toBuilder().count(sent.getCount())
+            .netId(sent.getNetId()).usingNetId(sent.isUsingNetId()).build();
+    }
+
+    private static void syncMatching(GeyserSession session) {
+        var inventory = session.getPlayerInventory();
+        var current = new java.util.HashSet<Integer>();
+        for (int slot = 9; slot <= 45; slot++) {
+            if (matchesCursor(session, inventory.getItem(slot))) current.add(slot);
+        }
+        var previous = MATCHING.put(session, current);
+        var update = new java.util.HashSet<>(current);
+        if (previous != null) update.addAll(previous);
+        NativeHeldView.invalidateOffhand(session);
+        for (int slot : update) session.getPlayerInventoryHolder().updateSlot(slot);
+        if (current.isEmpty()) MATCHING.remove(session);
+        // Inventory aliases must not become right-hand equipment definitions.
+        if (!update.isEmpty()) {
+            var equipment = new org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket();
+            equipment.setRuntimeEntityId(session.getPlayerEntity().geyserId());
+            equipment.setItem(nativeData(session, inventory.getItemInHand()));
+            equipment.setInventorySlot(inventory.getHeldItemSlot());
+            equipment.setHotbarSlot(inventory.getHeldItemSlot());
+            equipment.setContainerId(org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId.INVENTORY);
+            session.sendUpstreamPacket(equipment);
+        }
     }
 
     private static ItemData movingData(GeyserSession session, GeyserItemStack stack) {
@@ -86,7 +137,7 @@ final class NativeInventoryView {
         action.run();
     }
 
-    static void forget(GeyserSession session) { PICKED.remove(session); NativeHeldView.forget(session); }
-    static void clear() { PICKED.clear(); NativeHeldView.clear(); }
+    static void forget(GeyserSession session) { PICKED.remove(session); MATCHING.remove(session); NativeHeldView.forget(session); }
+    static void clear() { PICKED.clear(); MATCHING.clear(); NativeHeldView.clear(); }
     private NativeInventoryView() {}
 }

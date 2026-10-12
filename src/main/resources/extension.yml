@@ -2,5 +2,5 @@ id: nativeoffhand
 name: GeyserNativeOffhand
 main: org.pexserver.nativeoffhand.NativeOffhandExtension
 api: 2.12.0
-version: 0.2.29-rewrite.29
+version: 0.2.30-rewrite.30
 authors: [gamelist1990]

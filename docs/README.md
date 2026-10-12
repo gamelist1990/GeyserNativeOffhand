@@ -1,6 +1,6 @@
 # ドキュメント
 
-GeyserNativeOffhand 0.2.29候補の利用・開発資料です。概要と導入は[公開README](../README.md)を参照してください。
+GeyserNativeOffhand 0.2.30候補の利用・開発資料です。概要と導入は[公開README](../README.md)を参照してください。
 
 ## 利用・開発ガイド
 
@@ -14,7 +14,7 @@ GeyserNativeOffhand 0.2.29候補の利用・開発資料です。概要と導入
 
 ## 詳細資料・調査
 
-- [カーソルだけの一時定義と軽量化](cursor-only-inventory.md)
+- [カーソルと同種スタックの一時定義・軽量化](cursor-only-inventory.md)
 - [撤回した左手食事モーションの記録](left-eating-motion.md)
 - [食事アニメーションの調査・比較](eating-animation-research.md)
 - [DoubleHandsの解析](doublehands-reference.md)

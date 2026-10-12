@@ -109,6 +109,7 @@ function requestSlot(container,slot) {
 }
 async function nativeAction(type,count,sourceContainer,sourceSlot,destContainer,destSlot) {
   const source={...inventorySlot(sourceContainer,sourceSlot)},dest={...inventorySlot(destContainer,destSlot)}
+  if(type==='place' && dest.network_id) assert.equal(source.network_id,dest.network_id,'Retail merge requires identical cursor/destination item definitions')
   const fromRevision=revisions.get(slotKey(sourceContainer,sourceSlot)),toRevision=revisions.get(slotKey(destContainer,destSlot))
   const action={type_id:type,source:requestSlot(sourceContainer,sourceSlot),destination:requestSlot(destContainer,destSlot)}
   if(type!=='swap')action.count=count
@@ -391,6 +392,24 @@ async function main() {
     await hudOperations()
     for(const [id,count] of [['stone',4],['iron_axe',1],['diamond_sword',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['apple',16],['bread',4],['redstone',16],['water_bucket',1],['red_bed',1],['red_banner',16],['oak_sign',16],['red_wool',16]])
       await transferRoundTrip(id,count)
+    await setMain('stone',4)
+    await setOffhand('stone',4)
+    await cmd('item replace entity NativeOH hotbar.1 with minecraft:stone 3')
+    await until('ordinary merge target',()=>state.inventory[1]?.count===3)
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('merge inventory open',()=>state.opened)
+    await nativeAction('take',2,'hotbar',0,'cursor',0)
+    await until('matching stacks share picked definition',()=>state.inventory[1].network_id===state.cursor.network_id && state.offhand.network_id===state.cursor.network_id && state.cursor.network_id===uiDefinition('stone').runtime_id)
+    await nativeAction('place',1,'cursor',0,'hotbar',1)
+    await until('partial merge keeps matching definition',()=>state.cursor.count===1 && state.inventory[1].count===4 && state.inventory[1].network_id===state.cursor.network_id)
+    await nativeAction('place',1,'cursor',0,'offhand',1)
+    await until('all merge targets restore vanilla',()=>!state.cursor.network_id && state.inventory[0].network_id===nativeDefinition('stone').runtime_id && state.inventory[1].network_id===nativeDefinition('stone').runtime_id && state.offhand.network_id===nativeDefinition('stone').runtime_id && state.offhand.count===5)
+    await checkJavaCount('equipment.offhand.count',5)
+    const mergeClose=state.closes.length
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('merge close confirmation',()=>state.closes.length>mergeClose)
+    check('Partial cursor merges into same-type inventory and offhand stacks, then restores vanilla definitions')
     await setMain('stone',4)
     await setOffhand('apple',2)
     state.opened=null

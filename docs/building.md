@@ -17,7 +17,7 @@ bash build.sh
 
 ## 出力
 
-- `build/GeyserNativeOffhand-0.2.29-rewrite.29.jar` — サーバーへ導入する拡張。パックも同梱します。
+- `build/GeyserNativeOffhand-0.2.30-rewrite.30.jar` — サーバーへ導入する拡張。パックも同梱します。
 - `build/classes/GeyserNativeOffhand.mcpack` — 同梱パックの確認用出力。通常の導入で別途配信設定は不要です。
 
 JARを停止したサーバーの `plugins/Geyser-Spigot/extensions/` へ配置します。[READMEの導入手順](../README.md#導入)に従ってGeyserの既存設定を更新し、完全に再起動してください。

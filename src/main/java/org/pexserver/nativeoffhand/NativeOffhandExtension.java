@@ -103,6 +103,7 @@ public final class NativeOffhandExtension implements Extension {
                     else delegate.translate(session, packet);
                 });
                 if (packet instanceof ItemStackRequestPacket request) NativeInventoryView.afterRequest(session, request);
+                NativeInventoryView.refresh(session);
                 use.refresh(session);
                 hud.update(session);
             }

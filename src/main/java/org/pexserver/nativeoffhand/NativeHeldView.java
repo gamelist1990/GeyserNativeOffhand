@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Only cursor definitions change; duplicate inventory snapshots do not rebuild held models. */
+/** Temporary cursor/merge-target definitions; equipment keeps native mappings. */
 final class NativeHeldView extends UpstreamSession {
     private record Installed(UpstreamSession original, NativeHeldView view) {}
     private static final Map<GeyserSession, Installed> INSTALLED = new ConcurrentHashMap<>();
@@ -66,6 +66,16 @@ final class NativeHeldView extends UpstreamSession {
 
     private BedrockPacket present(BedrockPacket packet) {
         if (packet instanceof InventoryContentPacket content && content.getContainerId() == ContainerId.INVENTORY) {
+            var transformed = content.clone();
+            var contents = new ArrayList<>(content.getContents());
+            for (int i = 0; i < Math.min(36, contents.size()); i++) {
+                int javaSlot = i < 9 ? i + 36 : i;
+                NativeInventoryView.rememberSlot(owner, javaSlot, owner.getPlayerInventory().getItem(javaSlot));
+                contents.set(i, NativeInventoryView.slotData(owner, owner.getPlayerInventory().getItem(javaSlot), contents.get(i)));
+            }
+            transformed.setContents(contents);
+            content = transformed;
+            packet = transformed;
             if (inventory != null && inventory.size() == content.getContents().size()) {
                 boolean unchanged = true;
                 for (int i = 0; i < inventory.size(); i++) {
@@ -77,6 +87,14 @@ final class NativeHeldView extends UpstreamSession {
             return packet;
         }
         if (packet instanceof InventorySlotPacket slot && slot.getContainerId() == ContainerId.INVENTORY) {
+            if (slot.getSlot() >= 0 && slot.getSlot() < 36) {
+                var transformed = slot.clone();
+                int javaSlot = slot.getSlot() < 9 ? slot.getSlot() + 36 : slot.getSlot();
+                NativeInventoryView.rememberSlot(owner, javaSlot, owner.getPlayerInventory().getItem(javaSlot));
+                transformed.setItem(NativeInventoryView.slotData(owner, owner.getPlayerInventory().getItem(javaSlot), slot.getItem()));
+                slot = transformed;
+                packet = transformed;
+            }
             if (inventory != null && slot.getSlot() >= 0 && slot.getSlot() < inventory.size())
                 inventory.set(slot.getSlot(), slot.getItem());
             return packet;
@@ -94,7 +112,8 @@ final class NativeHeldView extends UpstreamSession {
                 && !content.getContents().isEmpty()) {
             var copy = content.clone();
             var items = new ArrayList<>(content.getContents());
-            var item = items.get(0);
+            NativeInventoryView.rememberSlot(owner, 45, owner.getPlayerInventory().getOffhand());
+            var item = NativeInventoryView.slotData(owner, owner.getPlayerInventory().getOffhand(), items.get(0));
             if (same(inventoryOffhand, item)) return null;
             inventoryOffhand = item;
             items.set(0, item);
@@ -103,7 +122,8 @@ final class NativeHeldView extends UpstreamSession {
         }
         if (packet instanceof InventorySlotPacket slot && slot.getContainerId() == ContainerId.OFFHAND) {
             var copy = slot.clone();
-            var item = slot.getItem();
+            NativeInventoryView.rememberSlot(owner, 45, owner.getPlayerInventory().getOffhand());
+            var item = NativeInventoryView.slotData(owner, owner.getPlayerInventory().getOffhand(), slot.getItem());
             if (same(inventoryOffhand, item)) return null;
             inventoryOffhand = item;
             copy.setItem(item);
