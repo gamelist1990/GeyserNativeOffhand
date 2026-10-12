@@ -1,6 +1,6 @@
 # Third-party notices
 
-The extension is MIT-licensed. Inventory validation and interaction conventions were studied in [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/e215fa5cf1ffc3874c4d46c579d25800b20f17e4/core/src/main/java/org/geysermc/geyser/translator/protocol/bedrock/BedrockInventoryTransactionTranslator.java), copyright (c) 2019-2022 GeyserMC. Geyser is distributed under the MIT license. The rewrite delegates ordinary inventory operations to Geyser and calls its block-reach helper instead of bundling the old full translator fork.
+The extension is MIT-licensed. Inventory validation and interaction conventions were studied in [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/e215fa5cf1ffc3874c4d46c579d25800b20f17e4/core/src/main/java/org/geysermc/geyser/translator/protocol/bedrock/BedrockInventoryTransactionTranslator.java), copyright (c) 2019-2022 GeyserMC. Geyser is distributed under the MIT license. The rewrite delegates ordinary inventory operations to Geyser instead of bundling the old full translator fork. Version 0.2.31 executes item/block interaction on the same Paper server rather than duplicating placement rules.
 
 The user-supplied DoubleHands 5.6.0 add-on is credited to Areed Elahi in its manifest. At the user request, version 0.2.4 copied its HUD UI files and images. Version 0.2.14 removes all 1,674 bundled item icon PNGs, the obsolete empty image and the converted TextureMap resource. It retains the slot PNG and the HUD registration/layout derived from DoubleHands, with a modified icon control that uses Bedrock's native item renderer. These third-party files are not relicensed under the extension MIT license. No separate redistribution license was included in the provided add-on. See [the inspection record](docs/doublehands-reference.md) and the bundled DOUBLEHANDS-NOTICE.txt.
 
@@ -17,3 +17,7 @@ Current builds resolve Mojang/bedrock-samples main and check its UI and block/te
 ## Eating Animation motion reference
 
 Eating Animation 1.1.5 by Voxen (user-provided Eating_Animation.zip) was analyzed as a motion reference. The experimental left-hand motion was removed in 0.2.28; only its research record remains. No original textures, attachables, or archive are bundled. See [the investigation](docs/eating-animation-research.md) and [the withdrawn implementation record](docs/left-eating-motion.md).
+
+## Vanilla placement behavior
+
+Version 0.2.31 was studied against the user-supplied official Minecraft 26.3 client JAR (SHA-1 e877b6a07acd633fb3bb475002175cec036e7b87) and the installed Paper 26.3-159-main@a4b87cf server. It calls the installed Minecraft/Paper interaction classes and Bukkit event APIs at runtime. The client/server JARs and decompiled research files are not redistributed in this repository or extension. See [PaperMC/Paper](https://github.com/PaperMC/Paper) and [the implementation record](docs/vanilla-placement.md).

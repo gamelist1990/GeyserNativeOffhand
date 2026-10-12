@@ -44,6 +44,7 @@ public final class NativeOffhandExtension implements Extension {
 
     @Subscribe public void initialize(GeyserPostInitializeEvent event) {
         try {
+            PaperUseBridge.initialize();
             componentData = SimpleItemDefinition.class.getDeclaredField("componentData");
             componentData.setAccessible(true);
             translation = org.geysermc.geyser.registry.type.ItemMapping.class.getDeclaredField("translationString");
@@ -83,7 +84,7 @@ public final class NativeOffhandExtension implements Extension {
             hookHud(ClientboundSetSubtitleTextPacket.class);
             hookHud(ClientboundSetTitlesAnimationPacket.class);
             hookHud(ClientboundClearTitlesPacket.class);
-            logger().info("Native renderer rewrite enabled; cursor-only item definitions; vanilla held mappings.");
+            logger().info("Native renderer rewrite enabled; cursor-only item definitions; vanilla held mappings; same-connection Paper use routing.");
         } catch (Throwable error) {
             restoreAll();
             logger().error("Native offhand initialization failed: " + error);
@@ -147,6 +148,7 @@ public final class NativeOffhandExtension implements Extension {
         for (int i = restore.size() - 1; i >= 0; i--) restore.get(i).run();
         restore.clear();
         use.clear();
+        PaperUseBridge.clear();
         NativeInventoryView.clear();
         hud.clear();
         nativeData.forEach((item, data) -> { try { componentData.set(item, data); } catch (Exception error) { logger().error(error.toString()); } });

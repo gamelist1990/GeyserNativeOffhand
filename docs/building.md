@@ -8,16 +8,19 @@ JDK 25以上、Python 3、検証したGeyser-Spigot JARとPaperのライブラ�
 
 ```bash
 export GEYSER_JAR=/path/to/Geyser-Spigot.jar
+export PAPER_SERVER_JAR=/path/to/test-server/versions/26.3/paper-26.3.jar
 export PAPER_LIBRARIES=/path/to/test-server/libraries
 export EXTRA_CP="$(python3 -c 'import os; from pathlib import Path; print(os.pathsep.join(str(p) for p in Path(os.environ["PAPER_LIBRARIES"]).rglob("*.jar")))')"
 bash build.sh
 ```
 
+`PAPER_SERVER_JAR`には起動時に生成されたremapped PaperサーバーJARを指定します。設置アダプターはそのNMSクラスと同じ版へコンパイルします。配布用のpaper.jarではありません。
+
 `GEYSER_JAR`はコンパイルとネイティブIDの生成に使います。`EXTRA_CP`にはPaperが用意した依存ライブラリを指定します。
 
 ## 出力
 
-- `build/GeyserNativeOffhand-0.2.30-rewrite.30.jar` — サーバーへ導入する拡張。パックも同梱します。
+- `build/GeyserNativeOffhand-0.2.32-rewrite.32.jar` — サーバーへ導入する拡張。パックも同梱します。
 - `build/classes/GeyserNativeOffhand.mcpack` — 同梱パックの確認用出力。通常の導入で別途配信設定は不要です。
 
 JARを停止したサーバーの `plugins/Geyser-Spigot/extensions/` へ配置します。[READMEの導入手順](../README.md#導入)に従ってGeyserの既存設定を更新し、完全に再起動してください。

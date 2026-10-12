@@ -1,0 +1,1048 @@
+{
+  "timestamp": "2026-10-12T05:47:31.695Z",
+  "extensionVersion": "0.2.32-rewrite.32",
+  "environment": {
+    "paper": "26.3-159-main@a4b87cf",
+    "geyser": "2.12.0-SNAPSHOT build 3080",
+    "bedrock": "1.26.51 / protocol 2193",
+    "java": "26.0.2",
+    "node": "24.19.0"
+  },
+  "officialClientSha1": "e877b6a07acd633fb3bb475002175cec036e7b87",
+  "artifacts": {
+    "extensionSha256": "755018bb14884822f2afead92c1f085d038b669e4a599b8473a679d68b0d2b8e",
+    "packSha256": "0f76e284ccd3efdba34c96609d1ad3047ccf863562f267ad8f52eb70637b69ec",
+    "packVersion": [
+      0,
+      2,
+      32
+    ],
+    "packBytes": 9744,
+    "packPngs": [
+      "textures/ui/offhand_slot.png"
+    ],
+    "behaviorClassSha256": {
+      "org/pexserver/nativeoffhand/PaperUseBridge.class": "4474fc08740e82187b243addfbd8705cf036ab20db6093ed74d81cc3cc9f6c44",
+      "org/pexserver/nativeoffhand/NativeUseRouter.class": "7ac875cc87255bddc1beb3875ba72801da9ab2c970c23adc4765bbfd2264c688"
+    }
+  },
+  "suites": {
+    "rate": {
+      "timestamp": "2026-10-12T05:34:04.113Z",
+      "nodeVersion": "24.19.0",
+      "checks": [
+        {
+          "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+        },
+        {
+          "label": "Single left-hand click consumes exactly one block without scheduled repeats"
+        },
+        {
+          "label": "Held-input spam retains client cadence at server 20 TPS",
+          "evidence": {
+            "attempts": 20,
+            "accepted": 4,
+            "placementMillis": [
+              20,
+              239,
+              442,
+              673
+            ],
+            "intervalsMillis": [
+              219,
+              203,
+              231
+            ]
+          }
+        },
+        {
+          "label": "Held-input spam retains client cadence at server 100 TPS",
+          "evidence": {
+            "attempts": 20,
+            "accepted": 5,
+            "placementMillis": [
+              22,
+              234,
+              437,
+              652,
+              852
+            ],
+            "intervalsMillis": [
+              212,
+              203,
+              215,
+              200
+            ]
+          }
+        }
+      ],
+      "totalChecks": 4
+    },
+    "placement": {
+      "timestamp": "2026-10-12T05:39:18.130Z",
+      "bedrockVersion": "1.26.51",
+      "checks": [
+        {
+          "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+        },
+        {
+          "label": "Main air advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main diamond_sword advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main diamond_pickaxe advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main stick advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main iron_axe advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main iron_hoe advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main iron_shovel advances to offhand stone exactly once"
+        },
+        {
+          "label": "Main-hand block SUCCESS stops before offhand"
+        },
+        {
+          "label": "Reporting the native offhand definition still preserves main-hand priority"
+        },
+        {
+          "label": "Main shovel path conversion SUCCESS stops offhand placement"
+        },
+        {
+          "label": "Main axe stripping SUCCESS stops offhand placement"
+        },
+        {
+          "label": "Main-hand BlockItem FAIL stops without offhand consumption"
+        },
+        {
+          "label": "Offhand slab merges at clicked position, not adjacent position"
+        },
+        {
+          "label": "Upper face places a bottom slab"
+        },
+        {
+          "label": "Placement in source water preserves slab waterlogging"
+        },
+        {
+          "label": "Log axis follows the clicked side face"
+        },
+        {
+          "label": "Door places both halves and consumes exactly one offhand item"
+        },
+        {
+          "label": "Door refuses placement when the upper half is obstructed"
+        },
+        {
+          "label": "Side hit above half height places a top slab"
+        },
+        {
+          "label": "Replaceable vegetation is replaced at clicked position"
+        },
+        {
+          "label": "Side face selects wall torch and facing"
+        },
+        {
+          "label": "Unsupported wall face falls back to standing torch when floor supports it"
+        },
+        {
+          "label": "Torch rejects placement when neither wall nor floor supports it"
+        },
+        {
+          "label": "Player collision rejects an offhand full block"
+        },
+        {
+          "label": "Stairs derive facing from authoritative player rotation"
+        },
+        {
+          "label": "Empty-hand block interaction opens chest before offhand placement"
+        },
+        {
+          "label": "Sneaking with an occupied hand bypasses chest interaction"
+        },
+        {
+          "label": "Full-hunger main food PASS allows offhand placement"
+        },
+        {
+          "label": "Hungry main food use SUCCESS blocks offhand placement"
+        },
+        {
+          "label": "Creative placement retains the offhand count"
+        },
+        {
+          "label": "Spectator cannot place an offhand block"
+        },
+        {
+          "label": "Adventure requires CAN_PLACE_ON rather than assuming survival placement"
+        },
+        {
+          "label": "Adventure CAN_PLACE_ON allows placement on a permitted block"
+        },
+        {
+          "label": "Authoritative reach rejects distant placement"
+        },
+        {
+          "label": "Non-finite hit is rejected"
+        },
+        {
+          "label": "Out-of-bounds hit is rejected"
+        },
+        {
+          "label": "Forged held item cannot bypass main-hand priority"
+        },
+        {
+          "label": "Vanilla four-tick use delay suppresses a burst across different blocks"
+        },
+        {
+          "label": "Placement resumes after four ticks"
+        },
+        {
+          "label": "Paper cancel_interact does not consume either hand or bypass through offhand"
+        },
+        {
+          "label": "Paper cancel_place does not consume either hand or bypass through offhand"
+        },
+        {
+          "label": "Main-hand food on cooldown returns PASS and allows offhand placement"
+        }
+      ],
+      "totalChecks": 43,
+      "limitations": [
+        "Headless protocol checks; retail client placement rendering remains unverified."
+      ],
+      "nodeVersion": "24.19.0"
+    },
+    "cursorMergeAndHud": {
+      "timestamp": "2026-10-12T05:39:37.024Z",
+      "bedrockVersion": "1.26.51",
+      "resourcePackVersion": [
+        0,
+        2,
+        32
+      ],
+      "checks": [
+        {
+          "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+        },
+        {
+          "label": "Native HUD receives block AUX and stack count",
+          "evidence": {
+            "identifier": "minecraft:stone",
+            "itemAux": "65536",
+            "titlePayload": "B65536",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Native HUD replaces the block AUX with food",
+          "evidence": {
+            "identifier": "minecraft:bread",
+            "itemAux": "17104896",
+            "titlePayload": "B17104896",
+            "countText": "7"
+          }
+        },
+        {
+          "label": "Native HUD preserves a colored block data value",
+          "evidence": {
+            "identifier": "minecraft:red_wool",
+            "itemAux": "-36438016",
+            "titlePayload": "B-36438016",
+            "countText": "9"
+          }
+        },
+        {
+          "label": "Native HUD sends signed AUX for lantern",
+          "evidence": {
+            "identifier": "minecraft:lantern",
+            "itemAux": "-13631488",
+            "titlePayload": "-13631488",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Native HUD sends signed AUX for soul_lantern",
+          "evidence": {
+            "identifier": "minecraft:soul_lantern",
+            "itemAux": "-17629184",
+            "titlePayload": "-17629184",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Native HUD sends signed AUX for soul_torch",
+          "evidence": {
+            "identifier": "minecraft:soul_torch",
+            "itemAux": "-17563648",
+            "titlePayload": "-17563648",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Diagnostic B fallback keeps apple native AUX without a guessed local-ID shift",
+          "evidence": {
+            "identifier": "minecraft:apple",
+            "itemAux": "57802752",
+            "titlePayload": "B57802752",
+            "countText": "2"
+          }
+        },
+        {
+          "label": "One item sends empty subtitle to hide the count",
+          "evidence": {
+            "identifier": "minecraft:bread",
+            "itemAux": "17104896",
+            "titlePayload": "B17104896",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Empty OFFHAND sends zero AUX to hide the slot",
+          "evidence": {
+            "identifier": "minecraft:air",
+            "itemAux": "0",
+            "titlePayload": "0",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Native HUD tool AUX leaves native equipment unchanged",
+          "evidence": {
+            "identifier": "minecraft:iron_axe",
+            "itemAux": "19660800",
+            "titlePayload": "B19660800",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Unchanged HUD data refreshes before the live title binding expires"
+        },
+        {
+          "label": "Server title/subtitle cannot replace the native HUD data; actionbar is preserved"
+        },
+        {
+          "label": "Server title reset refreshes rather than clearing the native HUD slot",
+          "evidence": {
+            "identifier": "minecraft:stone",
+            "itemAux": "65536",
+            "titlePayload": "B65536",
+            "countText": "3"
+          }
+        },
+        {
+          "label": "Native HUD after picking stone",
+          "evidence": {
+            "identifier": "minecraft:stone",
+            "itemAux": "65536",
+            "titlePayload": "B65536",
+            "countText": "4"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: stone"
+        },
+        {
+          "label": "Native HUD after picking iron_axe",
+          "evidence": {
+            "identifier": "minecraft:iron_axe",
+            "itemAux": "19660800",
+            "titlePayload": "B19660800",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: iron_axe"
+        },
+        {
+          "label": "Native HUD after picking diamond_sword",
+          "evidence": {
+            "identifier": "minecraft:diamond_sword",
+            "itemAux": "20840448",
+            "titlePayload": "B20840448",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: diamond_sword"
+        },
+        {
+          "label": "Native HUD after picking lantern",
+          "evidence": {
+            "identifier": "minecraft:lantern",
+            "itemAux": "-13631488",
+            "titlePayload": "-13631488",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: lantern"
+        },
+        {
+          "label": "Native HUD after picking soul_lantern",
+          "evidence": {
+            "identifier": "minecraft:soul_lantern",
+            "itemAux": "-17629184",
+            "titlePayload": "-17629184",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: soul_lantern"
+        },
+        {
+          "label": "Native HUD after picking soul_torch",
+          "evidence": {
+            "identifier": "minecraft:soul_torch",
+            "itemAux": "-17563648",
+            "titlePayload": "-17563648",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: soul_torch"
+        },
+        {
+          "label": "Native HUD after picking apple",
+          "evidence": {
+            "identifier": "minecraft:apple",
+            "itemAux": "57802752",
+            "titlePayload": "B57802752",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: apple"
+        },
+        {
+          "label": "Native HUD after picking bread",
+          "evidence": {
+            "identifier": "minecraft:bread",
+            "itemAux": "17104896",
+            "titlePayload": "B17104896",
+            "countText": "4"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: bread"
+        },
+        {
+          "label": "Native HUD after picking redstone",
+          "evidence": {
+            "identifier": "minecraft:redstone",
+            "itemAux": "24641536",
+            "titlePayload": "B24641536",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: redstone"
+        },
+        {
+          "label": "Native HUD after picking water_bucket",
+          "evidence": {
+            "identifier": "minecraft:water_bucket",
+            "itemAux": "23920640",
+            "titlePayload": "B23920640",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: water_bucket"
+        },
+        {
+          "label": "Native HUD after picking red_bed",
+          "evidence": {
+            "identifier": "minecraft:bed",
+            "itemAux": "27590670",
+            "titlePayload": "B27590670",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: red_bed"
+        },
+        {
+          "label": "Native HUD after picking red_banner",
+          "evidence": {
+            "identifier": "minecraft:banner",
+            "itemAux": "37814273",
+            "titlePayload": "B37814273",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: red_banner"
+        },
+        {
+          "label": "Native HUD after picking oak_sign",
+          "evidence": {
+            "identifier": "minecraft:oak_sign",
+            "itemAux": "23658496",
+            "titlePayload": "B23658496",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: oak_sign"
+        },
+        {
+          "label": "Native HUD after picking red_wool",
+          "evidence": {
+            "identifier": "minecraft:red_wool",
+            "itemAux": "-36438016",
+            "titlePayload": "B-36438016",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: red_wool"
+        },
+        {
+          "label": "Partial cursor merges into same-type inventory and offhand stacks, then restores vanilla definitions"
+        },
+        {
+          "label": "Cursor/offhand swap uses vanilla definitions after a partial pickup"
+        },
+        {
+          "label": "Cursor/inventory swap and offhand merge retain vanilla destination definitions"
+        },
+        {
+          "label": "No custom eating property or animation packets"
+        },
+        {
+          "label": "Sword opens chest with offhand air"
+        },
+        {
+          "label": "Sword opens chest with offhand apple"
+        },
+        {
+          "label": "Sword opens chest with offhand stone"
+        }
+      ],
+      "totalChecks": 49,
+      "customDataDrivenItems": 1626,
+      "limitations": [
+        "Headless checks do not execute retail JSON UI, signed-string conversion or icon rendering."
+      ],
+      "nodeVersion": "24.19.0"
+    },
+    "fullIntegration": {
+      "timestamp": "2026-10-12T05:47:31.695Z",
+      "bedrockVersion": "1.26.51",
+      "locale": "ja_JP",
+      "checks": [
+        {
+          "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+        },
+        {
+          "label": "Data-driven native items and inventory-only aliases permit offhand",
+          "evidence": 1625
+        },
+        {
+          "label": "Inventory tool aliases retain handheld rendering; ordinary items and blocks keep their own pose",
+          "evidence": {
+            "handheld": 13,
+            "ordinary": 6
+          }
+        },
+        {
+          "label": "Shield keeps its vanilla identifier for native rendering"
+        },
+        {
+          "label": "Main hand retains vanilla stone while OFFHAND presentation is independent"
+        },
+        {
+          "label": "Stone display name is localized for the client",
+          "evidence": "§r§f石"
+        },
+        {
+          "label": "A user custom item name retains priority over the localized fallback"
+        },
+        {
+          "label": "Native ItemStackRequest moved torches from hotbar into OFFHAND",
+          "evidence": "NativeOH has the following entity data: {id: \"minecraft:torch\", count: 8}"
+        },
+        {
+          "label": "Out-of-range offhand interaction is rejected without consumption"
+        },
+        {
+          "label": "Forged held definition is rejected without consumption"
+        },
+        {
+          "label": "Empty main hand places exactly one native offhand torch",
+          "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 7}}"
+        },
+        {
+          "label": "Sword in main hand allows offhand torch placement",
+          "evidence": "Test passed"
+        },
+        {
+          "label": "Useful main hand retains priority; no offhand duplicate",
+          "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 6}}"
+        },
+        {
+          "label": "Native offhand water bucket places source water and returns empty bucket",
+          "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:bucket\", count: 1}}"
+        },
+        {
+          "label": "Native offhand air-use consumes one ender pearl",
+          "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:ender_pearl\", count: 2}}"
+        },
+        {
+          "label": "Native offhand food completes timed use",
+          "evidence": "NativeOH has the following entity data: {}"
+        },
+        {
+          "label": "After eating, a sword in main hand allows native offhand stone placement",
+          "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:stone\", count: 3}}"
+        },
+        {
+          "label": "After eating, main-hand stone placement keeps priority over offhand food"
+        },
+        {
+          "label": "Sword opens chest with offhand air"
+        },
+        {
+          "label": "Sword opens chest with offhand apple"
+        },
+        {
+          "label": "Sword opens chest with offhand stone"
+        },
+        {
+          "label": "Native HUD after picking shield",
+          "evidence": {
+            "identifier": "minecraft:shield",
+            "itemAux": "23461888",
+            "titlePayload": "B23461888",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: shield"
+        },
+        {
+          "label": "Native HUD after picking lantern",
+          "evidence": {
+            "identifier": "minecraft:lantern",
+            "itemAux": "-13631488",
+            "titlePayload": "-13631488",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: lantern"
+        },
+        {
+          "label": "Native HUD after picking soul_lantern",
+          "evidence": {
+            "identifier": "minecraft:soul_lantern",
+            "itemAux": "-17629184",
+            "titlePayload": "-17629184",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: soul_lantern"
+        },
+        {
+          "label": "Native HUD after picking soul_torch",
+          "evidence": {
+            "identifier": "minecraft:soul_torch",
+            "itemAux": "-17563648",
+            "titlePayload": "-17563648",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: soul_torch"
+        },
+        {
+          "label": "Native HUD after picking stone",
+          "evidence": {
+            "identifier": "minecraft:stone",
+            "itemAux": "65536",
+            "titlePayload": "B65536",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: stone"
+        },
+        {
+          "label": "Native HUD after picking stone_bricks",
+          "evidence": {
+            "identifier": "minecraft:stone_bricks",
+            "itemAux": "6422528",
+            "titlePayload": "B6422528",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: stone_bricks"
+        },
+        {
+          "label": "Native HUD after picking diamond_sword",
+          "evidence": {
+            "identifier": "minecraft:diamond_sword",
+            "itemAux": "20840448",
+            "titlePayload": "B20840448",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: diamond_sword"
+        },
+        {
+          "label": "Native HUD after picking iron_axe",
+          "evidence": {
+            "identifier": "minecraft:iron_axe",
+            "itemAux": "19660800",
+            "titlePayload": "B19660800",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: iron_axe"
+        },
+        {
+          "label": "Native HUD after picking apple",
+          "evidence": {
+            "identifier": "minecraft:apple",
+            "itemAux": "57802752",
+            "titlePayload": "B57802752",
+            "countText": "4"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: apple"
+        },
+        {
+          "label": "Native HUD after picking bread",
+          "evidence": {
+            "identifier": "minecraft:bread",
+            "itemAux": "17104896",
+            "titlePayload": "B17104896",
+            "countText": "4"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: bread"
+        },
+        {
+          "label": "Native HUD after picking water_bucket",
+          "evidence": {
+            "identifier": "minecraft:water_bucket",
+            "itemAux": "23920640",
+            "titlePayload": "B23920640",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: water_bucket"
+        },
+        {
+          "label": "Native HUD after picking written_book",
+          "evidence": {
+            "identifier": "minecraft:written_book",
+            "itemAux": "34209792",
+            "titlePayload": "B34209792",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: written_book"
+        },
+        {
+          "label": "Native HUD after picking oak_planks",
+          "evidence": {
+            "identifier": "minecraft:oak_planks",
+            "itemAux": "327680",
+            "titlePayload": "B327680",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: oak_planks"
+        },
+        {
+          "label": "Native HUD after picking red_wool",
+          "evidence": {
+            "identifier": "minecraft:red_wool",
+            "itemAux": "-36438016",
+            "titlePayload": "B-36438016",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: red_wool"
+        },
+        {
+          "label": "Native HUD after picking glass",
+          "evidence": {
+            "identifier": "minecraft:glass",
+            "itemAux": "1310720",
+            "titlePayload": "B1310720",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: glass"
+        },
+        {
+          "label": "Native HUD after picking oak_fence",
+          "evidence": {
+            "identifier": "minecraft:oak_fence",
+            "itemAux": "5570560",
+            "titlePayload": "B5570560",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: oak_fence"
+        },
+        {
+          "label": "Native HUD after picking oak_stairs",
+          "evidence": {
+            "identifier": "minecraft:oak_stairs",
+            "itemAux": "3473408",
+            "titlePayload": "B3473408",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: oak_stairs"
+        },
+        {
+          "label": "Native HUD after picking chest",
+          "evidence": {
+            "identifier": "minecraft:chest",
+            "itemAux": "3538944",
+            "titlePayload": "B3538944",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: chest"
+        },
+        {
+          "label": "Native HUD after picking white_shulker_box",
+          "evidence": {
+            "identifier": "minecraft:white_shulker_box",
+            "itemAux": "14286848",
+            "titlePayload": "B14286848",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: white_shulker_box"
+        },
+        {
+          "label": "Native HUD after picking red_bed",
+          "evidence": {
+            "identifier": "minecraft:bed",
+            "itemAux": "27590670",
+            "titlePayload": "B27590670",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: red_bed"
+        },
+        {
+          "label": "Native HUD after picking red_banner",
+          "evidence": {
+            "identifier": "minecraft:banner",
+            "itemAux": "37814273",
+            "titlePayload": "B37814273",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: red_banner"
+        },
+        {
+          "label": "Native HUD after picking oak_sign",
+          "evidence": {
+            "identifier": "minecraft:oak_sign",
+            "itemAux": "23658496",
+            "titlePayload": "B23658496",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: oak_sign"
+        },
+        {
+          "label": "Native HUD after picking flower_pot",
+          "evidence": {
+            "identifier": "minecraft:flower_pot",
+            "itemAux": "34406400",
+            "titlePayload": "B34406400",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Only inventory-picked cursor uses move definition; both held hands remain vanilla: flower_pot"
+        },
+        {
+          "label": "Closing inventory preserves OFFHAND stone identity without AIR or model replacement"
+        },
+        {
+          "label": "Inventory-transferred OFFHAND stone places once after native restoration"
+        },
+        {
+          "label": "Reopening inventory restores movable stone and returns remaining count"
+        },
+        {
+          "label": "Closing inventory preserves OFFHAND oak_stairs identity without AIR or model replacement"
+        },
+        {
+          "label": "Inventory-transferred OFFHAND oak_stairs places once after native restoration"
+        },
+        {
+          "label": "Reopening inventory restores movable oak_stairs and returns remaining count"
+        },
+        {
+          "label": "Ordinary inventory slots directly place part of a stack into OFFHAND"
+        },
+        {
+          "label": "Ordinary inventory merges a matching stack into occupied OFFHAND without duplication"
+        },
+        {
+          "label": "Native cursor splits OFFHAND and returns items to an ordinary inventory slot"
+        },
+        {
+          "label": "Native inventory swaps food with a block already held in OFFHAND"
+        },
+        {
+          "label": "OFFHAND inventory swap preserves sword damage, enchantment and custom name after closing"
+        },
+        {
+          "label": "Reopening native inventory returns OFFHAND through cursor and preserves all remaining items"
+        },
+        {
+          "label": "Native HUD receives block AUX and stack count",
+          "evidence": {
+            "identifier": "minecraft:stone",
+            "itemAux": "65536",
+            "titlePayload": "B65536",
+            "countText": "64"
+          }
+        },
+        {
+          "label": "Native HUD replaces the block AUX with food",
+          "evidence": {
+            "identifier": "minecraft:bread",
+            "itemAux": "17104896",
+            "titlePayload": "B17104896",
+            "countText": "7"
+          }
+        },
+        {
+          "label": "Native HUD preserves a colored block data value",
+          "evidence": {
+            "identifier": "minecraft:red_wool",
+            "itemAux": "-36438016",
+            "titlePayload": "B-36438016",
+            "countText": "9"
+          }
+        },
+        {
+          "label": "Native HUD sends signed AUX for lantern",
+          "evidence": {
+            "identifier": "minecraft:lantern",
+            "itemAux": "-13631488",
+            "titlePayload": "-13631488",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Native HUD sends signed AUX for soul_lantern",
+          "evidence": {
+            "identifier": "minecraft:soul_lantern",
+            "itemAux": "-17629184",
+            "titlePayload": "-17629184",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Native HUD sends signed AUX for soul_torch",
+          "evidence": {
+            "identifier": "minecraft:soul_torch",
+            "itemAux": "-17563648",
+            "titlePayload": "-17563648",
+            "countText": "16"
+          }
+        },
+        {
+          "label": "Diagnostic B fallback keeps apple native AUX without a guessed local-ID shift",
+          "evidence": {
+            "identifier": "minecraft:apple",
+            "itemAux": "57802752",
+            "titlePayload": "B57802752",
+            "countText": "2"
+          }
+        },
+        {
+          "label": "One item sends empty subtitle to hide the count",
+          "evidence": {
+            "identifier": "minecraft:bread",
+            "itemAux": "17104896",
+            "titlePayload": "B17104896",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Empty OFFHAND sends zero AUX to hide the slot",
+          "evidence": {
+            "identifier": "minecraft:air",
+            "itemAux": "0",
+            "titlePayload": "0",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Native HUD tool AUX leaves native equipment unchanged",
+          "evidence": {
+            "identifier": "minecraft:iron_axe",
+            "itemAux": "19660800",
+            "titlePayload": "B19660800",
+            "countText": ""
+          }
+        },
+        {
+          "label": "Unchanged HUD data refreshes before the live title binding expires"
+        },
+        {
+          "label": "Server title/subtitle cannot replace the native HUD data; actionbar is preserved"
+        },
+        {
+          "label": "Server title reset refreshes rather than clearing the native HUD slot",
+          "evidence": {
+            "identifier": "minecraft:stone",
+            "itemAux": "65536",
+            "titlePayload": "B65536",
+            "countText": "3"
+          }
+        }
+      ],
+      "limitations": [
+        "Headless packet tests do not render or automate the Bedrock inventory UI.",
+        "Retail inventory drag restrictions and held-item appearance require a retail client test."
+      ],
+      "totalChecks": 92,
+      "nodeVersion": "24.19.0"
+    }
+  },
+  "limitations": [
+    "Headless checks do not render Bedrock prediction or held-item poses.",
+    "Retail 0.2.32 placement speed remains pending.",
+    "Repeated requests share a four-client-tick and 200ms minimum; no deferred placement queue."
+  ]
+}

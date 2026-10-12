@@ -1,0 +1,10 @@
+name: NativeOffhandPlacementTestHooks
+main: org.pexserver.nativeoffhand.tests.PlacementTestHooks
+version: 1.0
+api-version: '26.3'
+commands:
+  nativeoh-test-state:
+    permission: nativeoh.tests
+permissions:
+  nativeoh.tests:
+    default: op

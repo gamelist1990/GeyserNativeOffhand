@@ -94,3 +94,28 @@ TEST_CURSOR_ONLY=1 npm test
 自動クライアントはBedrock本体のJSON UI、アイコン描画、画面上のドラッグ制限を実行しません。実機では通常インベントリで一度掴んでから移動し、ホットバー・体力・空腹と左のオフハンド枠、アイコンの切り替え、個数、空状態を確認します。道具の保持位置と向きは、通常画面とインベントリ背景を比較します。
 
 [現行版の確認状況](validation.md)、[結果JSON](../tests/results)、[過去の試験履歴](testing-history.md)を参照してください。
+
+## Vanilla設置の重点試験（0.2.31）
+
+同じPaper/Geyserの独立したサーバーで実行します。試験用NativeOHと原点周辺を変更するため、参加中の検証ワールドと分けてください。
+
+```bash
+TEST_PLACEMENT_ONLY=1 npm test
+```
+
+Paperのイベントキャンセルとクールダウンも検証する場合、ビルド時と同じ `EXTRA_CP` を指定してリポジトリ直下で `bash tests/paper/build.sh` を実行します。生成した `build/NativeOffhandPlacementTestHooks.jar` を**独立した試験サーバーだけ**の `plugins/` に配置し、再起動します。通常の検証鯖・本番へこの試験プラグインを入れないでください。
+
+```bash
+cd tests/bedrock
+TEST_PLACEMENT_ONLY=1 TEST_PLACEMENT_HOOKS=1 npm test
+```
+
+半ブロック結合、クリック位置、支持面と松明の候補選択、水没状態、ドアの複数ブロック、衝突、右手の成功／FAIL／PASS、道具のブロック操作、食品・クールダウン、スニーク、ゲームモード、到達距離、不正座標、4tick間隔を確認します。入力フラグはprotocol 2193の配列形式を使用します。試験用フックの状態取得コマンドはOPだけが使えます。
+
+連続設置の速度だけを測る場合は、同じ試験用フックを入れた独立サーバーで実行します。
+
+```bash
+TEST_PLACEMENT_RATE_ONLY=1 npm test
+```
+
+BlockPlaceEventの実時間を記録し、20回の連続入力、通常20TPS、100TPSでも設置間隔が約200ms以上になること、単発クリックで1個しか消費しないことを確認します。試験中のtick rateは終了時に20へ戻します。設置試験の準備では原点のブロックと半径8ブロック内の落ちアイテムを片付けます。

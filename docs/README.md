@@ -1,6 +1,6 @@
 # ドキュメント
 
-GeyserNativeOffhand 0.2.30候補の利用・開発資料です。概要と導入は[公開README](../README.md)を参照してください。
+GeyserNativeOffhand 0.2.32候補の利用・開発資料です。概要と導入は[公開README](../README.md)を参照してください。
 
 ## 利用・開発ガイド
 
@@ -29,3 +29,5 @@ GeyserNativeOffhand 0.2.30候補の利用・開発資料です。概要と導入
 ## 開発履歴
 
 [開発・検証の記録](development-history.md)と[統合試験の開発履歴](testing-history.md)には、失敗した候補や当時の確認待ちの記述を残しています。現行版の合否は[確認状況](validation.md)で確認してください。生の試験結果は[tests/results](../tests/results)、モデル比較は[previews](previews)にあります。
+
+設置・使用の手順とPaper依存については[Vanilla設置処理](vanilla-placement.md)を参照してください。
