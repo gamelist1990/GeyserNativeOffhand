@@ -68,3 +68,6 @@ Bedrock実機でパン・石・りんごを順にオフハンドへ移し、最�
 ## 0.2.34 iPadスロット調査
 
 iOSとiPadモデルの両方を条件にし、実際の移動要求のスロットを記録します。画面を開く際の一括変換は撤去しました。タップ選択そのもののパケットは実機確認待ちで、この版ではタップ移動を解決済みとはしません。詳細は `tests/results/2026-10-12-ipad-slot-probe.json` を参照してください。
+
+## 0.2.35 iPad move slots
+The iPad inventory now temporarily aliases movable inventory slots while the player inventory is open, excluding the active hotbar slot. Closing restores native slot definitions; held equipment packets stay native. This addresses the observed Bedrock client-side offhand eligibility check without changing the held item mapping. Compilation passed. The targeted iPad behavior, held-item appearance, and full-stack transfers still need confirmation on the retail device.

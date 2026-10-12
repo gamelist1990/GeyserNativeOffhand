@@ -90,6 +90,18 @@ final class NativeInventoryView {
             .netId(sent.getNetId()).usingNetId(sent.isUsingNetId()).build();
     }
 
+    static ItemData slotData(GeyserSession session, int javaSlot, GeyserItemStack stack, ItemData sent) {
+        // Pocket selection is local to the client. Make inventory-only move
+        // definitions available to iPad taps, while keeping the actively held
+        // hotbar slot and all equipment packets on their native definitions.
+        boolean ipadMoveSlot = IpadSlotProbe.inventoryOpen(session)
+            && javaSlot >= 9 && javaSlot <= 45
+            && javaSlot != 36 + session.getPlayerInventory().getHeldItemSlot();
+        if (!ipadMoveSlot) return slotData(session, stack, sent);
+        return movingData(session, stack).toBuilder().count(sent.getCount())
+            .netId(sent.getNetId()).usingNetId(sent.isUsingNetId()).build();
+    }
+
     private static void syncMatching(GeyserSession session) {
         var inventory = session.getPlayerInventory();
         var current = new java.util.HashSet<Integer>();

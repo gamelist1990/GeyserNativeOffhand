@@ -76,7 +76,7 @@ final class NativeHeldView extends UpstreamSession {
             for (int i = 0; i < Math.min(36, contents.size()); i++) {
                 int javaSlot = i < 9 ? i + 36 : i;
                 NativeInventoryView.rememberSlot(owner, javaSlot, owner.getPlayerInventory().getItem(javaSlot));
-                contents.set(i, NativeInventoryView.slotData(owner, owner.getPlayerInventory().getItem(javaSlot), contents.get(i)));
+                contents.set(i, NativeInventoryView.slotData(owner, javaSlot, owner.getPlayerInventory().getItem(javaSlot), contents.get(i)));
             }
             transformed.setContents(contents);
             content = transformed;
@@ -96,7 +96,7 @@ final class NativeHeldView extends UpstreamSession {
                 var transformed = slot.clone();
                 int javaSlot = slot.getSlot() < 9 ? slot.getSlot() + 36 : slot.getSlot();
                 NativeInventoryView.rememberSlot(owner, javaSlot, owner.getPlayerInventory().getItem(javaSlot));
-                transformed.setItem(NativeInventoryView.slotData(owner, owner.getPlayerInventory().getItem(javaSlot), slot.getItem()));
+                transformed.setItem(NativeInventoryView.slotData(owner, javaSlot, owner.getPlayerInventory().getItem(javaSlot), slot.getItem()));
                 slot = transformed;
                 packet = transformed;
             }
@@ -118,7 +118,7 @@ final class NativeHeldView extends UpstreamSession {
             var copy = content.clone();
             var items = new ArrayList<>(content.getContents());
             NativeInventoryView.rememberSlot(owner, 45, owner.getPlayerInventory().getOffhand());
-            var item = NativeInventoryView.slotData(owner, owner.getPlayerInventory().getOffhand(), items.get(0));
+            var item = NativeInventoryView.slotData(owner, 45, owner.getPlayerInventory().getOffhand(), items.get(0));
             if (same(inventoryOffhand, item)) return null;
             inventoryOffhand = item;
             items.set(0, item);
@@ -128,7 +128,7 @@ final class NativeHeldView extends UpstreamSession {
         if (packet instanceof InventorySlotPacket slot && slot.getContainerId() == ContainerId.OFFHAND) {
             var copy = slot.clone();
             NativeInventoryView.rememberSlot(owner, 45, owner.getPlayerInventory().getOffhand());
-            var item = NativeInventoryView.slotData(owner, owner.getPlayerInventory().getOffhand(), slot.getItem());
+            var item = NativeInventoryView.slotData(owner, 45, owner.getPlayerInventory().getOffhand(), slot.getItem());
             if (same(inventoryOffhand, item)) return null;
             inventoryOffhand = item;
             copy.setItem(item);

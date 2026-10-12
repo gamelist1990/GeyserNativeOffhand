@@ -9,3 +9,7 @@
 [MojangのUI定義](https://github.com/Mojang/bedrock-samples/blob/main/resource_pack/ui/inventory_screen.json)では、通常スロットのmenu_selectは既にcontainer_take_all_place_allへ対応しています。この同じアクションに置き換えるだけでは、新しいカーソル取得操作を実装したことにはなりません。[公式のUIコンテナ資料](https://mojang.github.io/bedrock-protocol-docs/guides/server-auth-inventory-player-ui-container/)のCURSOR説明もkeyboard/mouseとgamepadに限定されています。
 
 現時点で、サーバー側のiPad判定と今回の受信スロット情報だけから、ユーザーが求める選択スロット限定の変換を実現できる根拠はありません。0.2.34はカーソル方式を維持し、一括変換を再導入しません。タッチUIからサーバーに選択を伝える経路、またはタップを実際のカーソル取得に変えるクライアント側の経路が必要で、まだ実装・実機検証できていません。
+
+## 0.2.35 対応
+
+通知のないiPadタップ選択をサーバーで特定する代わりに、開いている間だけ選択候補のインベントリ表示を移動可能にしました。現在手に持っているホットバースロットはネイティブのままにし、Java装備パケットもネイティブです。したがって手持ち表示の一括切り替えを避けながら、通常インベントリ内のアイテムをオフハンドへタップ移動できます。現在のホットバースロットは移動元から除外されます。

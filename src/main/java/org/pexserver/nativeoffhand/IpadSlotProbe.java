@@ -24,12 +24,18 @@ final class IpadSlotProbe {
 
     static void screen(GeyserSession session, boolean playerInventory) {
         if (!playerInventory) {
-            if (OPEN.remove(session) != null) log(session, "close");
+            if (OPEN.remove(session) != null) {
+                log(session, "close");
+                NativeHeldView.invalidateOffhand(session);
+                session.getPlayerInventoryHolder().updateInventory();
+            }
             return;
         }
         if (!isIpad(session)) return;
         if (OPEN.putIfAbsent(session, 64) != null) return;
-        log(session, "open; inventory remains native; observe requests only");
+        log(session, "open; iPad inventory move slots enabled; active held slot stays native");
+        NativeHeldView.invalidateOffhand(session);
+        session.getPlayerInventoryHolder().updateInventory();
     }
 
     static void received(GeyserSession session, BedrockPacket packet) {
@@ -63,6 +69,8 @@ final class IpadSlotProbe {
         OPEN.put(session, remaining - 1);
         log(session, detail);
     }
+
+    static boolean inventoryOpen(GeyserSession session) { return OPEN.containsKey(session); }
 
     private static void log(GeyserSession session, String message) {
         logger.accept("[iPad slots " + session.getPlayerEntity().geyserId() + "] " + message);
