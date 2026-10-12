@@ -56,18 +56,19 @@ final class NativeItemCatalog {
             if (name.equals("air") || nativeComponents.contains(mapping.get("bedrock_identifier").getAsString())) continue;
             var id = Identifier.of(javaId);
             var alias = new GeyserCustomItemDefinition.Builder(Identifier.of("nativeoffhand_ui", name), id);
-            // These aliases are rendered in both hands while the inventory is
-            // open. Giving every item the ordinary-item pose makes tools turn
-            // and change size when the native inventory opens or closes.
+            // Only inventory-picked cursor stacks use these definitions.
+            // Explicit vanilla item icons take precedence over placeable block
+            // geometry (redstone dust is an item icon, not redstone wire).
             var options = CustomItemBedrockOptions.builder().allowOffhand(true)
                 .displayHandheld(handheld(mapping.get("bedrock_identifier").getAsString()));
-            if (mapping.has("firstBlockRuntimeId") && !mapping.get("firstBlockRuntimeId").isJsonNull()) {
+            if (icons.has(name)) {
+                options.icon("nativeoffhand_ui_" + name);
+            } else if (mapping.has("firstBlockRuntimeId") && !mapping.get("firstBlockRuntimeId").isJsonNull()) {
                 var block = blocks.getBedrockBlock(mapping.get("firstBlockRuntimeId").getAsInt());
                 alias.geyserComponent(GeyserItemDataComponents.BLOCK_PLACER,
                     GeyserBlockPlacer.of(Identifier.of(block.getState().getString("name")), true));
             } else {
-                if (!icons.has(name)) throw new IOException("Missing vanilla icon for " + javaId);
-                options.icon("nativeoffhand_ui_" + name);
+                throw new IOException("Missing vanilla icon for " + javaId);
             }
             alias.priority(-1000000).predicate(context -> NativeInventoryView.aliasesEnabled())
                 .displayName(name).bedrockOptions(options);

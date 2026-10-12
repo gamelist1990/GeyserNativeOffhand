@@ -1,0 +1,121 @@
+{
+  "scope": "Schematic geometry: two item markers, not native Bedrock food or camera. Loaded release motion values in Blockbench.",
+  "frames": [
+    {
+      "time": 0,
+      "points": [
+        {
+          "name": "leftitem",
+          "center": [
+            12,
+            16,
+            0
+          ],
+          "screen": [
+            354.02072186029346,
+            270
+          ]
+        },
+        {
+          "name": "rightitem",
+          "center": [
+            -12,
+            16,
+            0
+          ],
+          "screen": [
+            605.9792781397065,
+            270
+          ]
+        }
+      ]
+    },
+    {
+      "time": 0.125,
+      "points": [
+        {
+          "name": "leftitem",
+          "center": [
+            6,
+            17.5,
+            0
+          ],
+          "screen": [
+            417.01036093014676,
+            257.146667939321
+          ]
+        },
+        {
+          "name": "rightitem",
+          "center": [
+            -12,
+            16,
+            0
+          ],
+          "screen": [
+            605.9792781397065,
+            270
+          ]
+        }
+      ]
+    },
+    {
+      "time": 0.25,
+      "points": [
+        {
+          "name": "leftitem",
+          "center": [
+            0,
+            19,
+            0
+          ],
+          "screen": [
+            480,
+            244.29333587864193
+          ]
+        },
+        {
+          "name": "rightitem",
+          "center": [
+            -12,
+            16,
+            0
+          ],
+          "screen": [
+            605.9792781397065,
+            270
+          ]
+        }
+      ]
+    },
+    {
+      "time": 0.3125,
+      "points": [
+        {
+          "name": "leftitem",
+          "center": [
+            0,
+            19,
+            1.9999238459999997
+          ],
+          "screen": [
+            480,
+            245.38719659947782
+          ]
+        },
+        {
+          "name": "rightitem",
+          "center": [
+            -12,
+            16,
+            0
+          ],
+          "screen": [
+            605.9792781397065,
+            270
+          ]
+        }
+      ]
+    }
+  ]
+}

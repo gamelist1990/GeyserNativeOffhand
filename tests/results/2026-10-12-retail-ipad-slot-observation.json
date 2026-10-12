@@ -1,0 +1,29 @@
+{
+  "testedVersion": "0.2.34",
+  "source": "Retail iPad test reported by the user; decoded request logs from the verification server. User identifiers and timestamps omitted.",
+  "observed": [
+    "open; inventory remains native; observe requests only",
+    "stack-request INVENTORY:13 -> INVENTORY:31",
+    "stack-request OFFHAND:1 -> INVENTORY:13",
+    "held-slot inventory=1 hotbar=0 container=119; not an inventory-selection signal",
+    "stack-request swap HOTBAR:6 <-> HOTBAR:7",
+    "stack-request HOTBAR:5 -> OFFHAND:1",
+    "held-slot inventory=1 hotbar=0 container=119; not an inventory-selection signal",
+    "stack-request OFFHAND:1 -> HOTBAR:5",
+    "held-slot inventory=1 hotbar=0 container=119; not an inventory-selection signal",
+    "stack-request HOTBAR:1 -> OFFHAND:1",
+    "held-slot inventory=1 hotbar=0 container=119; not an inventory-selection signal",
+    "stack-request OFFHAND:1 -> HOTBAR:1",
+    "held-slot inventory=1 hotbar=0 container=119; not an inventory-selection signal",
+    "stack-request CRAFTING_INPUT:28 -> HOTBAR_AND_INVENTORY:12 CRAFTING_INPUT:29 -> HOTBAR_AND_INVENTORY:12 CRAFTING_INPUT:30 -> HOTBAR_AND_INVENTORY:12 CRAFTING_INPUT:31 -> HOTBAR_AND_INVENTORY:12",
+    "close"
+  ],
+  "stackRequestPackets": 8,
+  "cursorRequestsObserved": 0,
+  "userObservation": "Most items could not enter offhand; apple could.",
+  "limitations": [
+    "Probe observes ItemStackRequest, InventoryTransaction and MobEquipment while player inventory is open. It is not a capture of all raw incoming packet types.",
+    "No independent selected-slot signal appeared among recorded packets. No item identifiers or response status were logged, so individual failed tap attempts cannot be matched to item names.",
+    "This does not prove that every Bedrock protocol/UI version lacks a selection message."
+  ]
+}

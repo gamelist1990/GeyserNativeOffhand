@@ -1,6 +1,6 @@
 # ドキュメント
 
-GeyserNativeOffhand 0.2.23の利用・開発資料です。概要と導入は[公開README](../README.md)を参照してください。
+GeyserNativeOffhand 0.2.32候補の利用・開発資料です。概要と導入は[公開README](../README.md)を参照してください。
 
 ## 利用・開発ガイド
 
@@ -14,6 +14,9 @@ GeyserNativeOffhand 0.2.23の利用・開発資料です。概要と導入は[�
 
 ## 詳細資料・調査
 
+- [カーソルと同種スタックの一時定義・軽量化](cursor-only-inventory.md)
+- [撤回した左手食事モーションの記録](left-eating-motion.md)
+- [食事アニメーションの調査・比較](eating-animation-research.md)
 - [DoubleHandsの解析](doublehands-reference.md)
 - [オフハンドHUDの変更記録](offhand-hud.md)
 - [既存のバニラ資産を使うHUDの調査](hud-texture-research.md)
@@ -26,3 +29,5 @@ GeyserNativeOffhand 0.2.23の利用・開発資料です。概要と導入は[�
 ## 開発履歴
 
 [開発・検証の記録](development-history.md)と[統合試験の開発履歴](testing-history.md)には、失敗した候補や当時の確認待ちの記述を残しています。現行版の合否は[確認状況](validation.md)で確認してください。生の試験結果は[tests/results](../tests/results)、モデル比較は[previews](previews)にあります。
+
+設置・使用の手順とPaper依存については[Vanilla設置処理](vanilla-placement.md)を参照してください。

@@ -1,0 +1,212 @@
+{
+  "archive_sha256": "dc2784cafbff473a6643330677da74babd4d834f752b60e03b3c43e7d51c42b8",
+  "archive_bytes": 205605,
+  "files": 317,
+  "expanded_bytes": 144338,
+  "png_count": 268,
+  "attachables": [
+    "minecraft:apple",
+    "minecraft:baked_potato",
+    "minecraft:beef",
+    "minecraft:beetroot",
+    "minecraft:beetroot_soup",
+    "minecraft:bread",
+    "minecraft:carrot",
+    "minecraft:chicken",
+    "minecraft:chorus_fruit",
+    "minecraft:cod",
+    "minecraft:cooked_beef",
+    "minecraft:cooked_chicken",
+    "minecraft:cooked_cod",
+    "minecraft:cooked_mutton",
+    "minecraft:cooked_porkchop",
+    "minecraft:cooked_rabbit",
+    "minecraft:cooked_salmon",
+    "minecraft:cookie",
+    "minecraft:dried_kelp",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:glow_berries",
+    "minecraft:golden_apple",
+    "minecraft:golden_carrot",
+    "minecraft:honey_bottle",
+    "minecraft:melon_slice",
+    "minecraft:milk_bucket",
+    "minecraft:mushroom_stew",
+    "minecraft:mutton",
+    "minecraft:ominous_bottle",
+    "minecraft:poisonous_potato",
+    "minecraft:porkchop",
+    "minecraft:potato",
+    "minecraft:potion",
+    "minecraft:pufferfish",
+    "minecraft:pumpkin_pie",
+    "minecraft:rabbit",
+    "minecraft:rabbit_stew",
+    "minecraft:rotten_flesh",
+    "minecraft:salmon",
+    "minecraft:spider_eye",
+    "minecraft:suspicious_stew",
+    "minecraft:sweet_berries",
+    "minecraft:tropical_fish"
+  ],
+  "animate_patterns": [
+    "[\"consumable_position\", \"consumable_eating_controller\"]"
+  ],
+  "source_sha256": {
+    "animations/consumable.animation.json": "baa3e680d43d45c25163d8a34c481940b4fd646e109b875ebce9fed8ad5cf928",
+    "animation_controllers/consumable.animation_controller.json": "0553f96ca3b828bfce3dcce06a3a9e60bed0a922e7520a6a6ea5d4de5dd83c1a",
+    "attachables/apple.attachable.json": "280665881320605c002759c0ab1fc6701a48029ed527bfceb5d8820dd445f9b7",
+    "attachables/baked_potato.attachable.json": "49691de47b063e2f6f7b93c08f6bf76b05c75629116cbe77933446f059d92734",
+    "attachables/beef.attachable.json": "07f165887910da11048c44ae6e5dd1e4aa39a7f82a7a9bd0e6b173bc2adc29d0",
+    "attachables/beetroot.attachable.json": "bb9f17655164758300c64398311ec7911cf501c5cf80c3645a2203ed1b48e28b",
+    "attachables/beetroot_soup.attachable.json": "51e395a2ba14851c868e0925f3d76109a3a7bbeea88c915e14eac863d9d7c6ed",
+    "attachables/bread.attachable.json": "eae7034689af016e3d56ad0f56acf941e00e9a87e60c583064dbb0bda3b5a2ca",
+    "attachables/carrot.attachable.json": "dbf1980ed536949f9927f450c2701516e54cc9a7b51852b45823dc79adc977e5",
+    "attachables/chicken.attachable.json": "0692b1feb22ac76fe6dfb8abe319e3a891814696237654f471531e19fab919cf",
+    "attachables/chorus_fruit.attachable.json": "b2ac335402c9b8ef21e35818100d7f6da30ff373363d9694ef7775a3c24a7b91",
+    "attachables/cod.attachable.json": "5e5a53834221014f59bbbcdf95a9253a1c6f0f182c499c339996eb71d542a378",
+    "attachables/cooked_beef.attachable.json": "73bf9650b9420827dd55622950a8a05cf9c776d4b5cc2ffd68d98dd447223ac3",
+    "attachables/cooked_chicken.attachable.json": "7a2a234f3dcac8dc434129786fc8a56aa1ec6d5725a65be47f735c0256ba3552",
+    "attachables/cooked_cod.attachable.json": "cdf234a506079b988a5c78f3f23a2aa52c77a918e99e7d1e351ef97a663c76ea",
+    "attachables/cooked_mutton.attachable.json": "4614db8984b03f89d8b9012089c81f514bf4cc05d48cbf75d57ea5e2d47f74a0",
+    "attachables/cooked_porkchop.attachable.json": "a80cae69f2ccc40fe6d2d8166ad3b539908cc16003e4eca95471d9aea2be9f88",
+    "attachables/cooked_rabbit.attachable.json": "1a5d78a1904f0610dd09624324a7c678e464313adc7d7d96bdc54e85454660b3",
+    "attachables/cooked_salmon.attachable.json": "8602839d7a68ea405fd0861529c14e6f0f6ecd9fa2b543bb9eaff86d7affedbf",
+    "attachables/cookie.attachable.json": "13db4293fff4ef9f991fec1e11d6547307f8d8d6a6439f8fc11ddd5237e69861",
+    "attachables/dried_kelp.attachable.json": "30008c7ca36fdf13a9aefdd1e91a90476b7790f8011b674cd007aa850abb0561",
+    "attachables/enchanted_golden_apple.attachable.json": "01b67d84e47c6630e27a0a4f3c3b6c72f7c8866e26bedc80e566cc832e9f4e28",
+    "attachables/glow_berries.attachable.json": "e73be442153b9eb80bb0bc7a8fe7c09c71e1d61be7aea03c032f0f649c2d6e46",
+    "attachables/golden_apple.attachable.json": "b33f8e6ada63ef22e42a876b73a7bf02b502f5179ec5a92681bbffd09b528072",
+    "attachables/golden_carrot.attachable.json": "936644579e24758622a948c37a3788325dd407ca485def349196cb93b33512e0",
+    "attachables/honey_bottle.attachable.json": "50156d1ec5603f7137c788d473fcaf6b85ac782a7d5b85a0d9339e5f8d2e637d",
+    "attachables/melon_slice.attachable.json": "575b4e16f7f215e11fefbe3e31b8a64919f8b099a46993a4bcacd97cbc10a9e5",
+    "attachables/milk_bucket.attachable.json": "8760d5a52c876b9dc9c29cdf5e1570a708701039616575b41896af7dbfb2dcc1",
+    "attachables/mushroom_stew.attachable.json": "58439a011f82aadc46bd0a214c19c5fc9d4feb5f6a2eb22cdd491a281cd7c9df",
+    "attachables/mutton.attachable.json": "131dbe10468d029577e91639a75991a1afe092008b5995705e0d6a0ffdc63042",
+    "attachables/ominous_bottle.attachable.json": "da3186d75196376233b757778840bdcc7818e7d4e4b2d0776568e1b0073abdcf",
+    "attachables/poisonous_potato.attachable.json": "e9a8df22799083831d084e91ad24f1057fa17368caac9be662c5180c06dacf03",
+    "attachables/porkchop.attachable.json": "2f6301a60a086a669e8a176aed865b4c84f2b78b865891ea8fc92d5388d74c5a",
+    "attachables/potato.attachable.json": "0ebf9e8b94592e673c0a013b8c0db40d0cafbac5caacb8e5ffd2dd349fd855be",
+    "attachables/potion.attachable.json": "05a469e69b2caca4ae976764c40804e2bc01e8e801305bbad75d823050334935",
+    "attachables/pufferfish.attachable.json": "35e6642ae317690c225f43eb8d54cd4fc05f4a00aeabf228969a2715aed9ef83",
+    "attachables/pumpkin_pie.attachable.json": "57e8a42409ab5b44f8d6e1ad6dab5f33f20c9996140230a59afff9dc79973aba",
+    "attachables/rabbit.attachable.json": "cdd299a3c3537bef2269d1df8b362f9cda6cf3ce7514a381244fc913002ca5e3",
+    "attachables/rabbit_stew.attachable.json": "16d75c62757ed7cbfe59b6910e3c851eb06c6fb2a0b8b38c3aa06b4d0c432a3f",
+    "attachables/rotten_flesh.attachable.json": "b3e8aa75eaafa27a3e3f3504f55485b3e5398f2c0991ded51d03dae4ca6eadbd",
+    "attachables/salmon.attachable.json": "6ac887182c38c8286b8e2fd79437fd45f06358d074982355fb9cb0b23e0890ab",
+    "attachables/spider_eye.attachable.json": "de73f4f5bd0fac8d3124b18f09b4d16c7d87c4e3924dba7ce1108aa8aad61bbd",
+    "attachables/suspicious_stew.attachable.json": "2c74294a14eb529862c666ea20b44b4642098a726c70727ffadb79b00c3b61e0",
+    "attachables/sweet_berries.attachable.json": "6a53bb2bc88537c2caf36fe075e168ddd8a9fdaeafab14bc3641a39c203d7e61",
+    "attachables/tropical_fish.attachable.json": "aeaddbf52d46bf1f2b6f872278ffbd99e8b28cf1bcfc52052c240c7fcbbb23c8",
+    "models/entity/eatinganimation.consumable.geo.json": "7512efb64bbf51cbfbb1b58359cb95f5721fdadd9506fb87fdbe825b66c44be9",
+    "molang/consumable_frame.molang": "2e96248375e3b5f8ae9787a00d9213b1a020910164c412342daa2e33fe9f66fb",
+    "render_controllers/consumable.render_controllers.json": "50b74fa5edb632b216e9f838ac435961d7c9062be316ee69380bf44c1376bffe"
+  },
+  "motion_samples": [
+    {
+      "seconds": 0,
+      "rotation_degrees": [
+        0,
+        0,
+        0
+      ],
+      "position_model_units": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "seconds": 0.125,
+      "rotation_degrees": [
+        16,
+        0,
+        48
+      ],
+      "position_model_units": [
+        -6,
+        1.5,
+        0
+      ]
+    },
+    {
+      "seconds": 0.25,
+      "rotation_degrees": [
+        32,
+        0,
+        96
+      ],
+      "position_model_units": [
+        -12,
+        3,
+        0
+      ]
+    },
+    {
+      "seconds": 0.3125,
+      "rotation_degrees": [
+        32,
+        0,
+        96
+      ],
+      "position_model_units": [
+        -12,
+        3,
+        1.9999238461283426
+      ]
+    },
+    {
+      "seconds": 0.375,
+      "rotation_degrees": [
+        32,
+        0,
+        96
+      ],
+      "position_model_units": [
+        -12,
+        3,
+        -0.017453070996746048
+      ]
+    },
+    {
+      "seconds": 0.4375,
+      "rotation_degrees": [
+        32,
+        0,
+        96
+      ],
+      "position_model_units": [
+        -12,
+        3,
+        -1.9999238461283426
+      ]
+    },
+    {
+      "seconds": 0.5,
+      "rotation_degrees": [
+        32,
+        0,
+        96
+      ],
+      "position_model_units": [
+        -12,
+        3,
+        0.017453070996745805
+      ]
+    },
+    {
+      "seconds": 1,
+      "rotation_degrees": [
+        32,
+        0,
+        96
+      ],
+      "position_model_units": [
+        -12,
+        3,
+        0.017453070996748376
+      ]
+    }
+  ],
+  "sample_scope": "Local child-bone transforms derived from this pack; not screen coordinates or retail measurements."
+}

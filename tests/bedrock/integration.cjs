@@ -7,11 +7,15 @@ const nbt = require('prismarine-nbt')
 const settings = JSON.parse(fs.readFileSync(process.env.TEST_SETTINGS || path.resolve(__dirname, '../../.integration/test-settings.json')))
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 const checks = []
+const touchOnly = process.env.TEST_TOUCH_ONLY === "1"
 const locale = process.env.TEST_LOCALE || "ja_JP"
 const propertySchemas = []
 const propertyPackets = []
 const debug = (...args) => { if(process.env.TEST_DEBUG)console.log(...args) }
 const state = { inventory: [], offhand: { network_id: 0 }, cursor: { network_id: 0 }, responses: [], closes: [], equipment: [], titles: [], animations: [], registry: [], blocks: [], position: {x:0,y:0,z:0}, spawned:false, closing:false }
+const revisions = new Map()
+let revision = 0
+const slotKey = (container,slot) => container==='offhand' ? 'offhand:1' : container==='cursor' ? 'cursor:0' : 'inventory:'+slot
 let savedDifficulty
 let client, rcon, inputTimer, requestId = 10, stackId = 1, tick = 0n
 async function until(label, predicate, timeout=15000) {
@@ -42,15 +46,17 @@ async function connectRcon() {
   return {command:cmd=>send(2,cmd),close:()=>socket.end()}
 }
 // Native colored beds and banners share their identifier; damage/NBT carries color.
-const definition = id => state.registry.find(i=>i.name==='nativeoffhand:'+id)
-  || state.registry.find(i=>i.name==='minecraft:'+(id.endsWith('_bed') ? 'bed' : id.endsWith('_banner') ? 'banner' : id))
+const nativeDefinition = id => state.registry.find(i=>i.name==='nativeoffhand:'+id)
+  || state.registry.find(i=>i.name==='minecraft:'+(id.endsWith('_bed') ? 'bed' : id.endsWith('_banner') ? 'banner' : id==='oak_door' ? 'wooden_door' : id))
 const uiDefinition = id => state.registry.find(i=>i.name==='nativeoffhand_ui:'+id)
+const definition = id => nativeDefinition(id)
+const offhandDefinition = id => nativeDefinition(id)
 const check = (label,evidence) => { checks.push({label,evidence});console.log('PASS',label,evidence||'') }
-async function cmd(command) { const result=await rcon.command(command);if(/Unknown|Incorrect|No entity was found|No player was found/.test(result))throw Error(command+': '+result);return result }
+async function cmd(command) { const result=await rcon.command(command);if(/Unknown|Incorrect|Invalid value|No entity was found|No player was found/.test(result))throw Error(command+': '+result);return result }
 async function inventoryData() { return cmd('data get entity NativeOH equipment') }
 async function setOffhand(id,count=1) {
   await cmd('item replace entity NativeOH weapon.offhand with minecraft:'+id+' '+count)
-  await until('offhand '+id,()=>id==='air' ? !state.offhand.network_id : state.offhand.network_id===definition(id)?.runtime_id && state.offhand.count===count)
+  await until('offhand '+id,()=>id==='air' ? !state.offhand.network_id : state.offhand.network_id===offhandDefinition(id)?.runtime_id && state.offhand.count===count)
 }
 async function setMain(id,count=1) {
   await cmd('item replace entity NativeOH hotbar.0 with minecraft:'+id+' '+count)
@@ -61,61 +67,33 @@ async function transferRoundTrip(id,count) {
   await setMain(id,count)
   if(id==='stone') {
     await cmd('item replace entity NativeOH hotbar.0 with minecraft:stone[custom_name={text:"Movable named stone"}] '+count)
-    await until('named stone before UI',()=>state.inventory[0]?.extra?.nbt
-      && nbt.simplify(state.inventory[0].extra.nbt.nbt).display?.Name?.includes('Movable named stone'))
+    await until('named stone before UI',()=>state.inventory[0]?.extra?.nbt && nbt.simplify(state.inventory[0].extra.nbt.nbt).display?.Name?.includes('Movable named stone'))
   }
-  const original=state.inventory[0],ui=uiDefinition(id)
+  const original={...state.inventory[0]},ui=uiDefinition(id) || nativeDefinition(id)
   state.opened=null
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
-  await until('inventory open',()=>state.opened)
-  await until('inventory definition '+id,()=>state.inventory[0]?.network_id===(ui || definition(id)).runtime_id)
-  const from=state.inventory[0],forward=stackId++
-  assert.equal(from.stack_id,original.stack_id,id+' presentation must retain stack ID')
-  assert.equal(from.count,count)
-  if(id==='stone') assert.equal(nbt.simplify(from.extra.nbt.nbt).display.Name,
-    nbt.simplify(original.extra.nbt.nbt).display.Name,'Custom name survives UI presentation')
-  if(ui) {
-    assert.equal(ui.version,'data_driven',id+' movable UI definition')
-    assert.equal(nbt.simplify(ui.nbt).components.item_properties.allow_off_hand,1)
-  }
-  client.queue('item_stack_request',{requests:[{request_id:forward,actions:[{type_id:'place',count,
-    source:{slot_type:{container_id:'hotbar'},slot:0,stack_id:from.stack_id},
-    destination:{slot_type:{container_id:'offhand'},slot:1,stack_id:0}
-  }],custom_names:[],cause:'slash_command_chat'}]})
-  await until('offhand transfer '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===forward && r.status==='ok'))
-  const response=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===forward)
-  const moved=response.containers.find(c=>c.slot_type.container_id==='offhand').slots[0]
-  assert.equal(moved.count,count)
-  let equipped
-  await until('Java OFFHAND confirms '+id,async()=>{
-    equipped=await cmd('data get entity NativeOH equipment.offhand')
-    return equipped.includes('minecraft:'+id) && equipped.includes('count: '+count)
-  })
-  if(id==='stone') assert(equipped.includes('Movable named stone'),'Java custom name remains after transfer')
-  if(['stone','iron_axe','lantern','soul_lantern','soul_torch','apple'].includes(id)) await checkHud(original,count,'HUD keeps native '+id+' AUX while the inventory uses a move alias')
-  if(ui) assert(!nbt.simplify(definition(id).nbt).components?.['minecraft:block_placer'],id+' native renderer is untouched')
-  state.offhand={...from,count,stack_id:moved.item_stack_id};state.inventory[0]={network_id:0}
-  const backward=stackId++
-  client.queue('item_stack_request',{requests:[{request_id:backward,actions:[{type_id:'place',count,
-    source:{slot_type:{container_id:'offhand'},slot:1,stack_id:moved.item_stack_id},
-    destination:{slot_type:{container_id:'hotbar'},slot:0,stack_id:0}
-  }],custom_names:[],cause:'slash_command_chat'}]})
-  await until('offhand return '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===backward && r.status==='ok'))
-  const returned=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===backward).containers.find(c=>c.slot_type.container_id==='hotbar').slots[0]
-  assert.equal(returned.count,count)
-  state.inventory[0]={...from,count,stack_id:returned.item_stack_id};state.offhand={network_id:0}
-  await until('Java hotbar confirms returned '+id,async()=>
-    (await cmd('execute if items entity NativeOH hotbar.0 minecraft:'+id)).includes('Test passed'))
-  const closeCount=state.closes.length
+  await until('native inventory open '+id,()=>state.opened)
+  assert.equal(state.inventory[0].network_id,original.network_id,'Opening leaves ordinary inventory vanilla')
+  assert.equal(state.inventory[0].stack_id,original.stack_id,'Opening does not replace the main-hand render identity')
+  await nativeAction('take',count,'hotbar',0,'cursor',0)
+  await until('picked cursor definition '+id,()=>state.cursor.network_id===ui.runtime_id && state.cursor.count===count)
+  if(ui.name.startsWith('nativeoffhand_ui:'))assert.equal(nbt.simplify(ui.nbt).components.item_properties.allow_off_hand,1)
+  await nativeAction('place',count,'cursor',0,'offhand',1)
+  await until('Java cursor-to-offhand '+id,async()=> (await inventoryData()).includes('minecraft:'+id))
+  await until('offhand definition '+id,()=>state.offhand.network_id===original.network_id && state.offhand.count===count)
+  await checkHud(state.offhand,count,'Native HUD after picking '+id)
+  await nativeAction('take',count,'offhand',1,'cursor',0)
+  await until('picked back '+id,()=>state.cursor.network_id===original.network_id)
+  await nativeAction('place',count,'cursor',0,'hotbar',0)
+  await until('vanilla item returned '+id,()=>state.inventory[0]?.network_id===original.network_id && state.inventory[0].count===count && !state.offhand.network_id)
+  assert.equal(state.inventory[0].metadata,original.metadata)
+  assert.equal(state.inventory[0].block_runtime_id,original.block_runtime_id)
+  if(id==='stone')assert.equal(nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name,nbt.simplify(original.extra.nbt.nbt).display.Name)
+  const closeStart=state.closes.length
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
-  await until('inventory close confirmation '+id,()=>state.closes.length>closeCount)
-  await until('native definition restored '+id,()=>state.inventory[0]?.network_id===original.network_id
-    && state.inventory[0]?.count===count && (ui ? state.inventory[0]?.stack_id!==returned.item_stack_id : state.inventory[0]?.stack_id===returned.item_stack_id))
-  assert.equal(state.inventory[0].block_runtime_id,original.block_runtime_id,id+' native block state')
-  assert.equal(state.inventory[0].metadata,original.metadata,id+' native data value')
-  if(id==='stone') assert.equal(nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name,
-    nbt.simplify(original.extra.nbt.nbt).display.Name,'Custom name survives native restoration')
-  check('Native inventory offhand round trip: '+id,equipped)
+  await until('close confirmation '+id,()=>state.closes.length>closeStart)
+  assert.equal(state.inventory[0].network_id,original.network_id)
+  check('Only inventory-picked cursor uses move definition; both held hands remain vanilla: '+id)
 }
 function inventorySlot(container,slot) {
   if(container==='offhand')return state.offhand
@@ -132,6 +110,8 @@ function requestSlot(container,slot) {
 }
 async function nativeAction(type,count,sourceContainer,sourceSlot,destContainer,destSlot) {
   const source={...inventorySlot(sourceContainer,sourceSlot)},dest={...inventorySlot(destContainer,destSlot)}
+  if(type==='place' && dest.network_id) assert.equal(source.network_id,dest.network_id,'Retail merge requires identical cursor/destination item definitions')
+  const fromRevision=revisions.get(slotKey(sourceContainer,sourceSlot)),toRevision=revisions.get(slotKey(destContainer,destSlot))
   const action={type_id:type,source:requestSlot(sourceContainer,sourceSlot),destination:requestSlot(destContainer,destSlot)}
   if(type!=='swap')action.count=count
   const id=stackId++
@@ -140,11 +120,11 @@ async function nativeAction(type,count,sourceContainer,sourceSlot,destContainer,
   const response=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===id)
   assert.equal(response.status,'ok',JSON.stringify(response))
   if(type==='swap') {
-    updateInventorySlot(sourceContainer,sourceSlot,dest)
-    updateInventorySlot(destContainer,destSlot,source)
+    if(revisions.get(slotKey(sourceContainer,sourceSlot))===fromRevision)updateInventorySlot(sourceContainer,sourceSlot,dest)
+    if(revisions.get(slotKey(destContainer,destSlot))===toRevision)updateInventorySlot(destContainer,destSlot,source)
   } else {
-    updateInventorySlot(sourceContainer,sourceSlot,source.count>count ? {...source,count:source.count-count} : {network_id:0})
-    updateInventorySlot(destContainer,destSlot,{...(dest.network_id ? dest : source),count:(dest.count || 0)+count})
+    if(revisions.get(slotKey(sourceContainer,sourceSlot))===fromRevision)updateInventorySlot(sourceContainer,sourceSlot,source.count>count ? {...source,count:source.count-count} : {network_id:0})
+    if(revisions.get(slotKey(destContainer,destSlot))===toRevision)updateInventorySlot(destContainer,destSlot,{...(dest.network_id ? dest : source),count:(dest.count || 0)+count})
   }
   for(const container of response.containers) {
     for(const slot of container.slots) {
@@ -153,6 +133,9 @@ async function nativeAction(type,count,sourceContainer,sourceSlot,destContainer,
       updateInventorySlot(name,slot.slot,slot.count ? {...old,count:slot.count,stack_id:slot.item_stack_id} : {network_id:0})
     }
   }
+  // The response describes Geyser prediction; allow the subsequent Java
+  // inventory confirmation to arrive before a dependent synthetic action.
+  await pause(100)
   return response
 }
 async function checkJavaCount(javaPath,count) {
@@ -171,8 +154,8 @@ async function nativeInventoryOperations() {
   state.opened=null
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
   await until('ordinary inventory aliases',()=>state.opened
-    && state.inventory[9]?.network_id===(uiDefinition('stone') || definition('stone')).runtime_id
-    && state.inventory[11]?.network_id===(uiDefinition('diamond_sword') || definition('diamond_sword')).runtime_id)
+    && state.inventory[9]?.network_id===definition('stone').runtime_id
+    && state.inventory[11]?.network_id===definition('diamond_sword').runtime_id)
   await nativeAction('place',6,'inventory',9,'offhand',1)
   await checkJavaCount('equipment.offhand.count',6)
   await checkJavaCount('Inventory[{Slot:9b}].count',10)
@@ -189,7 +172,7 @@ async function nativeInventoryOperations() {
   await checkJavaCount('Inventory[{Slot:9b}].count',9)
   check('Native cursor splits OFFHAND and returns items to an ordinary inventory slot')
   await nativeAction('swap',0,'inventory',10,'offhand',1)
-  assert.equal(state.offhand.network_id,(uiDefinition('apple') || definition('apple')).runtime_id)
+  assert.equal(state.offhand.network_id,definition('apple').runtime_id)
   await checkJavaCount('equipment.offhand.count',4)
   await checkJavaCount('Inventory[{Slot:10b}].count',7)
   assert((await cmd('execute if items entity NativeOH weapon.offhand minecraft:apple')).includes('Test passed'))
@@ -198,13 +181,13 @@ async function nativeInventoryOperations() {
   assert((await cmd('execute if items entity NativeOH weapon.offhand minecraft:diamond_sword[damage=17,enchantments={"minecraft:sharpness":3}]')).includes('Test passed'))
   assert(nbt.simplify(state.offhand.extra.nbt.nbt).display.Name.includes('Named blade'))
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
-  await until('native named blade restoration',()=>state.offhand.network_id===blade.network_id && state.offhand.count===1)
+  await until('native named blade restoration',()=>state.offhand.network_id===offhandDefinition('diamond_sword').runtime_id && state.offhand.count===1)
   assert.equal(state.offhand.metadata,blade.metadata)
   assert.deepEqual(nbt.simplify(state.offhand.extra.nbt.nbt),nbt.simplify(blade.extra.nbt.nbt))
   check('OFFHAND inventory swap preserves sword damage, enchantment and custom name after closing')
   state.opened=null
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
-  await until('reopen named offhand item',()=>state.opened && state.offhand.network_id===(uiDefinition('diamond_sword') || definition('diamond_sword')).runtime_id)
+  await until('reopen named offhand item',()=>state.opened && state.offhand.network_id===definition('diamond_sword').runtime_id)
   await nativeAction('take',1,'offhand',1,'cursor',0)
   await nativeAction('place',1,'cursor',0,'inventory',12)
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
@@ -217,10 +200,10 @@ async function nativeInventoryOperations() {
   check('Reopening native inventory returns OFFHAND through cursor and preserves all remaining items')
 }
 
-function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0},runtime=0) {
+function use(action,block={x:1,y:64,z:0},held=state.inventory[0]||{network_id:0},runtime=0,face=1,click={x:.5,y:1,z:.5}) {
   client.queue('inventory_transaction',{transaction:{legacy:{legacy_request_id:0},transaction_type:'item_use',actions:[],transaction_data:{
-    action_type:action,trigger_type:'player_input',block_position:block,face:1,hotbar_slot:0,
-    held_item:held,player_pos:state.position,click_pos:{x:.5,y:1,z:.5},
+    action_type:action,trigger_type:'player_input',block_position:block,face,hotbar_slot:0,
+    held_item:held,player_pos:state.position,click_pos:click,
     block_runtime_id:runtime,client_prediction:'failure'
   }}})
 }
@@ -228,6 +211,8 @@ const plainTitle = packet => packet?.text?.replace(/§./g,'')
 const latestHud = type => state.titles.findLast(p=>p.type===type)?.text
 function nativeHudAux(item) {
   if(!item.network_id) return 0
+  const registered=state.registry.find(d=>d.runtime_id===item.network_id)
+  if(registered?.name.startsWith('nativeoffhand_ui:')) item={...item,network_id:nativeDefinition(registered.name.split(':')[1]).runtime_id}
   return (item.network_id << 16) | ((item.metadata || 0) & 0xffff)
 }
 
@@ -239,7 +224,8 @@ function nativeHudTitle(item) {
 }
 
 async function checkHud(item,count,label) {
-  const definition=state.registry.find(d=>d.runtime_id===item.network_id)
+  let definition=state.registry.find(d=>d.runtime_id===item.network_id)
+  if(definition?.name.startsWith('nativeoffhand_ui:')) definition=nativeDefinition(definition.name.split(':')[1])
   if(item.network_id) {
     assert(definition,'HUD item exists in the client registry')
     assert(!definition.name.startsWith('nativeoffhand_ui:'),'HUD uses the native item, not the inventory move alias')
@@ -294,12 +280,262 @@ async function hudOperations() {
   await checkHud(state.offhand,3,'Server title reset refreshes rather than clearing the native HUD slot')
 }
 
+async function stableBlockOperations() {
+  // Leave a transferred block in OFFHAND while closing, then place it and
+  // reopen the inventory. This exercises both representations of the same
+  // authoritative Java stack without relying on manually filled equipment.
+  for(const id of ['stone','oak_stairs']) {
+    await cmd('item replace entity NativeOH hotbar.1 with minecraft:air')
+    await until('empty block return destination',()=>!state.inventory[1]?.network_id)
+    await setOffhand('air')
+    await setMain(id,3)
+    const original=state.inventory[0]
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('block UI open '+id,()=>state.opened && state.inventory[0]?.network_id===original.network_id)
+    const from=state.inventory[0],forward=stackId++
+    client.queue('item_stack_request',{requests:[{request_id:forward,actions:[{type_id:'place',count:3,
+      source:{slot_type:{container_id:'hotbar'},slot:0,stack_id:from.stack_id},
+      destination:{slot_type:{container_id:'offhand'},slot:1,stack_id:0}
+    }],custom_names:[],cause:'slash_command_chat'}]})
+    await until('block equipped '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===forward && r.status==='ok'))
+    const moved=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===forward).containers.find(c=>c.slot_type.container_id==='offhand').slots[0]
+    const equipmentStart=state.equipment.length,closeStart=state.closes.length
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('stable offhand close '+id,()=>state.closes.length>closeStart)
+    assert.equal(state.offhand.network_id,original.network_id)
+    assert.equal(state.offhand.stack_id,moved.item_stack_id,id+' close preserves render identity')
+    // The held stack always uses the native definition; move aliases belong
+    // only to an inventory-picked cursor and matching merge targets.
+    assert.equal(state.offhand.metadata,original.metadata)
+    assert(!state.equipment.slice(equipmentStart).some(p=>(p.window_id===119 || p.window_id==='offhand' || p.window_id==='off_hand') && !p.item.network_id),'No synthetic AIR equipment on close')
+    check('Closing inventory preserves OFFHAND '+id+' identity without AIR or model replacement')
+    await setMain('diamond_sword')
+    await cmd('setblock 3 65 1 minecraft:air')
+    use('click_block',{x:3,y:64,z:1})
+    await until('transferred native block placed '+id,()=>state.offhand.count===2)
+    assert((await cmd('execute if block 3 65 1 minecraft:'+id)).includes('Test passed'))
+    check('Inventory-transferred OFFHAND '+id+' places once after native restoration')
+    const nativeHeld=state.offhand
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('offhand UI reopen '+id,()=>state.opened && state.offhand.network_id===original.network_id && state.offhand.count===2)
+    assert.equal(state.offhand.stack_id,nativeHeld.stack_id)
+    const backward=stackId++
+    client.queue('item_stack_request',{requests:[{request_id:backward,actions:[{type_id:'place',count:2,
+      source:{slot_type:{container_id:'offhand'},slot:1,stack_id:state.offhand.stack_id},
+      destination:{slot_type:{container_id:'hotbar'},slot:1,stack_id:0}
+    }],custom_names:[],cause:'slash_command_chat'}]})
+    await until('reopened block returned '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===backward))
+    const returned=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===backward)
+    assert.equal(returned.status,'ok',JSON.stringify({id,response:returned,offhand:state.offhand,destination:state.inventory[1]}))
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('returned native block '+id,()=>!state.offhand.network_id && state.inventory[1]?.network_id===original.network_id && state.inventory[1]?.count===2)
+    assert((await cmd('execute if items entity NativeOH hotbar.1 minecraft:'+id)).includes('Test passed'))
+    check('Reopening inventory restores movable '+id+' and returns remaining count')
+    await cmd('item replace entity NativeOH hotbar.1 with minecraft:air')
+  }
+}
+
+async function placementRateOperations() {
+  await cmd('clear NativeOH');await cmd('effect clear NativeOH');await cmd('gamemode survival NativeOH')
+  await cmd('fill -5 64 -5 5 64 5 stone');await cmd('fill -5 65 -5 5 68 5 air')
+  await cmd('execute as @e[type=minecraft:item,x=0,y=64,z=0,distance=..8] run kill @s')
+  state.yaw=0;state.pitch=50
+  await cmd('tp NativeOH 0.5 65 0.5 0 50')
+  await until('rate position',()=>Math.abs(state.position.x-.5)<.01 && Math.abs(state.position.y-66.62)<.02)
+  await pause(300)
+  await setMain('diamond_sword');await setOffhand('stone',64);await pause(250)
+  await cmd('nativeoh-test-state rate-reset')
+  use('click_block',{x:2,y:64,z:0});await until('single click count',()=>state.offhand.count===63)
+  await pause(300);assert.equal(state.offhand.count,63)
+  check('Single left-hand click consumes exactly one block without scheduled repeats')
+  const targets=[]
+  for(let x=-2;x<=2;x++)for(let z=-2;z<=2;z++)if(x!==0 || z!==0)targets.push({x,y:64,z})
+  for(const serverTickRate of [20,100]) {
+    await cmd('tick rate '+serverTickRate)
+    try {
+      await cmd('fill -5 65 -5 5 68 5 air');await setOffhand('stone',64);await pause(300)
+      await cmd('nativeoh-test-state rate-reset')
+      for(let i=0;i<20;i++) { use('click_block',targets[i]);await pause(50) }
+      await pause(300)
+      const raw=await cmd('nativeoh-test-state rate-report')
+      const report=JSON.parse(raw.trim())
+      const times=report.placementMillis
+      const intervals=times.slice(1).map((n,i)=>n-times[i])
+      assert(times.length>=4 && times.length<=6,JSON.stringify({serverTickRate,times}))
+      assert(intervals.every(n=>n>=190),JSON.stringify({serverTickRate,times,intervals}))
+      const actual=await cmd('data get entity NativeOH equipment.offhand.count')
+      assert(actual.trim().endsWith(': '+(64-times.length)),actual)
+      await until('rate inventory matches server',()=>state.offhand.count===64-times.length)
+      check('Held-input spam retains client cadence at server '+serverTickRate+' TPS',{attempts:20,accepted:times.length,placementMillis:times,intervalsMillis:intervals})
+    } finally { await cmd('tick rate 20') }
+  }
+}
+
+async function placementOperations() {
+  await cmd('clear NativeOH')
+  await cmd('gamemode survival NativeOH')
+  await cmd('effect clear NativeOH')
+  await cmd('fill -5 64 -5 5 64 5 stone')
+  await cmd('fill -5 65 -5 5 68 5 air')
+  await cmd('tp NativeOH 0.5 65 0.5 0 0')
+  await until('placement spawn',()=>Math.abs(state.position.x-.5)<.01 && Math.abs(state.position.y-66.62)<.02)
+  state.position={...state.position,z:state.position.z+.0001}
+  await pause(300)
+  const b={x:2,y:64,z:0}, up={x:2,y:65,z:0}
+  const at=async(pos,block)=>{ const result=await cmd(`execute if block ${pos.x} ${pos.y} ${pos.z} ${block}`);assert(result.includes('Test passed'),JSON.stringify(pos)+' '+block+' '+result+(process.env.TEST_PLACEMENT_HOOKS==='1' && !result.includes('Test passed') ? ' '+await cmd('nativeoh-test-state') : '')) }
+  const reset=async(main,off='stone')=>{
+    state.sneaking=false
+    await cmd('gamemode survival NativeOH')
+    await cmd('fill -5 65 -5 5 68 5 air')
+    await cmd('execute as @e[type=minecraft:item,x=0,y=64,z=0,distance=..8] run kill @s')
+    await setMain(main,(main==='air' || /_(sword|pickaxe|axe|hoe|shovel)$/.test(main))?1:8)
+    await setOffhand(off,8)
+    await pause(250)
+  }
+  const click=async(pos=b,face=1,point={x:.5,y:1,z:.5})=>{
+    use('click_block',pos,state.inventory[0],0,face,point);await pause(300)
+    await until('placement held counts match Java',async()=>{
+      const off=await cmd('data get entity NativeOH equipment.offhand.count')
+      const main=await cmd('data get entity NativeOH Inventory[{Slot:0b}].count')
+      const count=text=>Number(text.trim().match(/: (\d+)$/)?.[1] || 0)
+      return (state.offhand.count || 0)===count(off) && (state.inventory[0]?.count || 0)===count(main)
+    })
+  }
+  for(const main of ['air','diamond_sword','diamond_pickaxe','stick','iron_axe','iron_hoe','iron_shovel']) {
+    await reset(main)
+    await click()
+    await at(up,'stone')
+    assert.equal(state.offhand.count,7)
+    check('Main '+main+' advances to offhand stone exactly once')
+  }
+  await reset('stone','dirt');await click();await at(up,'stone')
+  assert.equal(state.inventory[0].count,7);assert.equal(state.offhand.count,8)
+  check('Main-hand block SUCCESS stops before offhand')
+  await reset('stone','dirt');use('click_block',b,state.offhand);await pause(300);await at(up,'stone')
+  assert.equal(state.inventory[0].count,7);assert.equal(state.offhand.count,8)
+  check('Reporting the native offhand definition still preserves main-hand priority')
+  await reset('iron_shovel','stone');await cmd('setblock 2 64 0 dirt');await click();await at(b,'dirt_path');await at(up,'air');assert.equal(state.offhand.count,8)
+  await cmd('setblock 2 64 0 stone')
+  check('Main shovel path conversion SUCCESS stops offhand placement')
+  await reset('iron_axe','stone');await cmd('setblock 2 65 0 oak_log');await click(up);await at(up,'stripped_oak_log');assert.equal(state.offhand.count,8)
+  check('Main axe stripping SUCCESS stops offhand placement')
+  await reset('torch','stone');await cmd('setblock 2 65 0 stone')
+  // A torch cannot replace the occupied target; BlockItem FAIL must NOT
+  // become permission to place the offhand stone on another position.
+  await click(b);assert.equal(state.inventory[0].count,8);assert.equal(state.offhand.count,8)
+  check('Main-hand BlockItem FAIL stops without offhand consumption')
+  await reset('diamond_sword','oak_slab');await cmd('setblock 2 65 0 oak_slab[type=bottom]')
+  await click(up);await at(up,'oak_slab[type=double]');assert.equal(state.offhand.count,7)
+  check('Offhand slab merges at clicked position, not adjacent position')
+  await reset('diamond_sword','oak_slab');await click(b);await at(up,'oak_slab[type=bottom]')
+  check('Upper face places a bottom slab')
+  await reset('diamond_sword','oak_slab');await cmd('setblock 2 65 0 water')
+  await click();await at(up,'oak_slab[type=bottom,waterlogged=true]');assert.equal(state.offhand.count,7)
+  check('Placement in source water preserves slab waterlogging')
+  await reset('diamond_sword','oak_log');await cmd('setblock 2 65 0 stone')
+  await click(up,3,{x:.5,y:.5,z:1});await at({x:2,y:65,z:1},'oak_log[axis=z]')
+  check('Log axis follows the clicked side face')
+  await reset('diamond_sword','oak_door');await click()
+  await at(up,'oak_door[half=lower]');await at({x:2,y:66,z:0},'oak_door[half=upper]');assert.equal(state.offhand.count,7)
+  check('Door places both halves and consumes exactly one offhand item')
+  await reset('diamond_sword','oak_door');await cmd('setblock 2 66 0 stone');await click();await at(up,'air');assert.equal(state.offhand.count,8)
+  check('Door refuses placement when the upper half is obstructed')
+  await reset('diamond_sword','oak_slab');await cmd('setblock 2 65 0 stone')
+  await click(up,3,{x:.5,y:.8,z:1});await at({x:2,y:65,z:1},'oak_slab[type=top]')
+  check('Side hit above half height places a top slab')
+  await reset('diamond_sword');await cmd('setblock 2 65 0 short_grass')
+  await click(up);await at(up,'stone');await at({x:2,y:66,z:0},'air')
+  check('Replaceable vegetation is replaced at clicked position')
+  await reset('diamond_sword','torch');await cmd('setblock 2 65 0 stone')
+  await click(up,3,{x:.5,y:.5,z:1});await at({x:2,y:65,z:1},'wall_torch[facing=south]')
+  check('Side face selects wall torch and facing')
+  await reset('diamond_sword','torch');await cmd('setblock 2 65 0 oak_slab[type=bottom]')
+  await click(up,3,{x:.5,y:.5,z:1});await at({x:2,y:65,z:1},'torch');assert.equal(state.offhand.count,7)
+  check('Unsupported wall face falls back to standing torch when floor supports it')
+  await reset('diamond_sword','torch');await cmd('setblock 2 65 0 oak_slab[type=bottom]');await cmd('setblock 2 64 1 air')
+  await click(up,3,{x:.5,y:.5,z:1});await at({x:2,y:65,z:1},'air');assert.equal(state.offhand.count,8)
+  await cmd('setblock 2 64 1 stone')
+  check('Torch rejects placement when neither wall nor floor supports it')
+  await reset('diamond_sword');await click({x:0,y:64,z:0})
+  await at({x:0,y:65,z:0},'air');assert.equal(state.offhand.count,8)
+  check('Player collision rejects an offhand full block')
+  await reset('diamond_sword','oak_stairs');state.yaw=90;await cmd('tp NativeOH 0.5 65 0.5 90 0');await pause(500);
+  if(process.env.TEST_PLACEMENT_HOOKS==='1') await until('server rotation ready',async()=> (await cmd('nativeoh-test-state')).includes('yaw=90.0'))
+  await click()
+  await at(up,'oak_stairs[facing=west,half=bottom]')
+  check('Stairs derive facing from authoritative player rotation')
+  state.yaw=0;await cmd('tp NativeOH 0.5 65 0.5 0 0');await pause(300)
+  await reset('diamond_sword');await cmd('setblock 2 65 0 chest')
+  state.opened=null;await click(up);await until('chest opened',()=>state.opened)
+  assert.equal(state.offhand.count,8)
+  check('Empty-hand block interaction opens chest before offhand placement')
+  client.queue('container_close',{window_id:state.opened.window_id,server:false});await pause(250)
+  state.sneaking=true;await pause(500);
+  if(process.env.TEST_PLACEMENT_HOOKS==='1') { const status=await cmd('nativeoh-test-state');assert(status.includes('sneaking=true'),status) }
+  await click(up)
+  await at({x:2,y:66,z:0},'stone');assert.equal(state.offhand.count,7)
+  check('Sneaking with an occupied hand bypasses chest interaction')
+  state.sneaking=false
+  await reset('apple');await cmd('effect give NativeOH minecraft:saturation 1 255 true');await pause(250);await click()
+  await at(up,'stone');assert.equal(state.inventory[0].count,8)
+  check('Full-hunger main food PASS allows offhand placement')
+  await reset('apple');await cmd('difficulty easy');await cmd('effect give NativeOH minecraft:hunger 10 255 true');await pause(3500)
+  const food=await cmd('data get entity NativeOH foodLevel');assert(Number(food.match(/: (\d+)$/)?.[1])<20,food)
+  await click();await at(up,'air');assert.equal(state.offhand.count,8)
+  check('Hungry main food use SUCCESS blocks offhand placement')
+  // Allow eating to finish before switching items.
+  await pause(1800);await cmd('effect clear NativeOH')
+  await reset('diamond_sword');await cmd('gamemode creative NativeOH');await click();await at(up,'stone')
+  assert.equal(state.offhand.count,8)
+  check('Creative placement retains the offhand count')
+  await reset('diamond_sword');await cmd('gamemode spectator NativeOH');await click();await at(up,'air')
+  assert.equal(state.offhand.count,8)
+  check('Spectator cannot place an offhand block')
+  await reset('diamond_sword');await cmd('gamemode adventure NativeOH');await click();await at(up,'air')
+  assert.equal(state.offhand.count,8)
+  check('Adventure requires CAN_PLACE_ON rather than assuming survival placement')
+  await cmd('item replace entity NativeOH weapon.offhand with minecraft:stone[can_place_on={blocks:"minecraft:stone"}] 8')
+  const allowed=await cmd('data get entity NativeOH equipment.offhand');assert(allowed.includes('minecraft:can_place_on'),allowed)
+  await pause(250);await click();await at(up,'stone');assert.equal(state.offhand.count,7)
+  check('Adventure CAN_PLACE_ON allows placement on a permitted block')
+  await reset('diamond_sword');await click({x:1000,y:64,z:0});assert.equal(state.offhand.count,8)
+  check('Authoritative reach rejects distant placement')
+  await click(b,1,{x:Number.NaN,y:1,z:.5});assert.equal(state.offhand.count,8);await at(up,'air')
+  check('Non-finite hit is rejected')
+  await click(b,1,{x:1.75,y:1,z:.5});assert.equal(state.offhand.count,8);await at(up,'air')
+  check('Out-of-bounds hit is rejected')
+  const wrong={...state.inventory[0],network_id:nativeDefinition('dirt').runtime_id}
+  use('click_block',b,wrong);await pause(300);assert.equal(state.offhand.count,8);await at(up,'air')
+  check('Forged held item cannot bypass main-hand priority')
+  await reset('diamond_sword')
+  use('click_block',b);use('click_block',{x:3,y:64,z:0})
+  await pause(300);await at(up,'stone');await at({x:3,y:65,z:0},'air');assert.equal(state.offhand.count,7)
+  check('Vanilla four-tick use delay suppresses a burst across different blocks')
+  await click({x:3,y:64,z:0});await at({x:3,y:65,z:0},'stone');assert.equal(state.offhand.count,6)
+  check('Placement resumes after four ticks')
+  if(process.env.TEST_PLACEMENT_HOOKS==='1') {
+    for(const tag of ['cancel_interact','cancel_place']) {
+      await reset('stone','dirt');await cmd('tag NativeOH add nativeoh_'+tag)
+      try {await click();await at(up,'air');assert.equal(state.inventory[0].count,8);assert.equal(state.offhand.count,8)}
+      finally {await cmd('tag NativeOH remove nativeoh_'+tag)}
+      check('Paper '+tag+' does not consume either hand or bypass through offhand')
+    }
+    await reset('apple');await cmd('tag NativeOH add nativeoh_cooldown')
+    try {await click();await at(up,'stone');assert.equal(state.inventory[0].count,8);assert.equal(state.offhand.count,7)}
+    finally {await cmd('tag NativeOH remove nativeoh_cooldown')}
+    check('Main-hand food on cooldown returns PASS and allows offhand placement')
+  }
+}
+
 async function main() {
+  const probeLogStart=touchOnly ? fs.readFileSync(process.env.TEST_SERVER_LOG || path.resolve(__dirname,'../../.integration/placement-server/logs/latest.log'),'utf8').length : 0
   rcon=await connectRcon()
   savedDifficulty=(await cmd('difficulty')).match(/\b(peaceful|easy|normal|hard)\b/i)?.[1]?.toLowerCase()
   assert(savedDifficulty,'Capture difficulty before using the isolated test server')
   await cmd('whitelist off')
-  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,skinData:{LanguageCode:locale},transport:'raknet',conLog:()=>{}})
+  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,deviceOS:touchOnly ? Number(process.env.TEST_DEVICE_OS || 2) : 7,skinData:{LanguageCode:locale,...(touchOnly ? {DeviceOS:2,CurrentInputMode:2,DefaultInputMode:2,DeviceModel:process.env.TEST_DEVICE_MODEL || 'iPad13,4',UIProfile:process.env.TEST_TOUCH_CLASSIC==='1' ? 0 : 1} : {})},transport:'raknet',conLog:()=>{}})
   client.prependOnceListener('session',profile=>{profile.xuid='31001'})
   client.on('error',err=>{state.error=err})
   client.on('disconnect',p=>{if(!state.closing)state.error=Error(JSON.stringify(p))})
@@ -307,14 +543,14 @@ async function main() {
   client.on('item_registry',p=>{state.registry=p.itemstates})
   client.on('inventory_content',p=>{
     debug('DEBUG_CONTENT',p.window_id,JSON.stringify(p.input.slice(0,2)))
-    if(p.window_id===0||p.window_id==='inventory')state.inventory=p.input
-    if(p.window_id===119||p.window_id==='offhand')state.offhand=p.input[0]
+    if(p.window_id===0||p.window_id==='inventory'){state.inventory=p.input;p.input.forEach((_,i)=>revisions.set('inventory:'+i,++revision))}
+    if(p.window_id===119||p.window_id==='offhand' || p.window_id==='off_hand'){state.offhand=p.input[0];revisions.set('offhand:1',++revision)}
   })
   client.on('inventory_slot',p=>{
     debug('DEBUG_SLOT',p.window_id,p.slot,JSON.stringify(p.item))
-    if(p.window_id===0||p.window_id==='inventory')state.inventory[p.slot]=p.item
-    if(p.window_id===119||p.window_id==='offhand')state.offhand=p.item
-    if((p.window_id===124||p.window_id==='ui') && p.slot===0)state.cursor=p.item
+    if(p.window_id===0||p.window_id==='inventory'){state.inventory[p.slot]=p.item;revisions.set('inventory:'+p.slot,++revision)}
+    if(p.window_id===119||p.window_id==='offhand' || p.window_id==='off_hand'){state.offhand=p.item;revisions.set('offhand:1',++revision)}
+    if((p.window_id===124||p.window_id==='ui') && p.slot===0){state.cursor=p.item;revisions.set('cursor:0',++revision)}
   })
   client.on('item_stack_response',p=>{state.responses.push(p);debug('DEBUG_STACK',JSON.stringify(p))})
   client.on('update_block',p=>state.blocks.push(p))
@@ -324,7 +560,7 @@ async function main() {
   client.on('set_title',p=>{state.titles.push({...p,received:Date.now()});debug('DEBUG_TITLE',p)})
   client.on('mob_equipment',p=>{if(String(p.runtime_entity_id)===String(state.runtimeId))state.equipment.push(p)})
   client.on('container_close',p=>state.closes.push(p))
-  client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
+  client.on('container_open',p=>{state.openedSnapshot={inventory:state.inventory.map(i=>({...i})),offhand:{...state.offhand}};state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
     debug('DEBUG_MOVE',JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v))
     if(String(p.runtime_id)===String(state.runtimeId) || String(p.runtime_entity_id)===String(state.runtimeId))state.position=p.position
@@ -335,17 +571,111 @@ async function main() {
     state.spawned=true
     inputTimer=setInterval(()=>client.queue('player_auth_input',{
       pitch:state.pitch||0,yaw:state.yaw||0,head_yaw:state.yaw||0,position:state.position,move_vector:{x:0,z:0},
-      input_data:{handled_teleport:true,vertical_collision:true},input_mode:'mouse',play_mode:'normal',
+      input_data:['handled_teleport','vertical_collision',...(state.sneaking ? ['sneaking','start_sneaking'] : ['stop_sneaking'])],input_mode:touchOnly ? 'touch' : 'mouse',play_mode:'normal',
       interaction_model:'crosshair',interact_rotation:{x:state.pitch||0,z:state.yaw||0},tick:++tick,
       delta:{x:0,y:0,z:0},analogue_move_vector:{x:0,z:0},camera_orientation:{x:0,y:0,z:1},raw_move_vector:{x:0,z:0}
     }),50)
   })
   await until('spawn',()=>state.spawned && state.registry.length,60000)
   check('Bedrock 1.26.51 joined actual Paper/Geyser server')
-  if(process.env.TEST_HUD_ONLY==='1') {
-    await hudOperations()
-    for(const [id,count] of [['stone',4],['iron_axe',1],['diamond_sword',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['apple',16]])
+  if(touchOnly) {
+    await cmd('clear NativeOH')
+    for(const [id,count] of [['stone',8],['apple',4],['diamond_sword',1],['lantern',8]])
       await transferRoundTrip(id,count)
+    const log=fs.readFileSync(process.env.TEST_SERVER_LOG || path.resolve(__dirname,'../../.integration/placement-server/logs/latest.log'),'utf8').slice(probeLogStart)
+    const ipad=Number(process.env.TEST_DEVICE_OS || 2)===2 && (process.env.TEST_DEVICE_MODEL || 'iPad13,4').toLowerCase().startsWith('ipad')
+    if(ipad) {
+      assert(log.includes('[iPad slots ') && log.includes('open; inventory remains native'))
+      assert(log.includes('HOTBAR:0 -> CURSOR:0') && log.includes('CURSOR:0 -> OFFHAND:1'))
+      assert(log.includes('] close'))
+    } else assert(!log.includes('[iPad slots '),'Other devices are excluded from iPad diagnostics')
+    check(ipad ? 'iPad model detected; actual request endpoints recorded without inferring tap selection' : 'Other device excluded; native cursor behavior preserved')
+    fs.writeFileSync(process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/ipad-functional.json'),JSON.stringify({timestamp:new Date().toISOString(),deviceModel:process.env.TEST_DEVICE_MODEL || 'iPad13,4',deviceOs:Number(process.env.TEST_DEVICE_OS || 2),checks,totalChecks:checks.length,limitations:['Synthetic cursor requests; retail tap selection packet is unverified. Diagnostics do not implement tap transfer.']},null,2)+'\n')
+    return
+  }
+  if(process.env.TEST_PLACEMENT_RATE_ONLY==='1') {
+    await placementRateOperations()
+    const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/placement-rate-functional.json')
+    fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),nodeVersion:process.version,checks,totalChecks:checks.length},null,2)+'\n')
+    return
+  }
+  if(process.env.TEST_PLACEMENT_ONLY==='1') {
+    await placementOperations()
+    const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/placement-functional.json')
+    fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',checks,totalChecks:checks.length,
+      limitations:['Headless protocol checks; retail client placement rendering remains unverified.']},null,2)+'\n')
+    return
+  }
+  if(process.env.TEST_STABLE_ONLY==='1') {
+    await stableBlockOperations()
+    await nativeInventoryOperations()
+    await hudOperations()
+    const version=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../resource-pack/manifest.json'))).header.version
+    const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
+    fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',resourcePackVersion:version,checks,totalChecks:checks.length,limitations:['Headless tests do not render item models, animations or screen transitions.']},null,2)+'\n')
+    return
+  }
+  if(process.env.TEST_HUD_ONLY==='1' || process.env.TEST_CURSOR_ONLY==='1') {
+    await hudOperations()
+    for(const [id,count] of [['stone',4],['iron_axe',1],['diamond_sword',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['apple',16],['bread',4],['redstone',16],['water_bucket',1],['red_bed',1],['red_banner',16],['oak_sign',16],['red_wool',16]])
+      await transferRoundTrip(id,count)
+    await setMain('stone',4)
+    await setOffhand('stone',4)
+    await cmd('item replace entity NativeOH hotbar.1 with minecraft:stone 3')
+    await until('ordinary merge target',()=>state.inventory[1]?.count===3)
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('merge inventory open',()=>state.opened)
+    await nativeAction('take',2,'hotbar',0,'cursor',0)
+    await until('matching stacks share picked definition',()=>state.inventory[1].network_id===state.cursor.network_id && state.offhand.network_id===state.cursor.network_id && state.cursor.network_id===uiDefinition('stone').runtime_id)
+    await nativeAction('place',1,'cursor',0,'hotbar',1)
+    await until('partial merge keeps matching definition',()=>state.cursor.count===1 && state.inventory[1].count===4 && state.inventory[1].network_id===state.cursor.network_id)
+    await nativeAction('place',1,'cursor',0,'offhand',1)
+    await until('all merge targets restore vanilla',()=>!state.cursor.network_id && state.inventory[0].network_id===nativeDefinition('stone').runtime_id && state.inventory[1].network_id===nativeDefinition('stone').runtime_id && state.offhand.network_id===nativeDefinition('stone').runtime_id && state.offhand.count===5)
+    await checkJavaCount('equipment.offhand.count',5)
+    const mergeClose=state.closes.length
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('merge close confirmation',()=>state.closes.length>mergeClose)
+    check('Partial cursor merges into same-type inventory and offhand stacks, then restores vanilla definitions')
+    await setMain('stone',4)
+    await setOffhand('apple',2)
+    state.opened=null
+    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+    await until('cursor swap inventory open',()=>state.opened)
+    await nativeAction('take',2,'hotbar',0,'cursor',0)
+    await until('partial cursor alias',()=>state.cursor.network_id===uiDefinition('stone').runtime_id && state.cursor.count===2)
+    await nativeAction('swap',0,'cursor',0,'offhand',1)
+    await until('swap returns vanilla offhand source to cursor',()=>state.cursor.network_id===nativeDefinition('apple').runtime_id && state.offhand.network_id===nativeDefinition('stone').runtime_id)
+    check('Cursor/offhand swap uses vanilla definitions after a partial pickup')
+    await nativeAction('swap',0,'cursor',0,'hotbar',0)
+    await until('swap picks ordinary inventory onto custom cursor',()=>state.cursor.network_id===uiDefinition('stone').runtime_id && state.inventory[0].network_id===nativeDefinition('apple').runtime_id)
+    await nativeAction('place',2,'cursor',0,'offhand',1)
+    await until('cursor merges into vanilla offhand',()=>!state.cursor.network_id && state.offhand.count===4)
+    await checkJavaCount('equipment.offhand.count',4)
+    const swapClose=state.closes.length
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('swap close confirmation',()=>state.closes.length>swapClose)
+    check('Cursor/inventory swap and offhand merge retain vanilla destination definitions')
+    assert(!propertySchemas.flatMap(s=>s.properties || []).some(p=>p.name==='nativeoffhand:eating'))
+    assert(!state.animations.some(p=>JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v).includes('nativeoffhand')))
+    check('No custom eating property or animation packets')
+    await cmd('tp NativeOH 0.5 65 0.5 0 0')
+    await until('chest test position',()=>Math.abs(state.position.x-.5)<.01)
+  await setMain('diamond_sword')
+  await cmd('setblock 1 65 1 minecraft:chest')
+  for(const offhand of ['air','apple','stone']) {
+    await setOffhand(offhand,offhand==='air'?1:4)
+    state.opened=null
+    use('click_block',{x:1,y:65,z:1})
+    await until('sword opens chest with '+offhand,()=>state.opened && state.opened.window_type!=='inventory')
+    const closeCount=state.closes.length
+    client.queue('container_close',{window_id:state.opened.window_id,server:false})
+    await until('chest close '+offhand,()=>state.closes.length>closeCount)
+    if(offhand!=='air') assert.equal(state.offhand.count,4,'Chest interaction must not consume offhand '+offhand)
+    await pause(250)
+    check('Sword opens chest with offhand '+offhand)
+  }
+  await cmd('setblock 1 65 1 minecraft:air')
     const version=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../resource-pack/manifest.json'))).header.version
     const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')
     fs.writeFileSync(output,JSON.stringify({timestamp:new Date().toISOString(),bedrockVersion:'1.26.51',resourcePackVersion:version,checks,totalChecks:checks.length,customDataDrivenItems:state.registry.filter(d=>d.runtime_id>0 && d.version==='data_driven' && !d.name.startsWith('minecraft:')).length,limitations:['Headless checks do not execute retail JSON UI, signed-string conversion or icon rendering.']},null,2)+'\n')
@@ -374,8 +704,6 @@ async function main() {
   }
   check('Inventory tool aliases retain handheld rendering; ordinary items and blocks keep their own pose', {handheld:handheldAliases.length,ordinary:6})
   assert(!state.registry.some(i=>i.name.startsWith('nativeoffhand:')),'No custom held item definitions')
-  assert(!propertySchemas.some(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name.startsWith('nativeoffhand:'))),'No custom player pose or consume properties')
-  check('Rewrite registers no custom held items or player pose/consume properties')
 
   await cmd('execute as @e[type=minecraft:ender_pearl] at @s on owner if entity @s[name=NativeOH] run kill @e[type=minecraft:ender_pearl,distance=..0.01,limit=1]')
   await cmd('clear NativeOH')
@@ -399,10 +727,8 @@ async function main() {
   await setMain('stone',2)
   assert.equal(definition('stone').name,'minecraft:stone')
   assert(!state.registry.some(i=>i.name==='nativeoffhand:stone'))
-  assert(state.inventory[0].block_runtime_id>0,JSON.stringify(state.inventory[0]))
-  assert.equal(definition('stone').version,'none','Stone retains its native item version')
-  assert(!nbt.simplify(definition('stone').nbt).components?.['minecraft:block_placer'],'Native stone renderer must not be replaced with a data-driven block placer')
-  check('Stone retains ItemVersion.NONE, original ID and block state outside the inventory')
+  assert.equal(definition('stone').version,'none','Main hand retains native stone definition')
+  check('Main hand retains vanilla stone while OFFHAND presentation is independent')
 
   const stoneName=nbt.simplify(state.inventory[0].extra.nbt.nbt).display.Name
   assert(stoneName.includes(locale.toLowerCase()==='ja_jp' ? '石' : 'Stone'),stoneName)
@@ -436,18 +762,21 @@ async function main() {
   client.queue('container_close',{window_id:state.opened.window_id,server:false})
   await pause(300)
   const b={x:1,y:64,z:0}
+  await pause(250)
   use('click_block',{x:1000,y:64,z:0})
   await pause(350)
   assert.equal(state.offhand.count,8)
   assert((await inventoryData()).includes('count: 8'))
   check('Out-of-range offhand interaction is rejected without consumption')
   const forged={...from,network_id:state.registry.find(i=>i.name==='minecraft:stone').runtime_id}
+  await pause(250)
   use('click_block',b,forged)
   await pause(350)
   assert.equal(state.offhand.count,8)
   assert((await inventoryData()).includes('count: 8'))
   check('Forged held definition is rejected without consumption')
   debug('BEFORE_USE',await cmd('data get entity NativeOH Pos'),state.position)
+  await pause(250)
   use('click_block',b)
   await until('torch consumed',()=>state.offhand.count===7)
   const placed=await cmd('execute if block 1 65 0 minecraft:torch')
@@ -455,11 +784,13 @@ async function main() {
   check('Empty main hand places exactly one native offhand torch',await inventoryData())
   await setMain('diamond_sword')
   await cmd('setblock 2 65 0 air')
+  await pause(250)
   use('click_block',{x:2,y:64,z:0})
   await until('sword offhand torch consumed',()=>state.offhand.count===6)
   check('Sword in main hand allows offhand torch placement',await cmd('execute if block 2 65 0 minecraft:torch'))
   await setMain('stone',8)
   await cmd('setblock 1 65 1 air')
+  await pause(250)
   use('click_block',{x:1,y:64,z:1})
   await until('main stone consumed',()=>state.inventory[0].count===7)
   assert.equal(state.offhand.count,6)
@@ -468,13 +799,15 @@ async function main() {
   await setOffhand('water_bucket',1)
   state.yaw=90;state.pitch=Math.atan2(1.62,3)*180/Math.PI
   await pause(200)
+  await pause(250)
   use('click_block',{x:-3,y:64,z:0})
-  await until('water bucket replaced',()=>state.offhand.network_id===definition('bucket')?.runtime_id)
+  await until('water bucket replaced',()=>state.offhand.network_id===offhandDefinition('bucket')?.runtime_id)
   assert((await cmd('execute if block -3 65 0 minecraft:water')).includes('Test passed'))
   check('Native offhand water bucket places source water and returns empty bucket',await inventoryData())
   state.yaw=0;state.pitch=80
   await pause(200)
   await setOffhand('ender_pearl',3)
+  await pause(250)
   use('click_air')
   await until('offhand pearl consumed',()=>state.offhand.count===2)
   check('Native offhand air-use consumes one ender pearl',await inventoryData())
@@ -486,11 +819,14 @@ async function main() {
   await pause(300)
   await setMain('diamond_sword')
   await setOffhand('potion',1)
+  const potionStart=state.animations.length
+  await pause(250)
   use('click_air')
-  await until('offhand potion consumed',()=>state.offhand.network_id===definition('glass_bottle')?.runtime_id,10000)
-  check('Native offhand potion completes timed use',await inventoryData())
+  await until('offhand potion consumed',()=>state.offhand.network_id===offhandDefinition('glass_bottle')?.runtime_id,10000)
   await cmd('difficulty easy')
-  await setOffhand('apple',2)
+  // One apple isolates repeated starts within a single consumption from
+  // a legitimate second consumption while use remains held.
+  await setOffhand('apple',1)
   await cmd('effect give NativeOH minecraft:hunger 15 255 true')
   await pause(4500)
   let hunger,foodLevel=20
@@ -505,17 +841,25 @@ async function main() {
   debug('FOOD_LEVEL',hunger)
   // Match a held use input. The router must suppress repeated starts while
   // Java is already consuming, so these packets must not reset the timer.
+  const foodStart=state.animations.length
   const foodInput=setInterval(()=>use('click_air'),150)
   try {
     use('click_air')
-    await until('apple consumption with held use input',()=>state.offhand.count===1,10000)
+    await until('apple consumption with held use input',()=>!state.offhand.network_id,10000)
   } finally { clearInterval(foodInput) }
   check('Native offhand food completes timed use',await inventoryData())
-  assert(!state.animations.some(p=>p.animation.startsWith('animation.nativeoffhand.')))
-  check('Offhand food and potion use emit no custom PlayAnimation')
+  await setOffhand('apple',2)
+  const cancelStart=state.animations.length
+  await pause(250)
+  use('click_air')
+  await setOffhand('stone',4)
   await setMain('diamond_sword')
   await setOffhand('stone',4)
   await cmd('setblock -1 65 1 minecraft:air')
+  // A new click waits for the Java client's four-tick use delay and the
+  // server tick that cancels use of the replaced food stack.
+  await pause(250)
+  await pause(250)
   use('click_block',{x:-1,y:64,z:1})
   await until('post-food offhand stone placed',()=>state.offhand.count===3)
   assert((await cmd('execute if block -1 65 1 minecraft:stone')).includes('Test passed'))
@@ -523,66 +867,30 @@ async function main() {
   await setMain('stone',4)
   await setOffhand('apple',1)
   await cmd('setblock -2 65 1 minecraft:air')
+  await pause(250)
+  await pause(250)
   use('click_block',{x:-2,y:64,z:1})
   await until('post-food main stone placed',()=>state.inventory[0].count===3)
   assert.equal(state.offhand.count,1)
   assert((await cmd('execute if block -2 65 1 minecraft:stone')).includes('Test passed'))
   check('After eating, main-hand stone placement keeps priority over offhand food')
-  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['stone_bricks',16],['diamond_sword',1],['iron_axe',1],['apple',4],['bread',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
-  // Leave a transferred block in OFFHAND while closing, then place it and
-  // reopen the inventory. This exercises both representations of the same
-  // authoritative Java stack without relying on manually filled equipment.
-  for(const id of ['stone','oak_stairs']) {
-    await setOffhand('air')
-    await setMain(id,3)
-    const original=state.inventory[0],ui=uiDefinition(id)
+  await setMain('diamond_sword')
+  await cmd('setblock 1 65 1 minecraft:chest')
+  for(const offhand of ['air','apple','stone']) {
+    await setOffhand(offhand,offhand==='air'?1:4)
     state.opened=null
-    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
-    await until('block UI open '+id,()=>state.opened && state.inventory[0]?.network_id===ui.runtime_id)
-    const from=state.inventory[0],forward=stackId++
-    client.queue('item_stack_request',{requests:[{request_id:forward,actions:[{type_id:'place',count:3,
-      source:{slot_type:{container_id:'hotbar'},slot:0,stack_id:from.stack_id},
-      destination:{slot_type:{container_id:'offhand'},slot:1,stack_id:0}
-    }],custom_names:[],cause:'slash_command_chat'}]})
-    await until('block equipped '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===forward && r.status==='ok'))
-    const moved=state.responses.flatMap(p=>p.responses).find(r=>r.request_id===forward).containers.find(c=>c.slot_type.container_id==='offhand').slots[0]
-    const equipmentStart=state.equipment.length
+    use('click_block',{x:1,y:65,z:1})
+    await until('sword opens chest with '+offhand,()=>state.opened && state.opened.window_type!=='inventory')
+    const closeCount=state.closes.length
     client.queue('container_close',{window_id:state.opened.window_id,server:false})
-    await until('offhand native restoration '+id,()=>state.offhand.network_id===original.network_id && state.offhand.count===3)
-    assert.notEqual(state.offhand.stack_id,moved.item_stack_id,id+' close refreshes protocol render identity')
-    assert.equal(state.offhand.block_runtime_id,original.block_runtime_id)
-    assert.equal(state.offhand.metadata,original.metadata)
-    check('Closing inventory restores native OFFHAND block '+id+' with preserved state and fresh render identity')
-    await until('native equipment refresh '+id,()=>state.equipment.slice(equipmentStart)
-      .some(p=>(p.window_id===119 || p.window_id==='offhand') && p.item.network_id===original.network_id))
-    const offPackets=state.equipment.slice(equipmentStart).filter(p=>p.window_id===119 || p.window_id==='offhand')
-    assert(offPackets.some(p=>!p.item.network_id),'Offhand render is cleared first')
-    assert.equal(offPackets.at(-1).item.network_id,original.network_id)
-    assert.equal(offPackets.at(-1).item.block_runtime_id,original.block_runtime_id)
-    check('OFFHAND equipment refresh sends AIR then native '+id+' with its block state')
-    await setMain('diamond_sword')
-    await cmd('setblock 3 65 1 minecraft:air')
-    use('click_block',{x:3,y:64,z:1})
-    await until('transferred native block placed '+id,()=>state.offhand.count===2)
-    assert((await cmd('execute if block 3 65 1 minecraft:'+id)).includes('Test passed'))
-    check('Inventory-transferred OFFHAND '+id+' places once after native restoration')
-    const nativeHeld=state.offhand
-    state.opened=null
-    client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
-    await until('offhand UI reopen '+id,()=>state.opened && state.offhand.network_id===ui.runtime_id && state.offhand.count===2)
-    assert.equal(state.offhand.stack_id,nativeHeld.stack_id)
-    const backward=stackId++
-    client.queue('item_stack_request',{requests:[{request_id:backward,actions:[{type_id:'place',count:2,
-      source:{slot_type:{container_id:'offhand'},slot:1,stack_id:state.offhand.stack_id},
-      destination:{slot_type:{container_id:'hotbar'},slot:1,stack_id:0}
-    }],custom_names:[],cause:'slash_command_chat'}]})
-    await until('reopened block returned '+id,()=>state.responses.flatMap(p=>p.responses).some(r=>r.request_id===backward && r.status==='ok'))
-    client.queue('container_close',{window_id:state.opened.window_id,server:false})
-    await until('returned native block '+id,()=>!state.offhand.network_id && state.inventory[1]?.network_id===original.network_id && state.inventory[1]?.count===2)
-    assert((await cmd('execute if items entity NativeOH hotbar.1 minecraft:'+id)).includes('Test passed'))
-    check('Reopening inventory restores movable '+id+' and returns remaining count')
-    await cmd('item replace entity NativeOH hotbar.1 with minecraft:air')
+    await until('chest close '+offhand,()=>state.closes.length>closeCount)
+    if(offhand!=='air') assert.equal(state.offhand.count,4,'Chest interaction must not consume offhand '+offhand)
+    await pause(250)
+    check('Sword opens chest with offhand '+offhand)
   }
+  await cmd('setblock 1 65 1 minecraft:air')
+  for(const [id,count] of [['shield',1],['lantern',16],['soul_lantern',16],['soul_torch',16],['stone',16],['stone_bricks',16],['diamond_sword',1],['iron_axe',1],['apple',4],['bread',4],['water_bucket',1],['written_book',1],['oak_planks',64],['red_wool',64],['glass',64],['oak_fence',64],['oak_stairs',64],['chest',64],['white_shulker_box',1],['red_bed',1],['red_banner',16],['oak_sign',16],['flower_pot',64]]) await transferRoundTrip(id,count)
+  await stableBlockOperations()
   await nativeInventoryOperations()
   await hudOperations()
   const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/results.json')

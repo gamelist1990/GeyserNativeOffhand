@@ -28,7 +28,7 @@ def main():
     cache = ROOT / "build/mojang-source" / sha
     cache.mkdir(parents=True, exist_ok=True)
     inputs = {}
-    for name in ["ui/ui_common.json", "ui/hud_screen.json", "blocks.json", "textures/terrain_texture.json"]:
+    for name in ["ui/ui_common.json", "ui/hud_screen.json", "blocks.json", "textures/terrain_texture.json", "textures/item_texture.json"]:
         path = cache / name
         if not path.exists():
             data = fetch("https://raw.githubusercontent.com/" + REPO + "/" + sha + "/resource_pack/" + name)
@@ -48,6 +48,22 @@ def main():
         key = block.get("carried_textures", block.get("textures"))
         if not isinstance(terrain[key]["textures"], str):
             raise ValueError("Mojang's " + name + " texture definition changed")
+    item_textures = parse(inputs["textures/item_texture.json"])["texture_data"]
+    # Placeable items whose vanilla inventory icon is a sprite rather than
+    # the placed block. Resolve paths from the same current Mojang commit.
+    carried = {"redstone": "redstone_dust"}
+    icons_path = ROOT / "src/main/resources/icons.json"
+    atlas_path = ROOT / "resource-pack/textures/item_texture.json"
+    icons = json.loads(icons_path.read_text())
+    atlas = json.loads(atlas_path.read_text())
+    for java_name, vanilla_key in carried.items():
+        texture = item_textures[vanilla_key]["textures"]
+        if not isinstance(texture, str):
+            raise ValueError("Expected a vanilla carried item texture: " + java_name)
+        icons[java_name] = texture
+        atlas["texture_data"]["nativeoffhand_ui_" + java_name] = {"textures": texture}
+    icons_path.write_text(json.dumps(icons, indent=2) + "\n")
+    atlas_path.write_text(json.dumps(atlas, indent=2) + "\n")
     output = {
         "repository": "https://github.com/" + REPO, "ref": "main", "commit": sha,
         "commitDate": commit["commit"]["committer"]["date"],

@@ -1,0 +1,265 @@
+{
+  "version": "5.2.2",
+  "geometry": [
+    "consumable",
+    "consumable_animated"
+  ],
+  "animations": [
+    "animation.eatinganimation.consumable.position",
+    "animation.eatinganimation.consumable.eating"
+  ],
+  "samples": [
+    {
+      "time": 0,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "time": 0.125,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              16,
+              0,
+              48
+            ],
+            "position": [
+              -6,
+              1.5,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "time": 0.25,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              32,
+              0,
+              96
+            ],
+            "position": [
+              -12,
+              3,
+              0
+            ]
+          }
+        }
+      }
+    },
+    {
+      "time": 0.3125,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              32,
+              0,
+              96
+            ],
+            "position": [
+              -12,
+              3,
+              1.9999238461283426
+            ]
+          }
+        }
+      }
+    },
+    {
+      "time": 0.375,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              32,
+              0,
+              96
+            ],
+            "position": [
+              -12,
+              3,
+              -0.017453070996746048
+            ]
+          }
+        }
+      }
+    },
+    {
+      "time": 0.4375,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              32,
+              0,
+              96
+            ],
+            "position": [
+              -12,
+              3,
+              -1.9999238461283426
+            ]
+          }
+        }
+      }
+    },
+    {
+      "time": 0.5,
+      "bones": {
+        "animation.eatinganimation.consumable.position": {
+          "consumable": {
+            "rotation": [
+              38,
+              -120,
+              -63
+            ],
+            "position": [
+              -5.5,
+              23.5,
+              -5
+            ],
+            "scale": [
+              0.8
+            ]
+          }
+        },
+        "animation.eatinganimation.consumable.eating": {
+          "consumable_animated": {
+            "rotation": [
+              32,
+              0,
+              96
+            ],
+            "position": [
+              -12,
+              3,
+              0.017453070996745805
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

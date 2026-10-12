@@ -1,79 +1,155 @@
 package org.pexserver.nativeoffhand;
 
-import org.cloudburstmc.protocol.bedrock.data.inventory.*;
-import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.geysermc.geyser.inventory.GeyserItemStack;
-import org.geysermc.geyser.inventory.PlayerInventory;
 import org.geysermc.geyser.session.GeyserSession;
 
-/** Only Bedrock presentation changes; Java stacks and their components do not. */
+/** Picked cursor and matching merge targets share temporary move definitions. */
 final class NativeInventoryView {
-    private static final ThreadLocal<GeyserSession> SCOPE = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> MOVING = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> NATIVE = new ThreadLocal<>();
 
-    static boolean open(GeyserSession session) {
+    private static final java.util.Map<GeyserSession, java.util.Set<Integer>> MATCHING = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Set<GeyserSession> PICKED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    static void beforeRequest(GeyserSession session, org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket packet) {
+        for (var request : packet.getRequests()) for (var action : request.getActions()) {
+            var endpoints = endpoints(action);
+            if (endpoints.isEmpty()) continue;
+            var source = endpoints.get(0);
+            var destination = endpoints.get(1);
+            var cursor = org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType.CURSOR;
+            if (destination.getContainer() == cursor) pickedFrom(session, source);
+            else if (action instanceof org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.SwapAction
+                    && source.getContainer() == cursor) pickedFrom(session, destination);
+        }
+    }
+
+    private static void pickedFrom(GeyserSession session,
+            org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequestSlotData source) {
+        if (source.getContainer() == org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType.OFFHAND) PICKED.remove(session);
+        else PICKED.add(session);
+    }
+
+    private static java.util.List<org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequestSlotData>
+            endpoints(org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction action) {
+        if (action instanceof org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.TransferItemStackRequestAction move)
+            return java.util.List.of(move.getSource(), move.getDestination());
+        if (action instanceof org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.SwapAction swap)
+            return java.util.List.of(swap.getSource(), swap.getDestination());
+        return java.util.List.of();
+    }
+
+    static void afterRequest(GeyserSession session, org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket packet) {
         var holder = session.getInventoryHolder();
-        return holder != null && holder.inventory() instanceof PlayerInventory && holder.inventory().isDisplayed();
+        if (holder != null) {
+            var slots = new java.util.HashSet<Integer>();
+            for (var request : packet.getRequests()) for (var action : request.getActions()) {
+                for (var slot : endpoints(action)) {
+                    if (slot.getContainer() != org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType.CURSOR) {
+                        int javaSlot = holder.translator().bedrockSlotToJava(slot);
+                        if (javaSlot >= 0) slots.add(javaSlot);
+                    }
+                }
+            }
+            NativeHeldView.invalidateOffhand(session);
+            for (int slot : slots) holder.updateSlot(slot);
+        }
+        if (session.getPlayerInventory().getCursor().isEmpty()) PICKED.remove(session);
+        syncMatching(session);
+        org.geysermc.geyser.util.InventoryUtils.updateCursor(session);
+    }
+
+    static ItemData cursorData(GeyserSession session) {
+        var stack = session.getPlayerInventory().getCursor();
+        return PICKED.contains(session) ? movingData(session, stack) : nativeData(session, stack);
+    }
+
+    static void refresh(GeyserSession session) {
+        if (session.getPlayerInventory().getCursor().isEmpty() && MATCHING.containsKey(session)) {
+            PICKED.remove(session);
+            syncMatching(session);
+        }
+    }
+
+    static void rememberSlot(GeyserSession session, int javaSlot, GeyserItemStack stack) {
+        if (matchesCursor(session, stack))
+            MATCHING.computeIfAbsent(session, ignored -> new java.util.HashSet<>()).add(javaSlot);
+    }
+
+    static boolean matchesCursor(GeyserSession session, GeyserItemStack stack) {
+        var cursor = session.getPlayerInventory().getCursor();
+        return PICKED.contains(session) && !cursor.isEmpty() && !stack.isEmpty()
+            && cursor.asItem().javaId() == stack.asItem().javaId()
+            && NativeItemCatalog.hasAlias(cursor.asItem().javaKey().asString());
+    }
+
+    static ItemData slotData(GeyserSession session, GeyserItemStack stack, ItemData sent) {
+        if (!matchesCursor(session, stack)) return sent;
+        return movingData(session, stack).toBuilder().count(sent.getCount())
+            .netId(sent.getNetId()).usingNetId(sent.isUsingNetId()).build();
+    }
+
+    static ItemData slotData(GeyserSession session, int javaSlot, GeyserItemStack stack, ItemData sent) {
+        // Pocket selection is local to the client. Make inventory-only move
+        // definitions available to iPad taps, while keeping the actively held
+        // hotbar slot and all equipment packets on their native definitions.
+        boolean ipadMoveSlot = IpadSlotProbe.inventoryOpen(session)
+            && javaSlot >= 9 && javaSlot <= 45
+            && javaSlot != 36 + session.getPlayerInventory().getHeldItemSlot();
+        if (!ipadMoveSlot) return slotData(session, stack, sent);
+        return movingData(session, stack).toBuilder().count(sent.getCount())
+            .netId(sent.getNetId()).usingNetId(sent.isUsingNetId()).build();
+    }
+
+    private static void syncMatching(GeyserSession session) {
+        var inventory = session.getPlayerInventory();
+        var current = new java.util.HashSet<Integer>();
+        for (int slot = 9; slot <= 45; slot++) {
+            if (matchesCursor(session, inventory.getItem(slot))) current.add(slot);
+        }
+        var previous = MATCHING.put(session, current);
+        var update = new java.util.HashSet<>(current);
+        if (previous != null) update.addAll(previous);
+        NativeHeldView.invalidateOffhand(session);
+        for (int slot : update) session.getPlayerInventoryHolder().updateSlot(slot);
+        if (current.isEmpty()) MATCHING.remove(session);
+        // Inventory aliases must not become right-hand equipment definitions.
+        if (!update.isEmpty()) {
+            var equipment = new org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket();
+            equipment.setRuntimeEntityId(session.getPlayerEntity().geyserId());
+            equipment.setItem(nativeData(session, inventory.getItemInHand()));
+            equipment.setInventorySlot(inventory.getHeldItemSlot());
+            equipment.setHotbarSlot(inventory.getHeldItemSlot());
+            equipment.setContainerId(org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId.INVENTORY);
+            session.sendUpstreamPacket(equipment);
+        }
+    }
+
+    private static ItemData movingData(GeyserSession session, GeyserItemStack stack) {
+        var previous = MOVING.get();
+        MOVING.set(true);
+        try { return stack.getItemData(session); }
+        finally { if (previous == null) MOVING.remove(); else MOVING.set(previous); }
+    }
+
+    static ItemData nativeData(GeyserSession session, GeyserItemStack stack) {
+        var previous = NATIVE.get();
+        NATIVE.set(true);
+        try { return stack.getItemData(session); }
+        finally { if (previous == null) NATIVE.remove(); else NATIVE.set(previous); }
     }
 
     static boolean aliasesEnabled() {
-        var session = SCOPE.get();
-        return session != null && open(session);
+        return Boolean.TRUE.equals(MOVING.get()) && !Boolean.TRUE.equals(NATIVE.get());
     }
 
     static void translate(GeyserSession session, Runnable action) {
-        var old = SCOPE.get();
-        boolean wasOpen = open(session);
-        SCOPE.set(session);
-        try { action.run(); }
-        finally {
-            if (old == null) SCOPE.remove(); else SCOPE.set(old);
-        }
-        if (wasOpen && !open(session)) restoreNativeView(session);
+        NativeHeldView.install(session);
+        action.run();
     }
 
-    private static boolean aliased(GeyserItemStack stack) {
-        return !stack.isEmpty() && NativeItemCatalog.hasAlias(stack.asItem().javaKey().asString());
-    }
-
-    private static void clearSlot(GeyserSession session, int container, int slot) {
-        var packet = new InventorySlotPacket();
-        packet.setContainerId(container);
-        packet.setSlot(slot);
-        packet.setItem(ItemData.AIR);
-        session.sendUpstreamPacket(packet);
-    }
-
-    private static void equip(GeyserSession session, ItemData item, int container, int slot) {
-        var packet = new MobEquipmentPacket();
-        packet.setRuntimeEntityId(session.getPlayerEntity().geyserId());
-        packet.setItem(item);
-        packet.setContainerId(container);
-        packet.setInventorySlot(slot);
-        packet.setHotbarSlot(container == ContainerId.OFFHAND ? -1 : slot);
-        session.sendUpstreamPacket(packet);
-    }
-
-    static void restoreNativeView(GeyserSession session) {
-        var inventory = session.getPlayerInventory();
-        int hotbar = inventory.getHeldItemSlot();
-        boolean main = aliased(inventory.getItemInHand());
-        boolean off = aliased(inventory.getOffhand());
-        if (main) clearSlot(session, ContainerId.INVENTORY, hotbar);
-        if (off) {
-            clearSlot(session, ContainerId.OFFHAND, 0);
-            equip(session, ItemData.AIR, ContainerId.OFFHAND, 0);
-        }
-        // An alias and its native representation must not reuse a cached
-        // Bedrock render identity. Assign fresh protocol-only stack IDs.
-        // This does not replace, split, rename or otherwise mutate Java items.
-        for (int slot = 0; slot < inventory.getSize(); slot++) {
-            var stack = inventory.getItem(slot);
-            if (aliased(stack)) stack.setNetId(session.getNextItemNetId());
-        }
-        session.getPlayerInventoryHolder().updateInventory();
-        if (main) equip(session, inventory.getItemInHand().getItemData(session), ContainerId.INVENTORY, hotbar);
-        if (off) equip(session, inventory.getOffhand().getItemData(session), ContainerId.OFFHAND, 0);
-    }
-
+    static void forget(GeyserSession session) { IpadSlotProbe.forget(session); PICKED.remove(session); MATCHING.remove(session); NativeHeldView.forget(session); }
+    static void clear() { IpadSlotProbe.clear(); PICKED.clear(); MATCHING.clear(); NativeHeldView.clear(); }
     private NativeInventoryView() {}
 }

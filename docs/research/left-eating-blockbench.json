@@ -1,0 +1,302 @@
+{
+  "version": "5.2.2",
+  "animationTargets": [
+    "leftitem"
+  ],
+  "samples": [
+    {
+      "mode": "first_person",
+      "time": 0,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "first_person",
+      "time": 0.125,
+      "position": [
+        6,
+        1.5,
+        0
+      ],
+      "rotation": [
+        16,
+        0,
+        -48
+      ]
+    },
+    {
+      "mode": "first_person",
+      "time": 0.25,
+      "position": [
+        12,
+        3,
+        0
+      ],
+      "rotation": [
+        32,
+        0,
+        -96
+      ]
+    },
+    {
+      "mode": "first_person",
+      "time": 0.3125,
+      "position": [
+        12,
+        3,
+        1.9999238461283426
+      ],
+      "rotation": [
+        32,
+        0,
+        -96
+      ]
+    },
+    {
+      "mode": "first_person",
+      "time": 0.375,
+      "position": [
+        12,
+        3,
+        -0.017453070996746048
+      ],
+      "rotation": [
+        32,
+        0,
+        -96
+      ]
+    },
+    {
+      "mode": "first_person",
+      "time": 0.4375,
+      "position": [
+        12,
+        3,
+        -1.9999238461283426
+      ],
+      "rotation": [
+        32,
+        0,
+        -96
+      ]
+    },
+    {
+      "mode": "first_person",
+      "time": 0.5,
+      "position": [
+        12,
+        3,
+        0.017453070996745805
+      ],
+      "rotation": [
+        32,
+        0,
+        -96
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0.125,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0.25,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0.3125,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0.375,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0.4375,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "third_person",
+      "time": 0.5,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0.125,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0.25,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0.3125,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0.375,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0.4375,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "paperdoll",
+      "time": 0.5,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}
