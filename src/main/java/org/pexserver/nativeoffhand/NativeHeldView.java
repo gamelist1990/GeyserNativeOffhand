@@ -65,6 +65,11 @@ final class NativeHeldView extends UpstreamSession {
     }
 
     private BedrockPacket present(BedrockPacket packet) {
+        if (packet instanceof ContainerOpenPacket open) {
+            NativeInventoryView.inventoryScreen(owner, open.getType() == ContainerType.INVENTORY);
+        } else if (packet instanceof ContainerClosePacket) {
+            NativeInventoryView.inventoryScreen(owner, false);
+        }
         if (packet instanceof InventoryContentPacket content && content.getContainerId() == ContainerId.INVENTORY) {
             var transformed = content.clone();
             var contents = new ArrayList<>(content.getContents());

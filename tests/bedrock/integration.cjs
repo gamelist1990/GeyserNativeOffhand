@@ -7,6 +7,7 @@ const nbt = require('prismarine-nbt')
 const settings = JSON.parse(fs.readFileSync(process.env.TEST_SETTINGS || path.resolve(__dirname, '../../.integration/test-settings.json')))
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 const checks = []
+const touchOnly = process.env.TEST_TOUCH_ONLY === "1"
 const locale = process.env.TEST_LOCALE || "ja_JP"
 const propertySchemas = []
 const propertyPackets = []
@@ -307,7 +308,7 @@ async function stableBlockOperations() {
     // The held stack always uses the native definition; move aliases belong
     // only to an inventory-picked cursor and matching merge targets.
     assert.equal(state.offhand.metadata,original.metadata)
-    assert(!state.equipment.slice(equipmentStart).some(p=>(p.window_id===119 || p.window_id==='offhand') && !p.item.network_id),'No synthetic AIR equipment on close')
+    assert(!state.equipment.slice(equipmentStart).some(p=>(p.window_id===119 || p.window_id==='offhand' || p.window_id==='off_hand') && !p.item.network_id),'No synthetic AIR equipment on close')
     check('Closing inventory preserves OFFHAND '+id+' identity without AIR or model replacement')
     await setMain('diamond_sword')
     await cmd('setblock 3 65 1 minecraft:air')
@@ -533,7 +534,7 @@ async function main() {
   savedDifficulty=(await cmd('difficulty')).match(/\b(peaceful|easy|normal|hard)\b/i)?.[1]?.toLowerCase()
   assert(savedDifficulty,'Capture difficulty before using the isolated test server')
   await cmd('whitelist off')
-  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,skinData:{LanguageCode:locale},transport:'raknet',conLog:()=>{}})
+  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,skinData:{LanguageCode:locale,...(touchOnly ? {DeviceOS:2,CurrentInputMode:2,DefaultInputMode:2,UIProfile:process.env.TEST_TOUCH_CLASSIC==='1' ? 0 : 1} : {})},transport:'raknet',conLog:()=>{}})
   client.prependOnceListener('session',profile=>{profile.xuid='31001'})
   client.on('error',err=>{state.error=err})
   client.on('disconnect',p=>{if(!state.closing)state.error=Error(JSON.stringify(p))})
@@ -542,12 +543,12 @@ async function main() {
   client.on('inventory_content',p=>{
     debug('DEBUG_CONTENT',p.window_id,JSON.stringify(p.input.slice(0,2)))
     if(p.window_id===0||p.window_id==='inventory'){state.inventory=p.input;p.input.forEach((_,i)=>revisions.set('inventory:'+i,++revision))}
-    if(p.window_id===119||p.window_id==='offhand'){state.offhand=p.input[0];revisions.set('offhand:1',++revision)}
+    if(p.window_id===119||p.window_id==='offhand' || p.window_id==='off_hand'){state.offhand=p.input[0];revisions.set('offhand:1',++revision)}
   })
   client.on('inventory_slot',p=>{
     debug('DEBUG_SLOT',p.window_id,p.slot,JSON.stringify(p.item))
     if(p.window_id===0||p.window_id==='inventory'){state.inventory[p.slot]=p.item;revisions.set('inventory:'+p.slot,++revision)}
-    if(p.window_id===119||p.window_id==='offhand'){state.offhand=p.item;revisions.set('offhand:1',++revision)}
+    if(p.window_id===119||p.window_id==='offhand' || p.window_id==='off_hand'){state.offhand=p.item;revisions.set('offhand:1',++revision)}
     if((p.window_id===124||p.window_id==='ui') && p.slot===0){state.cursor=p.item;revisions.set('cursor:0',++revision)}
   })
   client.on('item_stack_response',p=>{state.responses.push(p);debug('DEBUG_STACK',JSON.stringify(p))})
@@ -569,13 +570,46 @@ async function main() {
     state.spawned=true
     inputTimer=setInterval(()=>client.queue('player_auth_input',{
       pitch:state.pitch||0,yaw:state.yaw||0,head_yaw:state.yaw||0,position:state.position,move_vector:{x:0,z:0},
-      input_data:['handled_teleport','vertical_collision',...(state.sneaking ? ['sneaking','start_sneaking'] : ['stop_sneaking'])],input_mode:'mouse',play_mode:'normal',
+      input_data:['handled_teleport','vertical_collision',...(state.sneaking ? ['sneaking','start_sneaking'] : ['stop_sneaking'])],input_mode:touchOnly ? 'touch' : 'mouse',play_mode:'normal',
       interaction_model:'crosshair',interact_rotation:{x:state.pitch||0,z:state.yaw||0},tick:++tick,
       delta:{x:0,y:0,z:0},analogue_move_vector:{x:0,z:0},camera_orientation:{x:0,y:0,z:1},raw_move_vector:{x:0,z:0}
     }),50)
   })
   await until('spawn',()=>state.spawned && state.registry.length,60000)
   check('Bedrock 1.26.51 joined actual Paper/Geyser server')
+  if(touchOnly) {
+    await cmd('clear NativeOH')
+    for(const [id,count] of [['stone',8],['apple',4],['diamond_sword',1],['lantern',8]]) {
+      await setMain(id,count);await setOffhand('air')
+      const before={...state.inventory[0]},movable=uiDefinition(id) || nativeDefinition(id)
+      state.opened=null
+      client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
+      await until('touch movable '+id,()=>state.opened && state.inventory[0]?.network_id===movable.runtime_id)
+      assert.equal(state.openedSnapshot.inventory[0].network_id,movable.runtime_id)
+      assert.equal(state.inventory[0].stack_id,before.stack_id)
+      assert(!state.cursor.network_id)
+      await nativeAction('place',count,'hotbar',0,'offhand',1)
+      await until('touch offhand alias',()=>state.offhand.network_id===movable.runtime_id && state.offhand.count===count)
+      await checkJavaCount('equipment.offhand.count',count)
+      assert(!state.cursor.network_id)
+      if(count>1) {
+        await nativeAction('place',2,'offhand',1,'hotbar',0)
+        await nativeAction('place',1,'hotbar',0,'offhand',1)
+        await checkJavaCount('equipment.offhand.count',count-1)
+      } else {
+        await nativeAction('swap',0,'offhand',1,'hotbar',0)
+        await nativeAction('swap',0,'offhand',1,'hotbar',0)
+      }
+      const close=state.closes.length
+      client.queue('container_close',{window_id:state.opened.window_id,server:false})
+      await until('touch closed native',()=>state.closes.length>close && state.offhand.network_id===nativeDefinition(id).runtime_id)
+      assert(!state.cursor.network_id)
+      if(uiDefinition(id)) assert(!state.equipment.some(p=>p.item.network_id===uiDefinition(id).runtime_id))
+      check('Touch selection direct transfer, merge/swap and native close: '+id)
+    }
+    fs.writeFileSync(process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/mobile-functional.json'),JSON.stringify({timestamp:new Date().toISOString(),checks,totalChecks:checks.length,limitations:['Headless touch-profile protocol checks; iPad tap UI needs retail verification.']},null,2)+'\n')
+    return
+  }
   if(process.env.TEST_PLACEMENT_RATE_ONLY==='1') {
     await placementRateOperations()
     const output=process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/placement-rate-functional.json')

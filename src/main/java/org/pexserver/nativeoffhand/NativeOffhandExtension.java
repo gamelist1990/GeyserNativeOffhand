@@ -84,7 +84,7 @@ public final class NativeOffhandExtension implements Extension {
             hookHud(ClientboundSetSubtitleTextPacket.class);
             hookHud(ClientboundSetTitlesAnimationPacket.class);
             hookHud(ClientboundClearTitlesPacket.class);
-            logger().info("Native renderer rewrite enabled; cursor-only item definitions; vanilla held mappings; same-connection Paper use routing.");
+            logger().info("Native renderer rewrite enabled; cursor/touch inventory definitions; vanilla held mappings; same-connection Paper use routing.");
         } catch (Throwable error) {
             restoreAll();
             logger().error("Native offhand initialization failed: " + error);

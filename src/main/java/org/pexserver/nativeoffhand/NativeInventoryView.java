@@ -4,13 +4,30 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.geysermc.geyser.inventory.GeyserItemStack;
 import org.geysermc.geyser.session.GeyserSession;
 
-/** Picked cursor and matching merge targets share temporary move definitions. */
+/** Cursor merges and touch inventory screens share temporary move definitions. */
 final class NativeInventoryView {
     private static final ThreadLocal<Boolean> MOVING = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> NATIVE = new ThreadLocal<>();
 
     private static final java.util.Map<GeyserSession, java.util.Set<Integer>> MATCHING = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Set<GeyserSession> PICKED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static final java.util.Set<GeyserSession> TOUCH_OPEN = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    static void inventoryScreen(GeyserSession session, boolean playerInventory) {
+        var input = session.getInputCache().getInputMode();
+        var client = session.getClientData();
+        boolean touch = input == org.cloudburstmc.protocol.bedrock.data.InputMode.TOUCH
+            || (client != null && (client.getUiProfile() == org.geysermc.floodgate.util.UiProfile.POCKET
+                || (input == null || input == org.cloudburstmc.protocol.bedrock.data.InputMode.UNDEFINED)
+                    && client.getCurrentInputMode() == org.geysermc.floodgate.util.InputMode.TOUCH));
+        boolean changed = playerInventory && touch ? TOUCH_OPEN.add(session) : TOUCH_OPEN.remove(session);
+        // Send movable slots before ContainerOpen: touch selection is client-local.
+        if (changed) {
+            NativeHeldView.invalidateOffhand(session);
+            session.getPlayerInventoryHolder().updateInventory();
+        }
+    }
 
     static void beforeRequest(GeyserSession session, org.cloudburstmc.protocol.bedrock.packet.ItemStackRequestPacket packet) {
         for (var request : packet.getRequests()) for (var action : request.getActions()) {
@@ -62,7 +79,7 @@ final class NativeInventoryView {
 
     static ItemData cursorData(GeyserSession session) {
         var stack = session.getPlayerInventory().getCursor();
-        return PICKED.contains(session) ? movingData(session, stack) : nativeData(session, stack);
+        return (PICKED.contains(session) || TOUCH_OPEN.contains(session)) ? movingData(session, stack) : nativeData(session, stack);
     }
 
     static void refresh(GeyserSession session) {
@@ -85,7 +102,7 @@ final class NativeInventoryView {
     }
 
     static ItemData slotData(GeyserSession session, GeyserItemStack stack, ItemData sent) {
-        if (!matchesCursor(session, stack)) return sent;
+        if (!TOUCH_OPEN.contains(session) && !matchesCursor(session, stack)) return sent;
         return movingData(session, stack).toBuilder().count(sent.getCount())
             .netId(sent.getNetId()).usingNetId(sent.isUsingNetId()).build();
     }
@@ -137,7 +154,7 @@ final class NativeInventoryView {
         action.run();
     }
 
-    static void forget(GeyserSession session) { PICKED.remove(session); MATCHING.remove(session); NativeHeldView.forget(session); }
-    static void clear() { PICKED.clear(); MATCHING.clear(); NativeHeldView.clear(); }
+    static void forget(GeyserSession session) { TOUCH_OPEN.remove(session); PICKED.remove(session); MATCHING.remove(session); NativeHeldView.forget(session); }
+    static void clear() { TOUCH_OPEN.clear(); PICKED.clear(); MATCHING.clear(); NativeHeldView.clear(); }
     private NativeInventoryView() {}
 }
