@@ -1,0 +1,393 @@
+{
+  "timestamp": "2026-10-12T00:35:55.553Z",
+  "extensionVersion": "0.2.24-rewrite.24",
+  "resourcePackVersion": [
+    0,
+    2,
+    24
+  ],
+  "bedrockVersion": "1.26.51",
+  "checks": [
+    {
+      "label": "Bedrock 1.26.51 joined actual Paper/Geyser server"
+    },
+    {
+      "label": "Data-driven native items and inventory-only aliases permit offhand",
+      "evidence": 1625
+    },
+    {
+      "label": "Inventory tool aliases retain handheld rendering; ordinary items and blocks keep their own pose",
+      "evidence": {
+        "handheld": 13,
+        "ordinary": 6
+      }
+    },
+    {
+      "label": "Independent eating property is registered without custom held definitions"
+    },
+    {
+      "label": "Shield keeps its vanilla identifier for native rendering"
+    },
+    {
+      "label": "Stone retains ItemVersion.NONE, original ID and block state outside the inventory"
+    },
+    {
+      "label": "Stone display name is localized for the client",
+      "evidence": "§r§f石"
+    },
+    {
+      "label": "A user custom item name retains priority over the localized fallback"
+    },
+    {
+      "label": "Native ItemStackRequest moved torches from hotbar into OFFHAND",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:torch\", count: 8}"
+    },
+    {
+      "label": "Out-of-range offhand interaction is rejected without consumption"
+    },
+    {
+      "label": "Forged held definition is rejected without consumption"
+    },
+    {
+      "label": "Empty main hand places exactly one native offhand torch",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 7}}"
+    },
+    {
+      "label": "Sword in main hand allows offhand torch placement",
+      "evidence": "Test passed"
+    },
+    {
+      "label": "Useful main hand retains priority; no offhand duplicate",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:torch\", count: 6}}"
+    },
+    {
+      "label": "Native offhand water bucket places source water and returns empty bucket",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:bucket\", count: 1}}"
+    },
+    {
+      "label": "Native offhand air-use consumes one ender pearl",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:ender_pearl\", count: 2}}"
+    },
+    {
+      "label": "Native offhand potion completes timed use and stops its independent animation",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:glass_bottle\", count: 1}}"
+    },
+    {
+      "label": "Native offhand food completes timed use",
+      "evidence": "NativeOH has the following entity data: {}"
+    },
+    {
+      "label": "Left-hand food/drink animation starts once and returns to idle on completion"
+    },
+    {
+      "label": "Replacing the offhand during consumption cancels the left-hand animation"
+    },
+    {
+      "label": "After eating, a sword in main hand allows native offhand stone placement",
+      "evidence": "NativeOH has the following entity data: {offhand: {id: \"minecraft:stone\", count: 3}}"
+    },
+    {
+      "label": "After eating, main-hand stone placement keeps priority over offhand food"
+    },
+    {
+      "label": "Native inventory offhand round trip: shield",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:shield\", count: 1}"
+    },
+    {
+      "label": "HUD keeps native lantern AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:lantern",
+        "itemAux": "-13631488",
+        "titlePayload": "-13631488",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: lantern",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:lantern\", count: 16}"
+    },
+    {
+      "label": "HUD keeps native soul_lantern AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:soul_lantern",
+        "itemAux": "-17629184",
+        "titlePayload": "-17629184",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_lantern",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:soul_lantern\", count: 16}"
+    },
+    {
+      "label": "HUD keeps native soul_torch AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:soul_torch",
+        "itemAux": "-17563648",
+        "titlePayload": "-17563648",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: soul_torch",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:soul_torch\", count: 16}"
+    },
+    {
+      "label": "HUD keeps native stone AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:stone",
+        "itemAux": "65536",
+        "titlePayload": "B65536",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: stone",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:stone\", count: 16, components: {\"minecraft:custom_name\": \"Movable named stone\"}}"
+    },
+    {
+      "label": "Native inventory offhand round trip: stone_bricks",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:stone_bricks\", count: 16}"
+    },
+    {
+      "label": "Native inventory offhand round trip: diamond_sword",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:diamond_sword\", count: 1}"
+    },
+    {
+      "label": "HUD keeps native iron_axe AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:iron_axe",
+        "itemAux": "19660800",
+        "titlePayload": "B19660800",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: iron_axe",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:iron_axe\", count: 1}"
+    },
+    {
+      "label": "HUD keeps native apple AUX while the inventory uses a move alias",
+      "evidence": {
+        "identifier": "minecraft:apple",
+        "itemAux": "57802752",
+        "titlePayload": "B57802752",
+        "countText": "4"
+      }
+    },
+    {
+      "label": "Native inventory offhand round trip: apple",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:apple\", count: 4}"
+    },
+    {
+      "label": "Native inventory offhand round trip: bread",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:bread\", count: 4}"
+    },
+    {
+      "label": "Native inventory offhand round trip: water_bucket",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:water_bucket\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: written_book",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:written_book\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: oak_planks",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:oak_planks\", count: 64}"
+    },
+    {
+      "label": "Native inventory offhand round trip: red_wool",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:red_wool\", count: 64}"
+    },
+    {
+      "label": "Native inventory offhand round trip: glass",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:glass\", count: 64}"
+    },
+    {
+      "label": "Native inventory offhand round trip: oak_fence",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:oak_fence\", count: 64}"
+    },
+    {
+      "label": "Native inventory offhand round trip: oak_stairs",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:oak_stairs\", count: 64}"
+    },
+    {
+      "label": "Native inventory offhand round trip: chest",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:chest\", count: 64}"
+    },
+    {
+      "label": "Native inventory offhand round trip: white_shulker_box",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:white_shulker_box\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: red_bed",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:red_bed\", count: 1}"
+    },
+    {
+      "label": "Native inventory offhand round trip: red_banner",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:red_banner\", count: 16}"
+    },
+    {
+      "label": "Native inventory offhand round trip: oak_sign",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:oak_sign\", count: 16}"
+    },
+    {
+      "label": "Native inventory offhand round trip: flower_pot",
+      "evidence": "NativeOH has the following entity data: {id: \"minecraft:flower_pot\", count: 64}"
+    },
+    {
+      "label": "Closing inventory restores native OFFHAND block stone with preserved state and fresh render identity"
+    },
+    {
+      "label": "OFFHAND equipment refresh sends AIR then native stone with its block state"
+    },
+    {
+      "label": "Inventory-transferred OFFHAND stone places once after native restoration"
+    },
+    {
+      "label": "Reopening inventory restores movable stone and returns remaining count"
+    },
+    {
+      "label": "Closing inventory restores native OFFHAND block oak_stairs with preserved state and fresh render identity"
+    },
+    {
+      "label": "OFFHAND equipment refresh sends AIR then native oak_stairs with its block state"
+    },
+    {
+      "label": "Inventory-transferred OFFHAND oak_stairs places once after native restoration"
+    },
+    {
+      "label": "Reopening inventory restores movable oak_stairs and returns remaining count"
+    },
+    {
+      "label": "Ordinary inventory slots directly place part of a stack into OFFHAND"
+    },
+    {
+      "label": "Ordinary inventory merges a matching stack into occupied OFFHAND without duplication"
+    },
+    {
+      "label": "Native cursor splits OFFHAND and returns items to an ordinary inventory slot"
+    },
+    {
+      "label": "Native inventory swaps food with a block already held in OFFHAND"
+    },
+    {
+      "label": "OFFHAND inventory swap preserves sword damage, enchantment and custom name after closing"
+    },
+    {
+      "label": "Reopening native inventory returns OFFHAND through cursor and preserves all remaining items"
+    },
+    {
+      "label": "Native HUD receives block AUX and stack count",
+      "evidence": {
+        "identifier": "minecraft:stone",
+        "itemAux": "65536",
+        "titlePayload": "B65536",
+        "countText": "64"
+      }
+    },
+    {
+      "label": "Native HUD replaces the block AUX with food",
+      "evidence": {
+        "identifier": "minecraft:bread",
+        "itemAux": "17104896",
+        "titlePayload": "B17104896",
+        "countText": "7"
+      }
+    },
+    {
+      "label": "Native HUD preserves a colored block data value",
+      "evidence": {
+        "identifier": "minecraft:red_wool",
+        "itemAux": "-36438016",
+        "titlePayload": "B-36438016",
+        "countText": "9"
+      }
+    },
+    {
+      "label": "Native HUD sends signed AUX for lantern",
+      "evidence": {
+        "identifier": "minecraft:lantern",
+        "itemAux": "-13631488",
+        "titlePayload": "-13631488",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Native HUD sends signed AUX for soul_lantern",
+      "evidence": {
+        "identifier": "minecraft:soul_lantern",
+        "itemAux": "-17629184",
+        "titlePayload": "-17629184",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Native HUD sends signed AUX for soul_torch",
+      "evidence": {
+        "identifier": "minecraft:soul_torch",
+        "itemAux": "-17563648",
+        "titlePayload": "-17563648",
+        "countText": "16"
+      }
+    },
+    {
+      "label": "Diagnostic B fallback keeps apple native AUX without a guessed local-ID shift",
+      "evidence": {
+        "identifier": "minecraft:apple",
+        "itemAux": "57802752",
+        "titlePayload": "B57802752",
+        "countText": "2"
+      }
+    },
+    {
+      "label": "One item sends empty subtitle to hide the count",
+      "evidence": {
+        "identifier": "minecraft:bread",
+        "itemAux": "17104896",
+        "titlePayload": "B17104896",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Empty OFFHAND sends zero AUX to hide the slot",
+      "evidence": {
+        "identifier": "minecraft:air",
+        "itemAux": "0",
+        "titlePayload": "0",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Native HUD tool AUX leaves native equipment unchanged",
+      "evidence": {
+        "identifier": "minecraft:iron_axe",
+        "itemAux": "19660800",
+        "titlePayload": "B19660800",
+        "countText": ""
+      }
+    },
+    {
+      "label": "Unchanged HUD data refreshes before the live title binding expires"
+    },
+    {
+      "label": "Server title/subtitle cannot replace the native HUD data; actionbar is preserved"
+    },
+    {
+      "label": "Server title reset refreshes rather than clearing the native HUD slot",
+      "evidence": {
+        "identifier": "minecraft:stone",
+        "itemAux": "65536",
+        "titlePayload": "B65536",
+        "countText": "3"
+      }
+    }
+  ],
+  "totalChecks": 78,
+  "limitations": [
+    "Headless packet tests do not render or automate the Bedrock inventory UI.",
+    "Retail inventory drag restrictions and held-item appearance require a retail client test.",
+    "Retail left-hand motion and inventory-transition flicker have not been visually verified.",
+    "Packet tests used the same Java changes before the final animation perspective gate changed from attachable context to vanilla player variables. Final animation expressions were separately checked in Blockbench."
+  ]
+}

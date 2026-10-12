@@ -5,10 +5,72 @@ import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.geysermc.geyser.inventory.GeyserItemStack;
 import org.geysermc.geyser.inventory.PlayerInventory;
 import org.geysermc.geyser.session.GeyserSession;
+import org.geysermc.geyser.inventory.InventoryHolder;
+import org.geysermc.geyser.translator.inventory.PlayerInventoryTranslator;
+import org.geysermc.geyser.translator.inventory.InventoryTranslator;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Only Bedrock presentation changes; Java stacks and their components do not. */
 final class NativeInventoryView {
     private static final ThreadLocal<GeyserSession> SCOPE = new ThreadLocal<>();
+
+    private static final ThreadLocal<Boolean> PREPARING = new ThreadLocal<>();
+    private record Installed(InventoryTranslator<?> original, InventoryTranslator<?> replacement) {}
+    private static final Map<InventoryHolder<?>, Installed> ORIGINALS = new ConcurrentHashMap<>();
+    private static final Field TRANSLATOR = translatorField();
+
+    private static Field translatorField() {
+        try {
+            var field = InventoryHolder.class.getDeclaredField("translator");
+            field.setAccessible(true);
+            return field;
+        } catch (ReflectiveOperationException error) {
+            throw new IllegalStateException("Cannot install inventory pre-open presentation", error);
+        }
+    }
+
+    private static void install(GeyserSession session) {
+        var holder = session.getPlayerInventoryHolder();
+        if (ORIGINALS.containsKey(holder)) return;
+        try {
+            var original = (InventoryTranslator<?>) TRANSLATOR.get(holder);
+            // Do not replace another extension's inventory translator.
+            if (original.getClass() != PlayerInventoryTranslator.class) return;
+            var replacement = new PlayerInventoryTranslator() {
+                @Override public void openInventory(GeyserSession owner, PlayerInventory inventory) {
+                    // Publish move-capable definitions BEFORE ContainerOpen, rather
+                    // than letting the first inventory frame use native definitions.
+                    var scope = SCOPE.get();
+                    var preparing = PREPARING.get();
+                    SCOPE.set(owner);
+                    PREPARING.set(true);
+                    try { super.updateInventory(owner, inventory); }
+                    finally {
+                        if (scope == null) SCOPE.remove(); else SCOPE.set(scope);
+                        if (preparing == null) PREPARING.remove(); else PREPARING.set(preparing);
+                    }
+                    super.openInventory(owner, inventory);
+                }
+            };
+            TRANSLATOR.set(holder, replacement);
+            ORIGINALS.put(holder, new Installed(original, replacement));
+        } catch (IllegalAccessException error) {
+            throw new IllegalStateException("Cannot prepare inventory before opening", error);
+        }
+    }
+
+    static void forget(GeyserSession session) { restore(session.getPlayerInventoryHolder()); }
+    static void clear() { for (var holder : ORIGINALS.keySet()) restore(holder); }
+    private static void restore(InventoryHolder<?> holder) {
+        var installed = ORIGINALS.remove(holder);
+        if (installed == null) return;
+        try {
+            if (TRANSLATOR.get(holder) == installed.replacement()) TRANSLATOR.set(holder, installed.original());
+        }
+        catch (IllegalAccessException error) { throw new IllegalStateException("Cannot restore inventory translator", error); }
+    }
 
     static boolean open(GeyserSession session) {
         var holder = session.getInventoryHolder();
@@ -17,10 +79,11 @@ final class NativeInventoryView {
 
     static boolean aliasesEnabled() {
         var session = SCOPE.get();
-        return session != null && open(session);
+        return session != null && (Boolean.TRUE.equals(PREPARING.get()) || open(session));
     }
 
     static void translate(GeyserSession session, Runnable action) {
+        install(session);
         var old = SCOPE.get();
         boolean wasOpen = open(session);
         SCOPE.set(session);

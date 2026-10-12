@@ -69,6 +69,7 @@ async function transferRoundTrip(id,count) {
   client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
   await until('inventory open',()=>state.opened)
   await until('inventory definition '+id,()=>state.inventory[0]?.network_id===(ui || definition(id)).runtime_id)
+  assert.equal(state.openedSnapshot.inventory[0]?.network_id,(ui || definition(id)).runtime_id,id+' alias must arrive before ContainerOpen')
   const from=state.inventory[0],forward=stackId++
   assert.equal(from.stack_id,original.stack_id,id+' presentation must retain stack ID')
   assert.equal(from.count,count)
@@ -324,7 +325,7 @@ async function main() {
   client.on('set_title',p=>{state.titles.push({...p,received:Date.now()});debug('DEBUG_TITLE',p)})
   client.on('mob_equipment',p=>{if(String(p.runtime_entity_id)===String(state.runtimeId))state.equipment.push(p)})
   client.on('container_close',p=>state.closes.push(p))
-  client.on('container_open',p=>{state.opened=p;debug('OPENED',p)})
+  client.on('container_open',p=>{state.openedSnapshot={inventory:state.inventory.map(i=>({...i})),offhand:{...state.offhand}};state.opened=p;debug('OPENED',p)})
   client.on('move_player',p=>{
     debug('DEBUG_MOVE',JSON.stringify(p,(_,v)=>typeof v==='bigint'?v.toString():v))
     if(String(p.runtime_id)===String(state.runtimeId) || String(p.runtime_entity_id)===String(state.runtimeId))state.position=p.position
@@ -374,8 +375,14 @@ async function main() {
   }
   check('Inventory tool aliases retain handheld rendering; ordinary items and blocks keep their own pose', {handheld:handheldAliases.length,ordinary:6})
   assert(!state.registry.some(i=>i.name.startsWith('nativeoffhand:')),'No custom held item definitions')
-  assert(!propertySchemas.some(s=>s.type==='minecraft:player' && s.properties.some(p=>p.name.startsWith('nativeoffhand:'))),'No custom player pose or consume properties')
-  check('Rewrite registers no custom held items or player pose/consume properties')
+  const playerSchema=propertySchemas.find(s=>s.type==='minecraft:player')
+  assert(playerSchema,'Player property schema')
+  const eatingIndex=playerSchema.properties.filter(p=>p.type===0).findIndex(p=>p.name==='nativeoffhand:eating')
+  assert(eatingIndex>=0,'Dedicated left-hand eating property '+JSON.stringify(playerSchema))
+  assert.equal(playerSchema.properties.filter(p=>p.name.startsWith('nativeoffhand:')).length,1)
+  const eatingValue=()=>propertyPackets.filter(p=>String(p.runtime_entity_id)===String(state.runtimeId))
+    .flatMap(p=>p.properties?.ints || []).findLast(p=>p.index===eatingIndex)?.value
+  check('Independent eating property is registered without custom held definitions')
 
   await cmd('execute as @e[type=minecraft:ender_pearl] at @s on owner if entity @s[name=NativeOH] run kill @e[type=minecraft:ender_pearl,distance=..0.01,limit=1]')
   await cmd('clear NativeOH')
@@ -486,11 +493,16 @@ async function main() {
   await pause(300)
   await setMain('diamond_sword')
   await setOffhand('potion',1)
+  const potionStart=state.animations.length
   use('click_air')
+  await until('offhand drinking animation starts',()=>state.animations.length>potionStart && eatingValue()===1)
   await until('offhand potion consumed',()=>state.offhand.network_id===definition('glass_bottle')?.runtime_id,10000)
-  check('Native offhand potion completes timed use',await inventoryData())
+  await until('offhand drinking animation stops',()=>eatingValue()===0)
+  check('Native offhand potion completes timed use and stops its independent animation',await inventoryData())
   await cmd('difficulty easy')
-  await setOffhand('apple',2)
+  // One apple isolates repeated starts within a single consumption from
+  // a legitimate second consumption while use remains held.
+  await setOffhand('apple',1)
   await cmd('effect give NativeOH minecraft:hunger 15 255 true')
   await pause(4500)
   let hunger,foodLevel=20
@@ -505,14 +517,30 @@ async function main() {
   debug('FOOD_LEVEL',hunger)
   // Match a held use input. The router must suppress repeated starts while
   // Java is already consuming, so these packets must not reset the timer.
+  const foodStart=state.animations.length
   const foodInput=setInterval(()=>use('click_air'),150)
   try {
     use('click_air')
-    await until('apple consumption with held use input',()=>state.offhand.count===1,10000)
+    await until('apple consumption with held use input',()=>!state.offhand.network_id,10000)
   } finally { clearInterval(foodInput) }
   check('Native offhand food completes timed use',await inventoryData())
-  assert(!state.animations.some(p=>p.animation.startsWith('animation.nativeoffhand.')))
-  check('Offhand food and potion use emit no custom PlayAnimation')
+  await until('food animation stopped',()=>eatingValue()===0)
+  const foodAnimations=state.animations.slice(foodStart)
+  assert.equal(foodAnimations.length,1,'Held input must not restart the animation')
+  for(const packet of state.animations.slice(potionStart)) {
+    assert.equal(packet.animation,'animation.nativeoffhand.eating.left')
+    assert.equal(packet.controller,'nativeoffhand_eating')
+    assert.equal(packet.stop_condition,"query.property('nativeoffhand:eating') == 0")
+    assert.deepEqual(packet.runtime_entity_ids.map(String),[String(state.runtimeId)])
+  }
+  check('Left-hand food/drink animation starts once and returns to idle on completion')
+  await setOffhand('apple',2)
+  const cancelStart=state.animations.length
+  use('click_air')
+  await until('cancellable food animation starts',()=>state.animations.length>cancelStart && eatingValue()===1)
+  await setOffhand('stone',4)
+  await until('changing offhand stops food animation',()=>eatingValue()===0)
+  check('Replacing the offhand during consumption cancels the left-hand animation')
   await setMain('diamond_sword')
   await setOffhand('stone',4)
   await cmd('setblock -1 65 1 minecraft:air')

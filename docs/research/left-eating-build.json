@@ -1,0 +1,12 @@
+{
+  "extension": "0.2.24-rewrite.24",
+  "packBytes": 53068,
+  "packSha256": "5fcbe12f85a7de3df63b7ec59bcd96deca2494851a29799cfe0e7789aa02935a",
+  "pngs": [
+    "textures/ui/offhand_slot.png"
+  ],
+  "animationTargets": [
+    "leftitem"
+  ],
+  "playerEntityOverride": false
+}

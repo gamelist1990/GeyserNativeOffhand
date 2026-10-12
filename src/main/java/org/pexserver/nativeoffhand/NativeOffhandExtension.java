@@ -25,6 +25,12 @@ public final class NativeOffhandExtension implements Extension {
     private final Map<org.geysermc.geyser.registry.type.ItemMapping, String> names = new IdentityHashMap<>();
     private Field componentData, translation;
 
+    @Subscribe public void properties(GeyserDefineEntityPropertiesEvent event) {
+        use.eatingProperty(event.registerIntegerProperty(
+            org.geysermc.geyser.api.util.Identifier.of("minecraft:player"),
+            org.geysermc.geyser.api.util.Identifier.of(NativeEatingAnimation.PROPERTY), 0, 1, 0));
+    }
+
     @Subscribe public void items(GeyserDefineCustomItemsEvent event) {
         try { logger().info("Registered " + NativeItemCatalog.register(event) + " inventory-only aliases; native held mappings retained."); }
         catch (Exception error) { throw new IllegalStateException("Cannot define inventory aliases", error); }
@@ -84,7 +90,7 @@ public final class NativeOffhandExtension implements Extension {
             hookHud(ClientboundSetSubtitleTextPacket.class);
             hookHud(ClientboundSetTitlesAnimationPacket.class);
             hookHud(ClientboundClearTitlesPacket.class);
-            logger().info("Native renderer rewrite enabled; no player pose, attachable or animation overrides.");
+            logger().info("Native renderer rewrite enabled; left-hand eating uses an independent player item-bone animation.");
         } catch (Throwable error) {
             restoreAll();
             logger().error("Native offhand initialization failed: " + error);
@@ -102,6 +108,7 @@ public final class NativeOffhandExtension implements Extension {
                         (PacketTranslator<InventoryTransactionPacket>) delegate);
                     else delegate.translate(session, packet);
                 });
+                use.refresh(session);
                 hud.update(session);
             }
             @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
@@ -127,7 +134,8 @@ public final class NativeOffhandExtension implements Extension {
                     var callback = session.getLatencyPingCache().poll();
                     if (callback != null) session.ensureInEventLoop(() -> {
                         NativeInventoryView.translate(session, callback);
-                        hud.update(session);
+                        use.refresh(session);
+                hud.update(session);
                     });
                 } else delegate.translate(session, packet);
             }
@@ -160,8 +168,7 @@ public final class NativeOffhandExtension implements Extension {
         if (delegate == null) throw new IllegalStateException("Missing metadata translator");
         PacketTranslator<ClientboundSetEntityDataPacket> wrapper = new PacketTranslator<>() {
             @Override public void translate(GeyserSession session, ClientboundSetEntityDataPacket packet) {
-                delegate.translate(session, packet);
-                use.metadata(session, packet);
+                delegate.translate(session, use.metadata(session, packet));
             }
             @Override public boolean shouldExecuteInEventLoop() { return delegate.shouldExecuteInEventLoop(); }
         };
@@ -173,6 +180,7 @@ public final class NativeOffhandExtension implements Extension {
         for (int i = restore.size() - 1; i >= 0; i--) restore.get(i).run();
         restore.clear();
         use.clear();
+        NativeInventoryView.clear();
         hud.clear();
         nativeData.forEach((item, data) -> { try { componentData.set(item, data); } catch (Exception error) { logger().error(error.toString()); } });
         nativeData.clear();
@@ -185,7 +193,7 @@ public final class NativeOffhandExtension implements Extension {
     }
 
     @Subscribe public void disconnect(org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent event) {
-        if (event.connection() instanceof GeyserSession session) { use.forget(session); hud.forget(session); }
+        if (event.connection() instanceof GeyserSession session) { use.forget(session); hud.forget(session); NativeInventoryView.forget(session); }
     }
     @Subscribe public void shutdown(GeyserShutdownEvent event) { restoreAll(); }
 }

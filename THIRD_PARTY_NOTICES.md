@@ -13,3 +13,7 @@ HUD binding behavior and type conversion were also studied in the [Bedrock Wiki 
 The native HUD renderer and numeric binding approach were studied in Mojang's [bedrock-samples UI](https://github.com/Mojang/bedrock-samples/tree/46ba6ea985fb5a92d79a9419198f10dda14c199d/resource_pack/ui) and Herobrine643928's [Chest-UI implementation](https://github.com/Herobrine643928/Chest-UI/blob/115d95c8239a0ee2f578a9a7710699a8f6627f26/RP/ui/chest_server_form.json). These are behavioral references; those source files are not bundled. See [the research record](docs/hud-texture-research.md).
 
 Current builds resolve Mojang/bedrock-samples main and check its UI and block/terrain definitions. Source metadata, checksums and generated native AUX integers are bundled; no downloaded Mojang JSON files or item PNGs are redistributed. See src/main/resources/mojang-hud-source.json and docs/native-hud-aux-repair.md. Native local UI ID behavior was researched from the Bedrock Wiki numerical-item-ids page. The experimental 852–883 shift was withdrawn after retail apple rendering failed; HUD AUX now uses native session IDs.
+
+## Eating Animation motion reference
+
+Eating Animation 1.1.5 by Voxen (user-provided Eating_Animation.zip) was analyzed as a motion reference. The left-hand motion uses the documented rise/bob timing with mirrored lateral movement and rotation. No original textures, attachables, or archive are bundled. See [the investigation](docs/eating-animation-research.md) and [the implementation](docs/left-eating-motion.md).

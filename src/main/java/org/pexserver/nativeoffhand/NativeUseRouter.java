@@ -23,7 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** Routes only offhand actions; every other action uses Geyser's translator. */
 final class NativeUseRouter {
-    private final Set<GeyserSession> consuming = ConcurrentHashMap.newKeySet();
+    private final NativeEatingAnimation animation = new NativeEatingAnimation();
+    void eatingProperty(org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty property) { animation.property(property); }
+    private final Map<GeyserSession, Integer> consuming = new ConcurrentHashMap<>();
     private static final Set<String> ACTIVE = Set.of("bow", "crossbow", "trident", "shield", "fishing_rod",
         "flint_and_steel", "fire_charge", "shears", "brush", "spyglass", "goat_horn", "snowball", "egg",
         "ender_pearl", "ender_eye", "experience_bottle", "wind_charge", "firework_rocket", "potion",
@@ -31,19 +33,39 @@ final class NativeUseRouter {
         "writable_book", "written_book", "armor_stand", "saddle");
 
     void forget(GeyserSession session) { consuming.remove(session); }
-    void clear() { consuming.clear(); }
+    void clear() { for (var session : consuming.keySet()) animation.stop(session); consuming.clear(); }
 
-    void metadata(GeyserSession session, ClientboundSetEntityDataPacket packet) {
-        if (packet.getEntityId() != session.getPlayerEntity().getEntityId()) return;
-        for (var entry : packet.getMetadata()) {
+    ClientboundSetEntityDataPacket metadata(GeyserSession session, ClientboundSetEntityDataPacket packet) {
+        if (packet.getEntityId() != session.getPlayerEntity().getEntityId()) return packet;
+        var translated = packet.getMetadata().clone();
+        boolean changed = false;
+        for (int i = 0; i < translated.length; i++) {
+            var entry = translated[i];
             if (entry.getId() != 8 || !(entry.getValue() instanceof Byte flags)) continue;
             var off = session.getPlayerInventory().getOffhand();
             if ((flags & 3) == 3 && off.getComponent(DataComponentTypes.CONSUMABLE) != null) {
-                consuming.add(session);
+                if (consuming.putIfAbsent(session, off.asItem().javaId()) == null) animation.start(session);
                 // Bedrock's generic USING_ITEM flag animates the main hand.
                 session.getPlayerEntity().setFlag(EntityFlag.USING_ITEM, false);
-                session.getPlayerEntity().updateBedrockMetadata();
-            } else consuming.remove(session);
+                // Filter before Geyser translates, so the right hand never
+                // receives a transient USING_ITEM=true packet for left-hand food.
+                if (entry instanceof org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.ByteEntityMetadata value) {
+                    translated[i] = new org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.ByteEntityMetadata(
+                        value.getId(), value.getType(), (byte) (flags & ~1));
+                    changed = true;
+                }
+            } else if (consuming.remove(session) != null) animation.stop(session);
+        }
+        return changed ? packet.withMetadata(translated) : packet;
+    }
+
+    void refresh(GeyserSession session) {
+        var item = consuming.get(session);
+        if (item == null) return;
+        var off = session.getPlayerInventory().getOffhand();
+        if (off.isEmpty() || off.asItem().javaId() != item || off.getComponent(DataComponentTypes.CONSUMABLE) == null) {
+            consuming.remove(session);
+            animation.stop(session);
         }
     }
 
@@ -75,7 +97,7 @@ final class NativeUseRouter {
                 || packet.getActionType() > 1) { original.translate(session, packet); return; }
         if (packet.getHotbarSlot() < 0 || packet.getHotbarSlot() > 8) return;
         if (!selectOffhand(session, packet)) { original.translate(session, packet); return; }
-        if (consuming.contains(session)) return;
+        if (consuming.containsKey(session)) return;
         var inventory = session.getPlayerInventory();
         int javaSlot = inventory.getOffsetForHotbar(packet.getHotbarSlot());
         var main = inventory.getItem(javaSlot);
