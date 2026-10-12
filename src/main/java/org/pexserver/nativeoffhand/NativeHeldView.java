@@ -66,9 +66,9 @@ final class NativeHeldView extends UpstreamSession {
 
     private BedrockPacket present(BedrockPacket packet) {
         if (packet instanceof ContainerOpenPacket open) {
-            NativeInventoryView.inventoryScreen(owner, open.getType() == ContainerType.INVENTORY);
+            IpadSlotProbe.screen(owner, open.getType() == ContainerType.INVENTORY);
         } else if (packet instanceof ContainerClosePacket) {
-            NativeInventoryView.inventoryScreen(owner, false);
+            IpadSlotProbe.screen(owner, false);
         }
         if (packet instanceof InventoryContentPacket content && content.getContainerId() == ContainerId.INVENTORY) {
             var transformed = content.clone();

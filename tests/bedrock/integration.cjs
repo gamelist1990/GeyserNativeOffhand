@@ -530,11 +530,12 @@ async function placementOperations() {
 }
 
 async function main() {
+  const probeLogStart=touchOnly ? fs.readFileSync(process.env.TEST_SERVER_LOG || path.resolve(__dirname,'../../.integration/placement-server/logs/latest.log'),'utf8').length : 0
   rcon=await connectRcon()
   savedDifficulty=(await cmd('difficulty')).match(/\b(peaceful|easy|normal|hard)\b/i)?.[1]?.toLowerCase()
   assert(savedDifficulty,'Capture difficulty before using the isolated test server')
   await cmd('whitelist off')
-  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,skinData:{LanguageCode:locale,...(touchOnly ? {DeviceOS:2,CurrentInputMode:2,DefaultInputMode:2,UIProfile:process.env.TEST_TOUCH_CLASSIC==='1' ? 0 : 1} : {})},transport:'raknet',conLog:()=>{}})
+  client=bedrock.createClient({host:'127.0.0.1',port:settings.bedrockPort,version:'1.26.51',username:'NativeOH',offline:true,deviceOS:touchOnly ? Number(process.env.TEST_DEVICE_OS || 2) : 7,skinData:{LanguageCode:locale,...(touchOnly ? {DeviceOS:2,CurrentInputMode:2,DefaultInputMode:2,DeviceModel:process.env.TEST_DEVICE_MODEL || 'iPad13,4',UIProfile:process.env.TEST_TOUCH_CLASSIC==='1' ? 0 : 1} : {})},transport:'raknet',conLog:()=>{}})
   client.prependOnceListener('session',profile=>{profile.xuid='31001'})
   client.on('error',err=>{state.error=err})
   client.on('disconnect',p=>{if(!state.closing)state.error=Error(JSON.stringify(p))})
@@ -579,35 +580,17 @@ async function main() {
   check('Bedrock 1.26.51 joined actual Paper/Geyser server')
   if(touchOnly) {
     await cmd('clear NativeOH')
-    for(const [id,count] of [['stone',8],['apple',4],['diamond_sword',1],['lantern',8]]) {
-      await setMain(id,count);await setOffhand('air')
-      const before={...state.inventory[0]},movable=uiDefinition(id) || nativeDefinition(id)
-      state.opened=null
-      client.queue('interact',{action_id:'open_inventory',target_entity_id:state.runtimeId,has_position:false})
-      await until('touch movable '+id,()=>state.opened && state.inventory[0]?.network_id===movable.runtime_id)
-      assert.equal(state.openedSnapshot.inventory[0].network_id,movable.runtime_id)
-      assert.equal(state.inventory[0].stack_id,before.stack_id)
-      assert(!state.cursor.network_id)
-      await nativeAction('place',count,'hotbar',0,'offhand',1)
-      await until('touch offhand alias',()=>state.offhand.network_id===movable.runtime_id && state.offhand.count===count)
-      await checkJavaCount('equipment.offhand.count',count)
-      assert(!state.cursor.network_id)
-      if(count>1) {
-        await nativeAction('place',2,'offhand',1,'hotbar',0)
-        await nativeAction('place',1,'hotbar',0,'offhand',1)
-        await checkJavaCount('equipment.offhand.count',count-1)
-      } else {
-        await nativeAction('swap',0,'offhand',1,'hotbar',0)
-        await nativeAction('swap',0,'offhand',1,'hotbar',0)
-      }
-      const close=state.closes.length
-      client.queue('container_close',{window_id:state.opened.window_id,server:false})
-      await until('touch closed native',()=>state.closes.length>close && state.offhand.network_id===nativeDefinition(id).runtime_id)
-      assert(!state.cursor.network_id)
-      if(uiDefinition(id)) assert(!state.equipment.some(p=>p.item.network_id===uiDefinition(id).runtime_id))
-      check('Touch selection direct transfer, merge/swap and native close: '+id)
-    }
-    fs.writeFileSync(process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/mobile-functional.json'),JSON.stringify({timestamp:new Date().toISOString(),checks,totalChecks:checks.length,limitations:['Headless touch-profile protocol checks; iPad tap UI needs retail verification.']},null,2)+'\n')
+    for(const [id,count] of [['stone',8],['apple',4],['diamond_sword',1],['lantern',8]])
+      await transferRoundTrip(id,count)
+    const log=fs.readFileSync(process.env.TEST_SERVER_LOG || path.resolve(__dirname,'../../.integration/placement-server/logs/latest.log'),'utf8').slice(probeLogStart)
+    const ipad=Number(process.env.TEST_DEVICE_OS || 2)===2 && (process.env.TEST_DEVICE_MODEL || 'iPad13,4').toLowerCase().startsWith('ipad')
+    if(ipad) {
+      assert(log.includes('[iPad slots ') && log.includes('open; inventory remains native'))
+      assert(log.includes('HOTBAR:0 -> CURSOR:0') && log.includes('CURSOR:0 -> OFFHAND:1'))
+      assert(log.includes('] close'))
+    } else assert(!log.includes('[iPad slots '),'Other devices are excluded from iPad diagnostics')
+    check(ipad ? 'iPad model detected; actual request endpoints recorded without inferring tap selection' : 'Other device excluded; native cursor behavior preserved')
+    fs.writeFileSync(process.env.TEST_RESULT || path.resolve(__dirname,'../../.integration/ipad-functional.json'),JSON.stringify({timestamp:new Date().toISOString(),deviceModel:process.env.TEST_DEVICE_MODEL || 'iPad13,4',deviceOs:Number(process.env.TEST_DEVICE_OS || 2),checks,totalChecks:checks.length,limitations:['Synthetic cursor requests; retail tap selection packet is unverified. Diagnostics do not implement tap transfer.']},null,2)+'\n')
     return
   }
   if(process.env.TEST_PLACEMENT_RATE_ONLY==='1') {

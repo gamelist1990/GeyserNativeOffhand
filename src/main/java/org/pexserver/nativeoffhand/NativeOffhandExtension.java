@@ -75,6 +75,8 @@ public final class NativeOffhandExtension implements Extension {
             hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerSetContentPacket.class, false);
             hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundContainerClosePacket.class, false);
             hook(Registries.JAVA_PACKET_TRANSLATORS, ClientboundOpenScreenPacket.class, false);
+            IpadSlotProbe.logger(message -> logger().info(message));
+            hook(Registries.BEDROCK_PACKET_TRANSLATORS, MobEquipmentPacket.class, false);
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, InteractPacket.class, false);
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, ContainerClosePacket.class, false);
             hook(Registries.BEDROCK_PACKET_TRANSLATORS, ItemStackRequestPacket.class, false);
@@ -84,7 +86,7 @@ public final class NativeOffhandExtension implements Extension {
             hookHud(ClientboundSetSubtitleTextPacket.class);
             hookHud(ClientboundSetTitlesAnimationPacket.class);
             hookHud(ClientboundClearTitlesPacket.class);
-            logger().info("Native renderer rewrite enabled; cursor/touch inventory definitions; vanilla held mappings; same-connection Paper use routing.");
+            logger().info("Native renderer rewrite enabled; cursor-only inventory definitions; iPad slot diagnostics; vanilla held mappings; same-connection Paper use routing.");
         } catch (Throwable error) {
             restoreAll();
             logger().error("Native offhand initialization failed: " + error);
@@ -97,6 +99,7 @@ public final class NativeOffhandExtension implements Extension {
         if (delegate == null) throw new IllegalStateException("Missing translator: " + type);
         PacketTranslator<P> wrapper = new PacketTranslator<>() {
             @Override public void translate(GeyserSession session, P packet) {
+                if (packet instanceof BedrockPacket bedrock) IpadSlotProbe.received(session, bedrock);
                 if (packet instanceof ItemStackRequestPacket request) NativeInventoryView.beforeRequest(session, request);
                 NativeInventoryView.translate(session, () -> {
                     if (route) use.translate(session, (InventoryTransactionPacket) packet,
