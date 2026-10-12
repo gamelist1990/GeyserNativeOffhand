@@ -17,14 +17,14 @@ bash build.sh
 
 ## 出力
 
-- `build/GeyserNativeOffhand-0.2.24-rewrite.24.jar` — サーバーへ導入する拡張。パックも同梱します。
+- `build/GeyserNativeOffhand-0.2.29-rewrite.29.jar` — サーバーへ導入する拡張。パックも同梱します。
 - `build/classes/GeyserNativeOffhand.mcpack` — 同梱パックの確認用出力。通常の導入で別途配信設定は不要です。
 
 JARを停止したサーバーの `plugins/Geyser-Spigot/extensions/` へ配置します。[READMEの導入手順](../README.md#導入)に従ってGeyserの既存設定を更新し、完全に再起動してください。
 
 ## 公式定義の取得と生成
 
-毎回のビルドでMojang/bedrock-samplesのmainを解決し、そのコミットのUI・ブロック・terrain定義を照合します。同じコミットの入力は `build/mojang-source/` にキャッシュします。取得に失敗した場合や期待する定義が変わった場合は、古い定義へ黙って戻らずビルドを失敗させます。
+毎回のビルドでMojang/bedrock-samplesのmainを解決し、そのコミットのUI・ブロック・terrain・item texture定義を照合します。同じコミットの入力は `build/mojang-source/` にキャッシュします。取得に失敗した場合や期待する定義が変わった場合は、古い定義へ黙って戻らずビルドを失敗させます。
 
 画像PNGはダウンロード・同梱しません。公式定義から携帯用ブロックを選び、Geyserの `bedrock/runtime_item_states.26_50.json` と照合してネイティブAUXを生成します。UIとJava側の選択に同じ一覧を使います。
 

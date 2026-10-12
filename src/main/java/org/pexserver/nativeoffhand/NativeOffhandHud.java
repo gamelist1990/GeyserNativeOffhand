@@ -61,7 +61,7 @@ final class NativeOffhandHud {
             // Resolve outside NativeInventoryView's scoped inventory aliases.
             // The HUD must use the client's native definition, even while the
             // inventory is showing an offhand-permitted move alias.
-            var item = stack.getItemData(session);
+            var item = NativeInventoryView.nativeData(session, stack);
             int aux = (item.getDefinition().getRuntimeId() << 16) | (item.getDamage() & 0xffff);
             snapshot = new Snapshot(aux, stack.getAmount());
         }

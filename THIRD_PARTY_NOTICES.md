@@ -4,7 +4,7 @@ The extension is MIT-licensed. Inventory validation and interaction conventions 
 
 The user-supplied DoubleHands 5.6.0 add-on is credited to Areed Elahi in its manifest. At the user request, version 0.2.4 copied its HUD UI files and images. Version 0.2.14 removes all 1,674 bundled item icon PNGs, the obsolete empty image and the converted TextureMap resource. It retains the slot PNG and the HUD registration/layout derived from DoubleHands, with a modified icon control that uses Bedrock's native item renderer. These third-party files are not relicensed under the extension MIT license. No separate redistribution license was included in the provided add-on. See [the inspection record](docs/doublehands-reference.md) and the bundled DOUBLEHANDS-NOTICE.txt.
 
-The current resource pack contains vanilla texture-path aliases, the DoubleHands-derived UI/slot frame and inventory-only tool attachables, geometry and pose animations. Item textures are referenced from the client's active assets rather than bundled. Minecraft imagery remains the property of Mojang. No vanilla player model is replaced. Geyser's integrated pack is loaded separately.
+The current resource pack contains vanilla texture-path aliases, the DoubleHands-derived UI/slot frame and no custom held-item models or animations. Item textures are referenced from the client's active assets rather than bundled. Minecraft imagery remains the property of Mojang. No vanilla player model is replaced. Geyser's integrated pack is loaded separately.
 
 Historical files in `docs/previews` contain Blockbench screenshots and texture-free inspection projects from the previous experimental implementation. Minecraft imagery remains the property of Mojang. Bedrock bone hierarchy/pivots in those historical projects were taken from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples), copyright Mojang AB, under its Minecraft EULA notice. Those previews do not verify the Bedrock runtime renderer and are not used by the rewrite.
 
@@ -16,4 +16,4 @@ Current builds resolve Mojang/bedrock-samples main and check its UI and block/te
 
 ## Eating Animation motion reference
 
-Eating Animation 1.1.5 by Voxen (user-provided Eating_Animation.zip) was analyzed as a motion reference. The left-hand motion uses the documented rise/bob timing with mirrored lateral movement and rotation. No original textures, attachables, or archive are bundled. See [the investigation](docs/eating-animation-research.md) and [the implementation](docs/left-eating-motion.md).
+Eating Animation 1.1.5 by Voxen (user-provided Eating_Animation.zip) was analyzed as a motion reference. The experimental left-hand motion was removed in 0.2.28; only its research record remains. No original textures, attachables, or archive are bundled. See [the investigation](docs/eating-animation-research.md) and [the withdrawn implementation record](docs/left-eating-motion.md).

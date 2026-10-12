@@ -23,8 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** Routes only offhand actions; every other action uses Geyser's translator. */
 final class NativeUseRouter {
-    private final NativeEatingAnimation animation = new NativeEatingAnimation();
-    void eatingProperty(org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty property) { animation.property(property); }
     private final Map<GeyserSession, Integer> consuming = new ConcurrentHashMap<>();
     private static final Set<String> ACTIVE = Set.of("bow", "crossbow", "trident", "shield", "fishing_rod",
         "flint_and_steel", "fire_charge", "shears", "brush", "spyglass", "goat_horn", "snowball", "egg",
@@ -33,7 +31,7 @@ final class NativeUseRouter {
         "writable_book", "written_book", "armor_stand", "saddle");
 
     void forget(GeyserSession session) { consuming.remove(session); }
-    void clear() { for (var session : consuming.keySet()) animation.stop(session); consuming.clear(); }
+    void clear() { consuming.clear(); }
 
     ClientboundSetEntityDataPacket metadata(GeyserSession session, ClientboundSetEntityDataPacket packet) {
         if (packet.getEntityId() != session.getPlayerEntity().getEntityId()) return packet;
@@ -44,7 +42,7 @@ final class NativeUseRouter {
             if (entry.getId() != 8 || !(entry.getValue() instanceof Byte flags)) continue;
             var off = session.getPlayerInventory().getOffhand();
             if ((flags & 3) == 3 && off.getComponent(DataComponentTypes.CONSUMABLE) != null) {
-                if (consuming.putIfAbsent(session, off.asItem().javaId()) == null) animation.start(session);
+                consuming.putIfAbsent(session, off.asItem().javaId());
                 // Bedrock's generic USING_ITEM flag animates the main hand.
                 session.getPlayerEntity().setFlag(EntityFlag.USING_ITEM, false);
                 // Filter before Geyser translates, so the right hand never
@@ -54,7 +52,7 @@ final class NativeUseRouter {
                         value.getId(), value.getType(), (byte) (flags & ~1));
                     changed = true;
                 }
-            } else if (consuming.remove(session) != null) animation.stop(session);
+            } else consuming.remove(session);
         }
         return changed ? packet.withMetadata(translated) : packet;
     }
@@ -65,7 +63,6 @@ final class NativeUseRouter {
         var off = session.getPlayerInventory().getOffhand();
         if (off.isEmpty() || off.asItem().javaId() != item || off.getComponent(DataComponentTypes.CONSUMABLE) == null) {
             consuming.remove(session);
-            animation.stop(session);
         }
     }
 
@@ -96,6 +93,16 @@ final class NativeUseRouter {
         if (packet.getTransactionType() != InventoryTransactionType.ITEM_USE || packet.getActionType() < 0
                 || packet.getActionType() > 1) { original.translate(session, packet); return; }
         if (packet.getHotbarSlot() < 0 || packet.getHotbarSlot() > 8) return;
+        // Opening a chest/door belongs to the clicked block, not to either
+        // item's use ability. Keep Geyser's native main-hand interaction path.
+        if (packet.getActionType() == 0 && !session.isSneaking() && packet.getBlockPosition() != null) {
+            var clicked = session.getGeyser().getWorldManager().blockAt(session, packet.getBlockPosition());
+            if (BlockRegistries.INTERACTIVE.get().get(clicked.javaId())
+                    || BlockRegistries.INTERACTIVE_MAY_BUILD.get().get(clicked.javaId())) {
+                original.translate(session, packet);
+                return;
+            }
+        }
         if (!selectOffhand(session, packet)) { original.translate(session, packet); return; }
         if (consuming.containsKey(session)) return;
         var inventory = session.getPlayerInventory();

@@ -1462,6 +1462,9 @@
     },
     "nativeoffhand_ui_zombified_piglin_spawn_egg": {
       "textures": "textures/items/spawn_eggs/spawn_egg_zombified_piglin"
+    },
+    "nativeoffhand_ui_redstone": {
+      "textures": "textures/items/redstone_dust"
     }
   }
 }

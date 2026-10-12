@@ -485,5 +485,6 @@
   "zombie_nautilus_spawn_egg": "textures/items/spawn_eggs/spawn_egg_zombie_nautilus",
   "zombie_spawn_egg": "textures/items/spawn_eggs/spawn_egg_zombie",
   "zombie_villager_spawn_egg": "textures/items/spawn_eggs/spawn_egg_zombie_villager",
-  "zombified_piglin_spawn_egg": "textures/items/spawn_eggs/spawn_egg_zombified_piglin"
+  "zombified_piglin_spawn_egg": "textures/items/spawn_eggs/spawn_egg_zombified_piglin",
+  "redstone": "textures/items/redstone_dust"
 }
